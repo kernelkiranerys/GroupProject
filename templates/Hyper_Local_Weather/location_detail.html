@@ -1,0 +1,20 @@
+{% load static %}
+{% extends 'base.html' %}
+
+{% block title %}{{ location.name }} - Hyper Local Weather{% endblock %}
+
+{% block content %}
+    <h2>{{ location.name }}</h2>
+    <p>Latitude: {{ location.latitude }}, Longitude: {{ location.longitude }}</p>
+
+    <h3>Recent readings</h3>
+    <ul>
+        {% for r in location.readings.all %}
+            <li>{{ r.timestamp }} - {{ r.temperature_c }} °C, {{ r.humidity }}%, {{ r.pressure_hpa }} hPa</li>
+        {% empty %}
+            <li>No readings available.</li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{% url 'Hyper_Local_Weather:index' %}">Back to locations</a></p>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% load static %}
+{% extends 'base.html' %}
+
+{% block title %}Locations - Hyper Local Weather{% endblock %}
+
+{% block content %}
+    <h2>Locations</h2>
+    <ul>
+        {% for loc in locations %}
+            <li><a href="{% url 'Hyper_Local_Weather:location_detail' loc.pk %}">{{ loc.name }}</a></li>
+        {% empty %}
+            <li>No locations yet.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
