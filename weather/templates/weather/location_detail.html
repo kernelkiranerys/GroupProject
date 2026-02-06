@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ location.name }} - Hyper Local Weather{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ location.name }}</h2>
+    <p>Location: {{ location.latitude }}, {{ location.longitude }}</p>
+    
+    <div class="weather-data">
+        <h3>Recent Weather Data</h3>
+        {% if weather_data %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date/Time</th>
+                        <th>Temperature (°C)</th>
+                        <th>Humidity (%)</th>
+                        <th>Pressure (hPa)</th>
+                        <th>Wind Speed (m/s)</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in weather_data %}
+                        <tr>
+                            <td>{{ data.recorded_at }}</td>
+                            <td>{{ data.temperature }}</td>
+                            <td>{{ data.humidity }}</td>
+                            <td>{{ data.pressure }}</td>
+                            <td>{{ data.wind_speed }}</td>
+                            <td>{{ data.description }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No weather data available for this location yet.</p>
+        {% endif %}
+    </div>
+    
+    <a href="{% url 'weather:index' %}">&larr; Back to Home</a>
+</div>
+{% endblock %}

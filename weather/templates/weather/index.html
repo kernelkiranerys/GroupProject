@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Hyper Local Weather{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Welcome to Hyper Local Weather</h2>
+    <p>Your source for hyperlocal weather information</p>
+    
+    <div class="locations-list">
+        <h3>Available Locations</h3>
+        {% if locations %}
+            <ul>
+                {% for location in locations %}
+                    <li>
+                        <a href="{% url 'weather:location_detail' location.id %}">
+                            {{ location.name }} ({{ location.latitude }}, {{ location.longitude }})
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No locations available yet. Please add some locations through the admin panel.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
