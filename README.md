@@ -74,22 +74,29 @@ GroupProject/
    pip install -r requirements.txt
    ```
 
-3. **Run migrations**
+3. **Configure environment** (for production)
+   ```bash
+   # Create a .env file and set your SECRET_KEY
+   # Never use the default SECRET_KEY in production!
+   echo "SECRET_KEY=your-secret-key-here" > .env
+   ```
+
+4. **Run migrations**
    ```bash
    python manage.py migrate
    ```
 
-4. **Create a superuser** (for admin access)
+5. **Create a superuser** (for admin access)
    ```bash
    python manage.py createsuperuser
    ```
 
-5. **Run the development server**
+6. **Run the development server**
    ```bash
    python manage.py runserver
    ```
 
-6. **Access the application**
+7. **Access the application**
    - Main site: http://127.0.0.1:8000/
    - Admin interface: http://127.0.0.1:8000/admin/
 
@@ -105,6 +112,17 @@ GroupProject/
 - **Python Version**: 3.12.3
 - **Django Version**: 6.0.2
 - **Database**: SQLite (default, can be configured for PostgreSQL, MySQL, etc.)
+
+### Security Notes
+
+- The default `SECRET_KEY` in `settings.py` is for development only
+- **Never use the default SECRET_KEY in production!**
+- For production deployment:
+  - Generate a new SECRET_KEY using Django's `get_random_secret_key()` function
+  - Store it in environment variables or a secure configuration file
+  - Update `DEBUG` to `False`
+  - Set `ALLOWED_HOSTS` appropriately
+  - Configure HTTPS/SSL settings
 
 ## Future Enhancements
 
