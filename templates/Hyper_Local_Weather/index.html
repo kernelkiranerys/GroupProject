@@ -1,15 +1,43 @@
-{% load static %}
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Locations - Hyper Local Weather{% endblock %}
+{% block title %}THis is the hyper local weather in {{ location }}{% endblock %}
 
 {% block content %}
-    <h2>Locations</h2>
-    <ul>
-        {% for loc in locations %}
-            <li><a href="{% url 'Hyper_Local_Weather:location_detail' loc.pk %}">{{ loc.name }}</a></li>
-        {% empty %}
-            <li>No locations yet.</li>
-        {% endfor %}
-    </ul>
+  <header class="page-header">
+    <h2 class="page-title">This is the hyper local weather in <span class="location">{{ location }}</span></h2>
+    <p class="page-desc">open source hyper local weather for community health</p>
+  </header>
+
+  <section class="card-grid">
+    <div class="card"> 
+      <div class="card-inner">
+        <h3 class="card-title">Air Quality</h3>
+        <div class="card-value">42 <span class="unit">AQI</span></div>
+        <p class="card-sub">PM2.5: 8 µg/m³ · Status: <strong>Good</strong></p>
+      </div>
+    </div>
+    <div class="card"> 
+      <div class="card-inner">
+        <h3 class="card-title">Temperature</h3>
+        <div class="card-value">22<span class="unit">°C</span></div>
+        <p class="card-sub">Feels like 21°C · Humidity: 56%</p>
+      </div>
+    </div>
+    <div class="card"> 
+      <div class="card-inner">
+        <h3 class="card-title">Pressure</h3>
+        <div class="card-value">1013 <span class="unit">hPa</span></div>
+        <p class="card-sub">Sea level pressure · Stable</p>
+      </div>
+    </div>
+    <div class="card"> 
+      <div class="card-inner">
+        <h3 class="card-title">Altitude</h3>
+        <div class="card-value">150 <span class="unit">m</span></div>
+        <p class="card-sub">Approximate elevation for this location</p>
+      </div>
+    </div>
+  </section>
+
 {% endblock %}
