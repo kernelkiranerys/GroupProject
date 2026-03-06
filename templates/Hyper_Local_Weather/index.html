@@ -1,56 +1,236 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}THis is the hyper local weather in {{ location }}{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-  <header class="page-header">
-    <h2 class="page-title">This is the hyper local weather in <span class="location">{{ location }}</span></h2>
-    <p class="page-desc">open source hyper local weather for community health</p>
-  </header>
 
-  <section class="card-grid">
-    <div class="card"> 
-      <div class="card-inner">
-        <h3 class="card-title">Air Quality</h3>
-        <div class="card-value">42 <span class="unit">AQI</span></div>
-        <p class="card-sub">PM2.5: 8 µg/m³ · Status: <strong>Good</strong></p>
-      </div>
-    </div>
-    <div class="card"> 
-      <div class="card-inner">
-        <h3 class="card-title">Temperature</h3>
-        <div class="card-value">22<span class="unit">°C</span></div>
-        <p class="card-sub">Feels like 21°C · Humidity: 56%</p>
-      </div>
-    </div>
-    <div class="card"> 
-      <div class="card-inner">
-        <h3 class="card-title">Pressure</h3>
-        <div class="card-value">1013 <span class="unit">hPa</span></div>
-        <p class="card-sub">Sea level pressure · Stable</p>
-      </div>
-    </div>
-    <div class="card"> 
-      <div class="card-inner">
-        <h3 class="card-title">Altitude</h3>
-        <div class="card-value">150 <span class="unit">m</span></div>
-        <p class="card-sub">Approximate elevation for this location</p>
-      </div>
-    </div>
-  </section>
+<!--  AIR QUALITY GRAPH -->
 
-  <!-- Map mockup: large standalone card under the grid -->
-  <section class="map-section">
-    <div class="card card-large">
-      <div class="card-inner">
-        <h3 class="card-title">Map</h3>
-        <div class="map-container">
-          <img src="https://via.placeholder.com/1100x420.png?text=Map+Placeholder" alt="Map placeholder" class="map-img" />
+<div class="dashboard-graph card">
+  <div class="aqWrap">
+
+    <!-- LEFT: CURRENT  -->
+    <div class="aqSummary">
+      <div class="aqSummary__top">
+        <div class="aqSummary__title">Todays Air Quality</div>
+      </div>
+
+      <div class="aqSummary__main">
+        <div class="aqSummary__num">50</div>
+        <div class="aqSummary__status">Good</div>
+        <div class="aqSummary__meta muted">AQI • PM2.5 placeholder</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CHART -->
+    <div class="aqChart">
+      <div class="aqChart__plot">
+
+        <svg viewBox="0 0 1000 360" class="aqSvg" role="img" aria-label="Air quality trend placeholder">
+  <!-- Chart frame -->
+  <!-- Plot area: left=70 right=970 top=30 bottom=300 -->
+  <defs>
+    <!-- soft glow for the line -->
+    <filter id="aqGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Risk bands (AQI zones) -->
+  <!-- These are translucent so the grid/line still shows -->
+  <g class="aqBands">
+    <!-- Good 0–50 -->
+    <rect x="70" y="250" width="900" height="50" class="band band-good"></rect>
+    <!-- Moderate 51–100 -->
+    <rect x="70" y="200" width="900" height="50" class="band band-mod"></rect>
+    <!-- Unhealthy for Sensitive 101–150 -->
+    <rect x="70" y="150" width="900" height="50" class="band band-usg"></rect>
+    <!-- Unhealthy 151–200 -->
+    <rect x="70" y="100" width="900" height="50" class="band band-unh"></rect>
+    <!-- Very Unhealthy 201–300 -->
+    <rect x="70" y="30" width="900" height="70" class="band band-vunh"></rect>
+  </g>
+
+  <!-- Grid + axes -->
+  <g class="aqGrid">
+    <!-- vertical axis -->
+    <line x1="70" y1="30" x2="70" y2="300"></line>
+    <!-- horizontal axis -->
+    <line x1="70" y1="300" x2="970" y2="300"></line>
+
+    <!-- horizontal grid lines -->
+    <line x1="70" y1="250" x2="970" y2="250"></line>
+    <line x1="70" y1="200" x2="970" y2="200"></line>
+    <line x1="70" y1="150" x2="970" y2="150"></line>
+    <line x1="70" y1="100" x2="970" y2="100"></line>
+    <line x1="70" y1="50"  x2="970" y2="50"></line>
+
+    <!-- vertical grid lines aligned to 7 points -->
+    <line x1="70"  y1="30" x2="70"  y2="300"></line>
+    <line x1="220" y1="30" x2="220" y2="300"></line>
+    <line x1="370" y1="30" x2="370" y2="300"></line>
+    <line x1="520" y1="30" x2="520" y2="300"></line>
+    <line x1="670" y1="30" x2="670" y2="300"></line>
+    <line x1="820" y1="30" x2="820" y2="300"></line>
+    <line x1="970" y1="30" x2="970" y2="300"></line>
+  </g>
+
+  <!-- Title -->
+  <text class="aqTitle" x="70" y="18">AQI (Air Quality Index) — last 7 days (mock)</text>
+
+  <!-- Y-axis labels -->
+  <g class="aqAxisLabels">
+    <text x="52" y="304" text-anchor="end">0</text>
+    <text x="52" y="254" text-anchor="end">50</text>
+    <text x="52" y="204" text-anchor="end">100</text>
+    <text x="52" y="154" text-anchor="end">150</text>
+    <text x="52" y="104" text-anchor="end">200</text>
+    <text x="52" y="54"  text-anchor="end">250</text>
+  </g>
+
+  <!-- Y-axis title -->
+  <text class="aqYAxisTitle" x="18" y="165" transform="rotate(-90 18 165)">AQI</text>
+
+  <!-- Area + line (points aligned with day labels) -->
+  <!-- Example values mapped visually; tweak y-values if you want -->
+  <path class="aqArea"
+    d="M70 210
+       L220 230
+       L370 160
+       L520 190
+       L670 170
+       L820 245
+       L970 180
+       L970 300 L70 300 Z" />
+
+  <path class="aqLine" filter="url(#aqGlow)"
+    d="M70 210
+       L220 230
+       L370 160
+       L520 190
+       L670 170
+       L820 245
+       L970 180" />
+
+  <g class="aqDots">
+    <circle cx="70"  cy="210" r="6"></circle>
+    <circle cx="220" cy="230" r="6"></circle>
+    <circle cx="370" cy="160" r="6"></circle>
+    <circle cx="520" cy="190" r="6"></circle>
+    <circle cx="670" cy="170" r="6"></circle>
+    <circle cx="820" cy="245" r="6"></circle>
+    <circle cx="970" cy="180" r="6"></circle>
+  </g>
+
+  <!-- X-axis day labels aligned to the same x positions -->
+  <g class="aqXLabels">
+    <text x="70"  y="340" text-anchor="middle">Mon</text>
+    <text x="220" y="340" text-anchor="middle">Tue</text>
+    <text x="370" y="340" text-anchor="middle">Wed</text>
+    <text x="520" y="340" text-anchor="middle">Thu</text>
+    <text x="670" y="340" text-anchor="middle">Fri</text>
+    <text x="820" y="340" text-anchor="middle">Sat</text>
+    <text x="970" y="340" text-anchor="middle">Sun</text>
+  </g>
+    </svg>
+
+  </div>
+</div>
+
+
+      </div>
+
+      <!-- bottom day strip -->
+      <div class="aqDays muted">
+        <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dashboard-row">
+
+  <!-- PRESSURE -->
+  <div class="card gauge-card">
+    <h3>Pressure</h3>
+
+    <div class="gauge">
+      <div class="gauge__ring">
+        <div class="gauge__needle"></div>
+        <div class="gauge__center"></div>
+      </div>
+
+      <div class="gauge__readout">
+        <div class="gauge__value">1013</div>
+        <div class="gauge__unit">hPa</div>
+        <div class="gauge__meta muted">Sea level • Stable (mock)</div>
+      </div>
+
+      <div class="gauge__labels muted">
+        <span>980</span>
+        <span>1040</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- HUMIDITY -->
+  <div class="card humidity-card">
+    <h3>Humidity</h3>
+    <p class="muted">Relative humidity (mock)</p>
+
+    <div class="humidityGauge">
+      <div class="cloud" style="--h: 63;">
+        <div class="cloud__fill"></div>
+        <div class="cloud__shine"></div>
+      </div>
+
+      <div class="humidityReadout">
+        <div class="humidityValue">
+          <span class="humidityNum">63</span>
+          <span class="humidityPct">%</span>
         </div>
-        <p class="card-sub">Interactive map will be embedded here. This is a placeholder image for the mockup.</p>
+        <div class="muted">Comfort: Normal</div>
       </div>
     </div>
-  </section>
+  </div>
+
+</div>
+
+
+<!-- TEMPERATURE GAUGE -->
+
+  <h3>Temperature</h3>
+
+  <div class="tempTile">
+  <div class="tempTile__main">
+    <div class="tempTile__value">
+      <span class="tempTile__num">23</span>
+      <span class="tempTile__deg">°</span>
+    </div>
+    <div class="tempTile__sub muted">Indoor • feels like — (mock)</div>
+  </div>
+
+  <div class="tempTile__week" aria-label="Weekly temperature strip (mock)">
+    <div class="day"><span class="day__name">M</span><span class="day__val">20°</span></div>
+    <div class="day"><span class="day__name">T</span><span class="day__val">21°</span></div>
+    <div class="day"><span class="day__name">W</span><span class="day__val">24°</span></div>
+    <div class="day"><span class="day__name">T</span><span class="day__val">27°</span></div>
+    <div class="day"><span class="day__name">F</span><span class="day__val">30°</span></div>
+    <div class="day"><span class="day__name">S</span><span class="day__val">21°</span></div>
+    <div class="day"><span class="day__name">S</span><span class="day__val">30°</span></div>
+  </div>
+</div>
+
+
+
+<!-- MAP -->
+<div class="card map-card">
+  <h3>Map</h3>
+  <div class="map-placeholder">Interactive Map</div>
+</div>
 
 {% endblock %}

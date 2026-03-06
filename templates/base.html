@@ -2,24 +2,36 @@
 {% load static %}
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Hyper Local Weather{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Hyper Local Weather{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
-<header class="site-header">
-    <div class="container">
-        <h1 class="site-title"><a href="{% url 'Hyper_Local_Weather:index' %}">Hyper Local Weather</a></h1>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="{% url 'Hyper_Local_Weather:index' %}">
+        <span class="brand__dot"></span>
+        <span class="brand__name">Hyper Local Weather</span>
+      </a>
+
+      <div class="topbar__meta">
+        <span class="pill">Indoor + Outdoor</span>
+        <span class="pill pill--soft">Prototype View</span>
+      </div>
     </div>
-</header>
-<main class="container">
+  </header>
+
+  <main class="container">
     {% block content %}{% endblock %}
-</main>
-<footer class="site-footer">
-    <div class="container">
-        <p>© Hyper Local Weather</p>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© Hyper Local Weather</span>
+      <span class="muted">Raspberry Pi sensors + public data</span>
     </div>
-</footer>
+  </footer>
 </body>
 </html>
