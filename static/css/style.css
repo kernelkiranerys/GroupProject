@@ -472,17 +472,26 @@ body{
 
 /* ========= PRESSURE GAUGE ========= */
 
-.gauge{
-  margin-top: 10px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(7,18,28,0.35);
+.gauge-card {
+  display: flex;
+  flex-direction: column;
   padding: 16px;
+}
+
+.gauge {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  left: 72px;
 }
 
 .gauge__ring{
   position: relative;
-  width: min(360px, 100%);
+  width: min(440px, 100%);
   aspect-ratio: 1 / 1;
   margin: 0 auto;
   border-radius: 999px;
@@ -545,7 +554,7 @@ body{
 
 .gauge__readout{
   text-align:center;
-  margin-top: -10px;
+  margin-top: -18px;
 }
 
 .gauge__value{
@@ -570,6 +579,13 @@ body{
   justify-content: space-between;
   margin-top: 10px;
   font-size: 0.9rem;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.gauge__labels span{
+  display: inline-block;
+  min-width: 40px;
 }
 
 /* ========= TEMPERATURE BARS ========= */
@@ -1059,343 +1075,9 @@ body{
   }
 }
 
-/* Make the pressure + humidity cards use their full height nicely */
-.gauge-card,
-.humidity-card{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 520px;          
-}
 
-.gauge-card h3,
-.humidity-card h3{
-  margin-bottom: 6px;
-}
-
-/* Pressure gauge should fill the card */
-.gauge-card .gauge{
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* make the ring bigger but still responsive */
-.gauge__ring{
-  width: min(420px, 100%);
-  margin: 0 auto;
-}
-
-/* move readout a bit closer so it feels more compact */
-.gauge__readout{
-  margin-top: -18px;
-}
-
-/* Humidity gauge should fill the card */
-.humidity-card .humidityGauge{
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* make the cloud larger */
-.humidity-card .cloud{
-  width: 300px;
-  height: 190px;
-}
-
-/* make the % bigger */
-.humidity-card .humidityNum{
-  font-size: 84px;
-}
-
-.gauge, .humidityGauge{
-  width: 100%;
-}
-
-/* =========================
-   PRESSURE + HUMIDITY: fill cards + clean header
-   ========================= */
-
-/* Make these cards behave like panels with header + body */
-.gauge-card,
-.humidity-card{
-  padding: 0;                 /* override card padding */
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-height: 520px;          /* adjust if you want */
-}
-
-/* Header bar */
-.gauge-card > h3,
-.humidity-card > h3{
-  margin: 0;
-  padding: 14px 16px;
-  font-weight: 900;
-  border-bottom: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-}
-
-/* Remove that extra humidity subtitle line (optional, cleaner like your sketch) */
-.humidity-card > p.muted{
-  display: none;
-}
-
-/* Body area fills remaining height */
-.gauge-card > .gauge,
-.humidity-card > .humidityGauge{
-  flex: 1;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
-
-/* ===== Pressure: scale ring up ===== */
-.gauge__ring{
-  width: min(420px, 100%);
-}
-
-/* Pull readout slightly upward so it feels tighter */
-.gauge__readout{
-  margin-top: -10px;
-}
-
-/* ===== Humidity: stack cloud then big number beneath ===== */
-.humidityGauge{
-  text-align: center;
-}
-
-/* Make the cloud bigger */
-.humidityGauge .cloud{
-  width: min(380px, 100%);
-  height: 220px;
-  margin: 0 auto;
-}
-
-/* Put the readout below, centered */
-.humidityReadout{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Bigger number like the sketch */
-.humidityNum{
-  font-size: 86px;
-  letter-spacing: 2px;
-}
-
-/* Slightly smaller % */
-.humidityPct{
-  font-size: 28px;
-  font-weight: 900;
-  color: rgba(234,242,255,0.70);
-}
-
-/* Comfort text smaller under number */
-.humidityReadout .muted{
-  margin-top: 6px;
-  font-size: 1rem;
-}
-
-/* Fix pressure min/max labels spacing */
-.gauge__labels{
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
-  margin-top: 10px;
-}
-
-.gauge__labels span{
-  display: inline-block;
-  min-width: 40px;
-}
-
-/* Balance pressure layout */
-.gauge-card > .gauge{
-  gap: 10px;                 /* tighter spacing */
-}
-
-.gauge__ring{
-  width: min(440px, 100%);   /* slightly bigger */
-}
-
-.gauge__readout{
-  margin-top: -18px;         /* pull numbers up closer */
-}
-
-/* Cloud tuning (make it look like a real single cloud) */
-.humidityGauge .cloud{
-  width: min(420px, 100%);
-  height: 240px;
-}
-
-/* Reposition bubbles */
-.humidityGauge .cloud::before{
-  width: 170px;
-  height: 170px;
-  left: 20px;
-  top: 48px;
-}
-
-.humidityGauge .cloud::after{
-  width: 190px;
-  height: 190px;
-  right: 18px;
-  top: 30px;
-}
-
-/* Make the main body more cloud-like */
-.humidityGauge .cloud{
-  border-radius: 999px;
-}
-
-/* Softer humidity fill edge and blend */
-.cloud__fill{
-  opacity: 0.85;
-  filter: blur(0.2px);
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-.cloud__shine{
-  opacity: 0.9;
-}
-
-/* Center humidity content better */
-.humidity-card > .humidityGauge{
-  justify-content: center;
-  gap: 22px;
-}
-
-.humidityReadout{
-  margin-top: -6px;
-}
-
-/* PRESSURE: remove inner panel look and let the gauge fill the card */
-.gauge-card > .gauge{
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  width: 100%;
-}
-
-.gauge-card > .gauge .gauge__ring{
-  width: min(520px, 100%);   /* bigger so it fills like your sketch */
-  margin: 0 auto;
-}
-
-/* give more breathing room above + keep readout close */
-.gauge-card > .gauge{
-  gap: 14px;
-  justify-content: center;
-}
-
-.gauge__readout{
-  margin-top: -22px;
-}
-
-/* HUMIDITY: true cloud silhouette using gradients (overrides old bubble method) */
-.humidityGauge .cloud{
-  width: min(520px, 100%);
-  height: 240px;
-  position: relative;
-  overflow: hidden;
-
-  /* unified cloud shape */
-  border-radius: 999px;
-  background:
-    radial-gradient(110px 90px at 22% 55%, rgba(255,255,255,0.09) 60%, transparent 61%),
-    radial-gradient(140px 120px at 40% 40%, rgba(255,255,255,0.09) 60%, transparent 61%),
-    radial-gradient(150px 130px at 62% 42%, rgba(255,255,255,0.09) 60%, transparent 61%),
-    radial-gradient(120px 100px at 78% 55%, rgba(255,255,255,0.09) 60%, transparent 61%),
-    rgba(255,255,255,0.05);
-
-  border: 1px solid rgba(255,255,255,0.10);
-  backdrop-filter: blur(10px);
-  filter: drop-shadow(0 18px 35px rgba(0,0,0,0.45));
-}
-
-/* kill old pseudo bubbles so they don't interfere */
-.humidityGauge .cloud::before,
-.humidityGauge .cloud::after{
-  content: none !important;
-}
-
-/* fill (water/mist) stays the same but needs to match the cloud shape */
-.humidityGauge .cloud__fill{
-  position:absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: calc(var(--h) * 1%);
-
-  background:
-    radial-gradient(90px 60px at 25% 30%, rgba(34,211,238,0.30), transparent 70%),
-    radial-gradient(110px 70px at 70% 35%, rgba(96,165,250,0.26), transparent 72%),
-    linear-gradient(180deg, rgba(34,211,238,0.22), rgba(96,165,250,0.16));
-
-  border-top: 1px solid rgba(255,255,255,0.10);
-  opacity: 0.92;
-  border-bottom-left-radius: 999px;
-  border-bottom-right-radius: 999px;
-
-  /* soft wavy surface */
-  clip-path: path("M 0 26 C 70 10, 140 42, 210 26 C 280 10, 350 42, 420 26 C 470 18, 510 32, 520 26 L 520 400 L 0 400 Z");
-}
-
-/* shine */
-.humidityGauge .cloud__shine{
-  opacity: 0.95;
-}
-
-/* Humidity layout: cloud top, number bottom, centered */
-.humidity-card > .humidityGauge{
-  gap: 26px;
-  justify-content: center;
-}
-
-.humidityReadout{
-  margin-top: -4px;
-}
-
-/* PRESSURE: prevent cropping and balance spacing */
-.gauge-card > .gauge{
-  padding: 10px 18px 18px !important;  /* give the ring room */
-}
-
-.gauge-card .gauge__ring{
-  width: min(460px, 92%);              /* slightly smaller than before */
-}
-
-/* tighten readout spacing */
-.gauge__readout{
-  margin-top: -28px;
-}
-
-/* HUMIDITY: make cloud less dominant + move it up slightly */
-.humidityGauge .cloud{
-  width: min(460px, 92%);
-  height: 210px;
-  margin-top: -10px;
-}
-
-/* keep the number feeling centered */
-.humidityReadout{
-  margin-top: -2px;
-}
-
-/* Ensure content is vertically centered in both cards */
-.gauge-card > .gauge,
 .humidity-card > .humidityGauge{
   justify-content: center;
 }
+
+/* change order: map at top, current temp, air quality, humidity then past temperatures at the bottom */
