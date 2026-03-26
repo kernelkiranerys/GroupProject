@@ -2,8 +2,48 @@
 
 {% block content %}
 
-<!--  AIR QUALITY GRAPH -->
+<!-- MAP -->
+<div class="card map-card">
+  <h3>Map</h3>
+  <div class="map-placeholder">Interactive Map</div>
+</div>
 
+<!-- TEMPERATURE GAUGES -->
+<div class="dashboard-row">
+  <div class="card gauge-card {% if latest_indoor_temp == 'N/A' %}disabled{% endif %}">
+    <h3>Current Indoor Temperature</h3>
+    {% if latest_indoor_temp == 'N/A' %}
+        <div class="error-message">
+            Connection to temperature monitor device could not be established
+        </div>
+    {% else %}
+        <div class="tempTile">
+            <div class="tempTile__main">
+                <div class="tempTile__value">
+                    <span class="tempTile__num">{{ latest_indoor_temp|floatformat:0 }}</span>
+                    <span class="tempTile__deg">°</span>
+                </div>
+                <div class="tempTile__sub muted">Indoor • feels like — (mock)</div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+  <div class="card gauge-card">
+    <h3>Current Outdoor Temperature</h3>
+    <div class="tempTile">
+      <div class="tempTile__main">
+        <div class="tempTile__value">
+          <span class="tempTile__num">23</span>
+          <span class="tempTile__deg">°</span>
+        </div>
+        <div class="tempTile__sub muted">Outdoor • feels like — (mock)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--  AIR QUALITY GRAPH -->
 <div class="dashboard-graph card">
   <div class="aqWrap">
 
@@ -134,10 +174,10 @@
     <text x="820" y="340" text-anchor="middle">Sat</text>
     <text x="970" y="340" text-anchor="middle">Sun</text>
   </g>
-    </svg>
+        </svg>
 
-  </div>
-</div>
+      </div>
+    </div>
 
 
       </div>
@@ -152,7 +192,29 @@
 </div>
 
 <div class="dashboard-row">
+  <!-- HUMIDITY -->
+  <div class="card humidity-card">
+    <h3>Humidity</h3>
+    <p class="muted">Relative humidity (mock)</p>
 
+    <div class="humidityGauge">
+      <div class="cloud" style="--h: 63;">
+        <div class="cloud__fill"></div>
+        <div class="cloud__shine"></div>
+      </div>
+
+      <div class="humidityReadout">
+        <div class="humidityValue">
+          <span class="humidityNum">63</span>
+          <span class="humidityPct">%</span>
+        </div>
+        <div class="muted">Comfort: Normal</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-row">
   <!-- PRESSURE -->
   <div class="card gauge-card">
     <h3>Pressure</h3>
@@ -175,62 +237,85 @@
       </div>
     </div>
   </div>
+</div>
 
+<!-- PAST WEEK STRIP -->
 
-  <!-- HUMIDITY -->
-  <div class="card humidity-card">
-    <h3>Humidity</h3>
-    <p class="muted">Relative humidity (mock)</p>
-
-    <div class="humidityGauge">
-      <div class="cloud" style="--h: 63;">
-        <div class="cloud__fill"></div>
-        <div class="cloud__shine"></div>
-      </div>
-
-      <div class="humidityReadout">
-        <div class="humidityValue">
-          <span class="humidityNum">63</span>
-          <span class="humidityPct">%</span>
+<div class="dashboard-graph card">
+  <div id="past-temperatures-card" class="card">
+    <h3>Record of Past Temperatures for week of <span id="current-date">{{ current_date|date:"M d, Y" }}</span></h3>
+    <div id="past-temperatures-container" class="tempTile__week" aria-label="Weekly temperature strip">
+      {% for temp_data in past_week_temps %}
+        <div class="day">
+          <span class="day__name">{{ temp_data.day_name }}</span>
+          <span class="day__val">{{ temp_data.avg_temp }}°</span>
         </div>
-        <div class="muted">Comfort: Normal</div>
-      </div>
+      {% endfor %}
+    </div>
+    <div class="week-navigation">
+      <a href="{% url 'Hyper_Local_Weather:index_with_date' date=previous_week %}" id="prev-week-link">Previous Week</a>
+      {% if not is_current_week %}
+        <a href="{% url 'Hyper_Local_Weather:index_with_date' date=next_week %}" id="next-week-link">Next Week</a>
+      {% endif %}
     </div>
   </div>
-
 </div>
 
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const weekNavigation = document.querySelector('.week-navigation');
 
-<!-- TEMPERATURE GAUGE -->
+      weekNavigation.addEventListener('click', function(e) {
+          if (e.target.tagName === 'A') {
+              e.preventDefault();
+              const url = e.target.href;
 
-  <h3>Temperature</h3>
+              fetch(url, {
+                  headers: {
+                      'X-Requested-With': 'XMLHttpRequest'
+                  }
+              })
+              .then(response => response.json())
+              .then(data => {
+                  updateTemperatureCard(data);
+              });
+          }
+      });
 
-  <div class="tempTile">
-  <div class="tempTile__main">
-    <div class="tempTile__value">
-      <span class="tempTile__num">23</span>
-      <span class="tempTile__deg">°</span>
-    </div>
-    <div class="tempTile__sub muted">Indoor • feels like — (mock)</div>
-  </div>
+      function updateTemperatureCard(data) {
+          const tempContainer = document.getElementById('past-temperatures-container');
+          tempContainer.innerHTML = ''; 
 
-  <div class="tempTile__week" aria-label="Weekly temperature strip (mock)">
-    <div class="day"><span class="day__name">M</span><span class="day__val">20°</span></div>
-    <div class="day"><span class="day__name">T</span><span class="day__val">21°</span></div>
-    <div class="day"><span class="day__name">W</span><span class="day__val">24°</span></div>
-    <div class="day"><span class="day__name">T</span><span class="day__val">27°</span></div>
-    <div class="day"><span class="day__name">F</span><span class="day__val">30°</span></div>
-    <div class="day"><span class="day__name">S</span><span class="day__val">21°</span></div>
-    <div class="day"><span class="day__name">S</span><span class="day__val">30°</span></div>
-  </div>
-</div>
+          data.past_week_temps.forEach(temp_data => {
+              const dayDiv = document.createElement('div');
+              dayDiv.classList.add('day');
+              dayDiv.innerHTML = `<span class="day__name">${temp_data.day_name}</span><span class="day__val">${temp_data.avg_temp}°</span>`;
+              tempContainer.appendChild(dayDiv);
+          });
 
+          document.getElementById('current-date').textContent = data.current_date;
 
+          const baseUrl = "{% url 'Hyper_Local_Weather:index' %}";
 
-<!-- MAP -->
-<div class="card map-card">
-  <h3>Map</h3>
-  <div class="map-placeholder">Interactive Map</div>
-</div>
+          const prevLink = document.getElementById('prev-week-link');
+          if (prevLink) {
+              prevLink.href = baseUrl + data.previous_week + '/';
+          }
+
+          let nextLink = document.getElementById('next-week-link');
+          if (!data.is_current_week) {
+              if (!nextLink) {
+                  nextLink = document.createElement('a');
+                  nextLink.id = 'next-week-link';
+                  nextLink.textContent = 'Next Week';
+                  weekNavigation.appendChild(nextLink);
+              }
+              nextLink.href = baseUrl + data.next_week + '/';
+          } else if (nextLink) {
+              nextLink.remove();
+          }
+      }
+  });
+  </script>
 
 {% endblock %}
