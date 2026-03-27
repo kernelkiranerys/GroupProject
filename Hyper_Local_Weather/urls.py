@@ -10,4 +10,7 @@ urlpatterns = [
     path('update_location/', views.update_location, name='update_location'),
     path('signup/', views.signup, name='signup'),
     path('<str:date>/', views.index, name='index_with_date'),
+    path('location/<int:pk>/', views.location_detail, name='location_detail'),
+    # New endpoint for receiving POST updates
+    path('update/', views.update_reading, name='update_reading'),
 ]
