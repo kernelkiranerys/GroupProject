@@ -1,11 +1,22 @@
 {% extends "base.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+crossorigin=""></script>
 
 {% block content %}
 
 <!-- MAP -->
 <div class="card map-card">
   <h3>Map</h3>
-  <div class="map-placeholder">Interactive Map</div>
+  <div id="mapid" style="height: 400px;"></div>
+  <div id="map-error" class="error-message" style="display: none;">
+    Map data could not be loaded. Please check your connection and try again.
+  </div>
 </div>
 
 <!-- TEMPERATURE GAUGES -->
@@ -261,61 +272,127 @@
   </div>
 </div>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-      const weekNavigation = document.querySelector('.week-navigation');
+{% endblock %}
 
-      weekNavigation.addEventListener('click', function(e) {
-          if (e.target.tagName === 'A') {
-              e.preventDefault();
-              const url = e.target.href;
+{% block scripts %}
+{{ locations|json_script:"locations-data" }}
+{{ request.session.location|json_script:"current-location-data" }}
 
-              fetch(url, {
-                  headers: {
-                      'X-Requested-With': 'XMLHttpRequest'
-                  }
-              })
-              .then(response => response.json())
-              .then(data => {
-                  updateTemperatureCard(data);
-              });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const locationsData = JSON.parse(document.getElementById('locations-data').textContent);
+        const currentLocationData = JSON.parse(document.getElementById('current-location-data').textContent);
+
+        const lat = currentLocationData ? currentLocationData.lat : 53.8278;
+        const lon = currentLocationData ? currentLocationData.lon : -1.5929;
+
+        function getAirQualityColor(aqi) {
+          if (isNaN(aqi) || aqi === null) return '#808080'; // Grey for no data
+          if (aqi <= 50) return '#009966';  // Good
+          if (aqi <= 100) return '#FFDE33'; // Moderate
+          if (aqi <= 150) return '#FF9933'; // Unhealthy for Sensitive Groups
+          if (aqi <= 200) return '#CC0033'; // Unhealthy
+          if (aqi <= 300) return '#660099'; // Very Unhealthy
+          return '#7E0023'; // Hazardous
+        }
+
+        var map = L.map('mapid').setView([lat, lon], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        locationsData.forEach(function(location) {
+          if (location.fields.latitude && location.fields.longitude) {
+            var aqi = parseFloat(location.fields.latest_reading ? location.fields.latest_reading.air_quality : 'N/A');
+            var color = getAirQualityColor(aqi);
+
+            var marker = L.circleMarker([location.fields.latitude, location.fields.longitude], {
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.75,
+              radius: 8
+            }).addTo(map);
+
+            marker.bindPopup("<b>" + location.fields.name + "</b><br>Air Quality: " + (isNaN(aqi) ? 'N/A' : aqi));
           }
+        });
+
+    } catch (e) {
+        console.error("Map initialization failed:", e);
+        document.getElementById('map-error').style.display = 'block';
+    }
+
+    // --- WEEK NAVIGATION ---
+    const weekNavigation = document.querySelector('.week-navigation');
+    
+    if (weekNavigation) {
+        weekNavigation.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const url = e.target.href;
+
+                fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch week data');
+                    return response.json();
+                })
+                .then(data => {
+                    // Assuming this function is defined elsewhere in your scripts
+                    if (typeof updateTemperatureCard === 'function') {
+                        updateTemperatureCard(data);
+                    } else {
+                        console.error('updateTemperatureCard function is not defined.');
+                    }
+                })
+                .catch(error => console.error('Error fetching week data:', error)); // Added error handling
+            }
+        });
+    }
+});
+
+  function updateTemperatureCard(data) {
+      const tempContainer = document.getElementById('past-temperatures-container');
+      
+      //ensures that element exists before trying to update it, preventing potential errors if the element is missing from the DOM 
+      if (tempContainer) {
+          tempContainer.innerHTML = ''; // Clear existing content
+      } else {
+          console.error('Temperature container not found');
+          return;
+      }
+      tempContainer.innerHTML = ''; 
+
+      data.past_week_temps.forEach(temp_data => {
+          const dayDiv = document.createElement('div');
+          dayDiv.classList.add('day');
+          dayDiv.innerHTML = `<span class="day__name">${temp_data.day_name}</span><span class="day__val">${temp_data.avg_temp}°</span>`;
+          tempContainer.appendChild(dayDiv);
       });
 
-      function updateTemperatureCard(data) {
-          const tempContainer = document.getElementById('past-temperatures-container');
-          tempContainer.innerHTML = ''; 
+      document.getElementById('current-date').textContent = data.current_date;
 
-          data.past_week_temps.forEach(temp_data => {
-              const dayDiv = document.createElement('div');
-              dayDiv.classList.add('day');
-              dayDiv.innerHTML = `<span class="day__name">${temp_data.day_name}</span><span class="day__val">${temp_data.avg_temp}°</span>`;
-              tempContainer.appendChild(dayDiv);
-          });
-
-          document.getElementById('current-date').textContent = data.current_date;
-
-          const baseUrl = "{% url 'Hyper_Local_Weather:index' %}";
-
-          const prevLink = document.getElementById('prev-week-link');
-          if (prevLink) {
-              prevLink.href = baseUrl + data.previous_week + '/';
-          }
-
-          let nextLink = document.getElementById('next-week-link');
-          if (!data.is_current_week) {
-              if (!nextLink) {
-                  nextLink = document.createElement('a');
-                  nextLink.id = 'next-week-link';
-                  nextLink.textContent = 'Next Week';
-                  weekNavigation.appendChild(nextLink);
-              }
-              nextLink.href = baseUrl + data.next_week + '/';
-          } else if (nextLink) {
-              nextLink.remove();
-          }
+      const baseUrl = "{% url 'Hyper_Local_Weather:index' %}";
+      const prevLink = document.getElementById('prev-week-link');
+      if (prevLink) {
+          prevLink.href = baseUrl + data.previous_week + '/';
       }
-  });
-  </script>
 
+      let nextLink = document.getElementById('next-week-link');
+      if (!data.is_current_week) {
+          if (!nextLink) {
+              nextLink = document.createElement('a');
+              nextLink.id = 'next-week-link';
+              nextLink.textContent = 'Next Week';
+              document.querySelector('.week-navigation').appendChild(nextLink);
+          }
+          nextLink.href = baseUrl + data.next_week + '/';
+      } else if (nextLink) {
+          nextLink.remove();
+      }
+  }
+</script>
 {% endblock %}

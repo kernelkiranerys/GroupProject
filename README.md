@@ -10,3 +10,9 @@ Django Hyper Local Weather App
 6. Run the development server on a custom port (optional):
 
    python manage.py runserver 8000
+
+#Updating map location
+
+1. marker.setLatLng([newLat, newLon]); (setting marker location)
+
+2. mymap.panTo([newLat, newLon]); (setting camera view)

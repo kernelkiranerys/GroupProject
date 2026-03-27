@@ -16,6 +16,7 @@ class WeatherReading(models.Model):
     temperature_c = models.FloatField()
     humidity = models.FloatField()
     pressure_hpa = models.FloatField()
+    air_quality = models.FloatField(null=True, blank=True)
 
     class Meta:
         ordering = ['-timestamp']
