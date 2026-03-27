@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="card">
+  <h3>Historical Weather Data</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Location</th>
+        <th>Timestamp</th>
+        <th>Temperature (°C)</th>
+        <th>Humidity (%)</th>
+        <th>Pressure (hPa)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for reading in readings %}
+      <tr>
+        <td>{{ reading.location.name }}</td>
+        <td>{{ reading.timestamp }}</td>
+        <td>{{ reading.temperature_c|floatformat:2 }}</td>
+        <td>{{ reading.humidity|floatformat:2 }}</td>
+        <td>{{ reading.pressure_hpa|floatformat:2 }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5">No historical data available.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

@@ -11,17 +11,35 @@
 <body>
   <header class="topbar">
     <div class="container topbar__inner">
-      <a class="brand" href="{% url 'Hyper_Local_Weather:index' %}">
-        <span class="brand__dot"></span>
-        <span class="brand__name">Hyper Local Weather</span>
-      </a>
-
-      <div class="topbar__meta">
-        <span class="pill">Indoor + Outdoor</span>
-        <span class="pill pill--soft">Prototype View</span>
-      </div>
+        <div class="brand-and-nav">
+            <a class="brand" href="{% url 'Hyper_Local_Weather:index' %}">
+                <span class="brand__dot"></span>
+                <span class="brand__name">Home</span>
+            </a>
+            <nav class="main-nav">
+                <div class="dropdown">
+                    <button class="dropbtn">Menu</button>
+                    <div class="dropdown-content">
+                        <a href="{% url 'Hyper_Local_Weather:historical' %}">Historical</a>
+                        {% if user.is_authenticated %}
+                            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="link-button">Logout</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'login' %}">Login</a>
+                            <a href="{% url 'Hyper_Local_Weather:signup' %}">Sign Up</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="topbar__meta">
+            <span class="pill">Indoor + Outdoor</span>
+            <span class="pill pill--soft">Prototype View</span>
+        </div>
     </div>
-  </header>
+</header>
 
   <main class="container">
     {% block content %}{% endblock %}
@@ -33,5 +51,6 @@
       <span class="muted">Raspberry Pi sensors + public data</span>
     </div>
   </footer>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

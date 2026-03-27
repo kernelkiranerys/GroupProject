@@ -55,6 +55,59 @@ body{
   min-height: 64px;
 }
 
+.brand-and-nav {
+    display: flex;
+    align-items: center;
+}
+
+.main-nav {
+    margin-left: 20px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: var(--teal);
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--bg1);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 8px;
+}
+
+.dropdown-content a {
+    color: var(--text);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--bg0);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #25a090;
+}
+
 .brand{
   display:flex;
   align-items:center;
@@ -322,8 +375,8 @@ body{
 .dot--teal{ background: var(--teal); }
 .spacer{ flex: 1; }
 
-/* ===== Map placeholder ===== */
-.mapPlaceholder{
+/* ===== Map  ===== */
+.mapCard{
   position: relative;
   height: 360px;
   border-radius: 16px;
