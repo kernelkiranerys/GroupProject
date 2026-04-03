@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-tabs">
+    <button class="auth-tab auth-tab--active" data-tab="login">Login</button>
+    <button class="auth-tab" data-tab="signup">Sign Up</button>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div class="auth-panel auth-panel--active" id="login">
+    <h2>Welcome Back</h2>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="login">
+      
+      <div class="form-group">
+        <label for="id_username">Username:</label>
+        <input type="text" id="id_username" name="username" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_password">Password:</label>
+        <input type="password" id="id_password" name="password" required>
+      </div>
+
+      {% if login_error %}
+        <div class="form-error-box">{{ login_error }}</div>
+      {% endif %}
+
+      <button type="submit" class="auth-submit-btn" name="login-submit">Login</button>
+    </form>
+  </div>
+
+  <!-- SIGNUP FORM -->
+  <div class="auth-panel" id="signup">
+    <h2>Create Account</h2>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="signup">
+      
+      <div class="form-group">
+        <label for="id_signup_username">Username:</label>
+        <input type="text" id="id_signup_username" name="username" required>
+        {% if signup_form.username.errors %}
+          <span class="form-error">{{ signup_form.username.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_email">Email:</label>
+        <input type="email" id="id_email" name="email" required>
+        {% if signup_form.email.errors %}
+          <span class="form-error">{{ signup_form.email.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_password1">Password:</label>
+        <input type="password" id="id_password1" name="password1" required>
+        {% if signup_form.password1.errors %}
+          <span class="form-error">{{ signup_form.password1.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_password2">Confirm Password:</label>
+        <input type="password" id="id_password2" name="password2" required>
+        {% if signup_form.password2.errors %}
+          <span class="form-error">{{ signup_form.password2.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      {% if signup_error %}
+        <div class="form-error-box">{{ signup_error }}</div>
+      {% endif %}
+
+      <button type="submit" class="auth-submit-btn" name="signup-submit">Sign Up</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const tabName = this.getAttribute('data-tab');
+      
+      // Hide all panels
+      document.querySelectorAll('.auth-panel').forEach(panel => {
+        panel.classList.remove('auth-panel--active');
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.auth-tab').forEach(t => {
+        t.classList.remove('auth-tab--active');
+      });
+      
+      // Show selected panel and tab
+      document.getElementById(tabName).classList.add('auth-panel--active');
+      this.classList.add('auth-tab--active');
+    });
+  });
+</script>
+{% endblock %}
+

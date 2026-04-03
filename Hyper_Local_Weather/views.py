@@ -6,11 +6,12 @@ from .models import Location, WeatherReading
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Avg
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.shortcuts import redirect
 from .forms import SignUpForm
 from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
+from django.contrib.auth.models import User
 
 @login_required
 def historical(request):
@@ -19,6 +20,48 @@ def historical(request):
         'readings': readings
     }
     return render(request, 'Hyper_Local_Weather/historical.html', context)
+
+def auth_page(request):
+    """Unified authentication page for both login and signup"""
+    # If user is already authenticated, redirect to dashboard
+    if request.user.is_authenticated:
+        return redirect('Hyper_Local_Weather:index')
+    
+    signup_form = SignUpForm()
+    login_error = None
+    signup_error = None
+    
+    if request.method == 'POST':
+        # Check which form was submitted
+        if 'login-submit' in request.POST or request.POST.get('action') == 'login':
+            # Handle login
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('Hyper_Local_Weather:index')
+            else:
+                login_error = "Invalid username or password."
+        
+        elif 'signup-submit' in request.POST or request.POST.get('action') == 'signup':
+            # Handle signup
+            signup_form = SignUpForm(request.POST)
+            if signup_form.is_valid():
+                user = signup_form.save()
+                login(request, user)
+                return redirect('Hyper_Local_Weather:index')
+            else:
+                signup_error = "Please correct the errors below."
+    
+    context = {
+        'form': None,
+        'signup_form': signup_form,
+        'login_error': login_error,
+        'signup_error': signup_error,
+    }
+    
+    return render(request, 'registration/auth.html', context)
 
 def signup(request):
     if request.method == 'POST':
@@ -32,6 +75,21 @@ def signup(request):
     return render(request, 'registration/signup.html', {'form': form})
 
 def index(request, date=None):
+    view_mode = request.GET.get('mode', 'outdoor')
+    if view_mode not in ('indoor', 'outdoor'):
+        view_mode = 'outdoor'
+
+    # MOCK DATA FALLBACKS:
+    # Keep these values obvious and centralized so they can be replaced
+    # with live sensor/public API data later.
+    mock_values = {
+        'indoor_temp': 22,
+        'outdoor_temp': 23,
+        'air_quality': 50,
+        'humidity': 63,
+        'pressure_hpa': 1013,
+    }
+
     locations = Location.objects.all()
     locations_with_readings = []
     for loc in locations:
@@ -51,14 +109,35 @@ def index(request, date=None):
     else:
         current_date = timezone.now().date()
 
-    # Get latest indoor temperature
+    # Get latest indoor and outdoor temperatures
     indoor_location = Location.objects.filter(name__icontains='indoor').first()
+    outdoor_location = Location.objects.filter(name__icontains='outdoor').first()
+
     latest_indoor_reading = None
     if indoor_location:
         latest_indoor_reading = WeatherReading.objects.filter(
             location=indoor_location,
             timestamp__date=current_date
         ).order_by('-timestamp').first()
+
+    latest_outdoor_reading = None
+    if outdoor_location:
+        latest_outdoor_reading = WeatherReading.objects.filter(
+            location=outdoor_location,
+            timestamp__date=current_date
+        ).order_by('-timestamp').first()
+
+    active_reading = latest_indoor_reading if view_mode == 'indoor' else latest_outdoor_reading
+
+    indoor_temp_value = latest_indoor_reading.temperature_c if latest_indoor_reading else mock_values['indoor_temp']
+    outdoor_temp_value = latest_outdoor_reading.temperature_c if latest_outdoor_reading else mock_values['outdoor_temp']
+    air_quality_value = (
+        active_reading.air_quality
+        if active_reading and active_reading.air_quality is not None
+        else mock_values['air_quality']
+    )
+    humidity_value = active_reading.humidity if active_reading else mock_values['humidity']
+    pressure_value = active_reading.pressure_hpa if active_reading else mock_values['pressure_hpa']
 
     past_week_temps = []
     for i in range(6, -1, -1):
@@ -80,7 +159,17 @@ def index(request, date=None):
 
     context = {
         'locations': locations_with_readings,
-        'latest_indoor_temp': latest_indoor_reading.temperature_c if latest_indoor_reading else 'N/A',
+        'view_mode': view_mode,
+        'latest_indoor_temp': indoor_temp_value,
+        'latest_outdoor_temp': outdoor_temp_value,
+        'current_air_quality': air_quality_value,
+        'current_humidity': humidity_value,
+        'current_pressure': pressure_value,
+        'is_mock_indoor_temp': latest_indoor_reading is None,
+        'is_mock_outdoor_temp': latest_outdoor_reading is None,
+        'is_mock_air_quality': active_reading is None or active_reading.air_quality is None,
+        'is_mock_humidity': active_reading is None,
+        'is_mock_pressure': active_reading is None,
         'past_week_temps': past_week_temps,
         'current_date': current_date,
         'previous_week': previous_week.strftime('%Y-%m-%d'),

@@ -12,14 +12,14 @@
   <header class="topbar">
     <div class="container topbar__inner">
         <div class="brand-and-nav">
-            <a class="brand" href="{% url 'Hyper_Local_Weather:index' %}">
-                <span class="brand__dot"></span>
-                <span class="brand__name">Home</span>
-            </a>
             <nav class="main-nav">
                 <div class="dropdown">
-                    <button class="dropbtn">Menu</button>
-                    <div class="dropdown-content">
+                <button class="dropbtn" aria-label="Open menu" title="Menu" aria-expanded="false" aria-controls="main-menu-dropdown" type="button">
+                  <span class="hamburger-icon" aria-hidden="true"></span>
+                </button>
+                    <div class="dropdown-content" id="main-menu-dropdown">
+                        <a href="{% url 'Hyper_Local_Weather:index' %}">Dashboard</a>
+                        <a href="/admin/">Settings</a>
                         <a href="{% url 'Hyper_Local_Weather:historical' %}">Historical</a>
                         {% if user.is_authenticated %}
                             <form action="{% url 'logout' %}" method="post" style="display: inline;">
@@ -27,16 +27,11 @@
                                 <button type="submit" class="link-button">Logout</button>
                             </form>
                         {% else %}
-                            <a href="{% url 'login' %}">Login</a>
-                            <a href="{% url 'Hyper_Local_Weather:signup' %}">Sign Up</a>
+                            <a href="{% url 'Hyper_Local_Weather:auth' %}">Login / Sign Up</a>
                         {% endif %}
                     </div>
                 </div>
             </nav>
-        </div>
-        <div class="topbar__meta">
-            <span class="pill">Indoor + Outdoor</span>
-            <span class="pill pill--soft">Prototype View</span>
         </div>
     </div>
 </header>
@@ -52,5 +47,35 @@
     </div>
   </footer>
   {% block scripts %}{% endblock %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const dropdown = document.querySelector('.dropdown');
+      if (!dropdown) return;
+
+      const button = dropdown.querySelector('.dropbtn');
+      if (!button) return;
+
+      button.addEventListener('click', function (event) {
+        event.stopPropagation();
+        const willOpen = !dropdown.classList.contains('dropdown--open');
+        dropdown.classList.toggle('dropdown--open', willOpen);
+        button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      });
+
+      document.addEventListener('click', function (event) {
+        if (!dropdown.contains(event.target)) {
+          dropdown.classList.remove('dropdown--open');
+          button.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          dropdown.classList.remove('dropdown--open');
+          button.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
