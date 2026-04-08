@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Authorisations — Hyper Local Weather{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+
+  <div class="pagehead">
+    <div>
+      <h1 class="h1">Authorisations</h1>
+      <p class="muted" style="margin:0;">Grant or revoke staff access for registered accounts.</p>
+    </div>
+    <div class="pagehead__right">
+      <span class="pill pill--soft">Staff only</span>
+    </div>
+  </div>
+
+  {% if action_success %}
+    <div class="settings-alert settings-alert--ok" style="margin-bottom:14px;">{{ action_success }}</div>
+  {% endif %}
+  {% if action_error %}
+    <div class="settings-alert settings-alert--err" style="margin-bottom:14px;">{{ action_error }}</div>
+  {% endif %}
+
+  <div class="settings-section card">
+    <div class="settings-section__head">
+      <span class="settings-section__icon">🛡️</span>
+      <div>
+        <h2 class="settings-section__title">Registered Users</h2>
+        <p class="muted settings-section__sub">Accounts with staff access can view this page and manage other users.</p>
+      </div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <div class="auth-table-wrap">
+      <table class="auth-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr {% if u == request.user %}class="auth-table__self"{% endif %}>
+            <td><strong>{{ u.username }}</strong> {% if u == request.user %}<span class="auth-you">(you)</span>{% endif %}</td>
+            <td>{{ u.get_full_name|default:"—" }}</td>
+            <td class="muted">{{ u.email|default:"—" }}</td>
+            <td class="muted">{{ u.date_joined|date:"d M Y" }}</td>
+            <td>
+              {% if u.is_superuser %}
+                <span class="role-badge role-badge--super">Superuser</span>
+              {% elif u.is_staff %}
+                <span class="role-badge role-badge--staff">Staff</span>
+              {% else %}
+                <span class="role-badge">Member</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if u.is_superuser %}
+                <span class="muted" style="font-size:0.85rem;">Protected</span>
+              {% elif u == request.user %}
+                <span class="muted" style="font-size:0.85rem;">Cannot change own</span>
+              {% elif u.is_staff %}
+                <form method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ u.pk }}">
+                  <input type="hidden" name="action" value="revoke">
+                  <button type="submit" class="auth-action-btn auth-action-btn--revoke">Revoke</button>
+                </form>
+              {% else %}
+                <form method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ u.pk }}">
+                  <input type="hidden" name="action" value="grant">
+                  <button type="submit" class="auth-action-btn auth-action-btn--grant">Grant</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="muted" style="text-align:center;padding:20px;">No users found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -5,7 +5,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Hyper Local Weather{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4">
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 
 <body>
@@ -19,9 +25,12 @@
                 </button>
                     <div class="dropdown-content" id="main-menu-dropdown">
                         <a href="{% url 'Hyper_Local_Weather:index' %}">Dashboard</a>
-                        <a href="/admin/">Settings</a>
                         <a href="{% url 'Hyper_Local_Weather:historical' %}">Historical</a>
                         {% if user.is_authenticated %}
+                            <a href="{% url 'Hyper_Local_Weather:settings' %}">⚙️ Settings</a>
+                            {% if user.is_staff %}
+                                <a href="{% url 'Hyper_Local_Weather:authorisations' %}">🛡️ Authorisations</a>
+                            {% endif %}
                             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="link-button">Logout</button>
@@ -29,6 +38,13 @@
                         {% else %}
                             <a href="{% url 'Hyper_Local_Weather:auth' %}">Login / Sign Up</a>
                         {% endif %}
+                        <button type="button" id="theme-toggle" class="theme-row-btn" aria-label="Toggle theme">
+                          <span id="theme-icon" class="theme-row-btn__icon">🌙</span>
+                          <span id="theme-label" class="theme-row-btn__label">Theme</span>
+                          <span class="theme-pill" id="theme-pill">
+                            <span class="theme-pill__knob"></span>
+                          </span>
+                        </button>
                     </div>
                 </div>
             </nav>
@@ -74,6 +90,34 @@
           dropdown.classList.remove('dropdown--open');
           button.setAttribute('aria-expanded', 'false');
         }
+      });
+
+      // Theme toggle
+      var themeToggle = document.getElementById('theme-toggle');
+      var themeIcon   = document.getElementById('theme-icon');
+      var themeLabel  = document.getElementById('theme-label');
+      var themePill   = document.getElementById('theme-pill');
+
+      function applyThemeUI(theme) {
+        var isDark = theme === 'dark';
+        themeIcon.textContent  = isDark ? '🌙' : '☀️';
+        themeLabel.textContent = 'Theme';
+        themePill.classList.toggle('theme-pill--on', isDark);
+        // keep settings page swatches in sync if present
+        var optDark  = document.getElementById('theme-opt-dark');
+        var optLight = document.getElementById('theme-opt-light');
+        if (optDark)  optDark.classList.toggle('theme-option--active',  isDark);
+        if (optLight) optLight.classList.toggle('theme-option--active', !isDark);
+      }
+
+      applyThemeUI(document.documentElement.getAttribute('data-theme') || 'dark');
+
+      themeToggle.addEventListener('click', function () {
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        applyThemeUI(next);
       });
     });
   </script>

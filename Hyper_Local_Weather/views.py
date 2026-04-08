@@ -8,8 +8,9 @@ from datetime import timedelta, datetime
 from django.db.models import Avg
 from django.contrib.auth import login, authenticate
 from django.shortcuts import redirect
-from .forms import SignUpForm
-from django.contrib.auth.decorators import login_required
+from .forms import SignUpForm, ChangeProfileForm, ChangePasswordForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import update_session_auth_hash
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
 
@@ -208,3 +209,73 @@ def update_location(request):
 def location_detail(request, pk):
     location = get_object_or_404(Location, pk=pk)
     return render(request, 'Hyper_Local_Weather/location_detail.html', {'location': location})
+
+
+@login_required
+def settings_page(request):
+    profile_form = ChangeProfileForm(instance=request.user)
+    password_form = ChangePasswordForm()
+    profile_success = profile_error = password_success = password_error = None
+
+    if request.method == 'POST':
+        if 'update_profile' in request.POST:
+            profile_form = ChangeProfileForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                profile_success = 'Profile updated successfully.'
+            else:
+                profile_error = 'Please correct the errors below.'
+
+        elif 'change_password' in request.POST:
+            password_form = ChangePasswordForm(request.POST)
+            if password_form.is_valid():
+                if request.user.check_password(password_form.cleaned_data['current_password']):
+                    request.user.set_password(password_form.cleaned_data['new_password'])
+                    request.user.save()
+                    update_session_auth_hash(request, request.user)
+                    password_success = 'Password changed successfully.'
+                    password_form = ChangePasswordForm()
+                else:
+                    password_error = 'Current password is incorrect.'
+            else:
+                password_error = 'Please correct the errors below.'
+
+    return render(request, 'Hyper_Local_Weather/settings.html', {
+        'profile_form': profile_form,
+        'password_form': password_form,
+        'profile_success': profile_success,
+        'profile_error': profile_error,
+        'password_success': password_success,
+        'password_error': password_error,
+    })
+
+
+@user_passes_test(lambda u: u.is_active and u.is_staff)
+def authorisations(request):
+    action_success = action_error = None
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        action = request.POST.get('action')
+        if user_id and action in ('grant', 'revoke'):
+            try:
+                target = User.objects.get(pk=user_id)
+                if action == 'grant':
+                    target.is_staff = True
+                    target.save()
+                    action_success = f"Staff access granted to {target.username}."
+                elif target.pk != request.user.pk:
+                    target.is_staff = False
+                    target.save()
+                    action_success = f"Staff access removed from {target.username}."
+                else:
+                    action_error = "You cannot remove your own staff access."
+            except User.DoesNotExist:
+                action_error = "User not found."
+
+    users = User.objects.all().order_by('username')
+    return render(request, 'Hyper_Local_Weather/authorisations.html', {
+        'users': users,
+        'action_success': action_success,
+        'action_error': action_error,
+    })
