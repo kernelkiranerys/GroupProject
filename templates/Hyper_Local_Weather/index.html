@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block extra_head %}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+{% endblock %}
+
 {% block content %}
 
 <div class="view-switch" role="navigation" aria-label="Dashboard mode switch">
@@ -16,8 +25,13 @@
 
 <div class="card outdoor-top">
   <div class="outdoor-top__left">
-    <h3>Map</h3>
-    <div class="outdoor-top__placeholder muted">Map will be added later</div>
+    <h3>Outdoor Air Quality</h3>
+    <div id="uk-air-quality-map" class="outdoor-top__map" aria-label="UK air quality map"></div>
+    <div class="aq-map-legend" aria-label="Air quality legend">
+      <span><i class="aq-map-dot aq-map-dot--good"></i> Good</span>
+      <span><i class="aq-map-dot aq-map-dot--moderate"></i> Moderate</span>
+      <span><i class="aq-map-dot aq-map-dot--poor"></i> Poor</span>
+    </div>
   </div>
   <div class="outdoor-top__right {% if is_mock_outdoor_temp %}disabled{% endif %}">
     <div class="outdoor-temp">
@@ -234,9 +248,77 @@
 {% endblock %}
 
 {% block scripts %}
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Reserved for future indoor/outdoor interactivity.
+  const mapContainer = document.getElementById('uk-air-quality-map');
+  if (!mapContainer || typeof L === 'undefined') {
+    return;
+  }
+
+  const map = L.map('uk-air-quality-map', {
+    zoomControl: true,
+  }).setView([54.5, -2.6], 6);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 18,
+  }).addTo(map);
+
+  const ukBounds = [[49.8, -8.8], [60.9, 2.2]];
+  map.fitBounds(ukBounds, { padding: [12, 12] });
+
+  fetch('{% url "Hyper_Local_Weather:uk_sensor_hex_data" %}')
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('Failed to load air quality data');
+      }
+      return response.json();
+    })
+    .then(function(payload) {
+      const cells = payload.cells || [];
+      cells.forEach(function(cell) {
+        if (cell.pm25 === null) {
+          return;
+        }
+
+        if (!Array.isArray(cell.hex_points) || cell.hex_points.length !== 6) {
+          return;
+        }
+
+        const hexLatLngs = cell.hex_points.map(function(point) {
+          return [point.latitude, point.longitude];
+        });
+
+        const hex = L.polygon(hexLatLngs, {
+          color: '#2f2f2f',
+          fillColor: cell.zone_color || '#2ecc71',
+          fillOpacity: 0.38,
+          weight: 0.9,
+        }).addTo(map);
+
+        hex.bindPopup(
+          '<strong>' + (cell.name || 'Air quality station') + '</strong><br>' +
+          'PM2.5: ' + (cell.pm25 !== null ? cell.pm25 : 'n/a') + ' ug/m3<br>' +
+          'Sensors in zone: ' + (cell.sensor_count || 1) + '<br>' +
+          'Status: ' + cell.zone_label + '<br>' +
+          'Source: ' + cell.source + '<br>' +
+          'Source mix: ' + JSON.stringify(cell.source_counts || {})
+        );
+      });
+
+      if ((!cells || cells.length === 0) && payload.message) {
+        mapContainer.setAttribute('aria-label', payload.message);
+      }
+    })
+    .catch(function() {
+      mapContainer.classList.add('outdoor-top__map--error');
+      mapContainer.setAttribute('aria-label', 'Unable to load live air quality data');
+    });
 });
 </script>
 {% endblock %}

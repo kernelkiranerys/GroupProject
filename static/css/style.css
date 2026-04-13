@@ -1374,6 +1374,44 @@ body{
   font-weight: 700;
 }
 
+.outdoor-top__map{
+  flex: 1;
+  min-height: 220px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.16);
+  overflow: hidden;
+}
+
+.outdoor-top__map--error{
+  background: rgba(255,255,255,0.06);
+}
+
+.aq-map-legend{
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: rgba(234,242,255,0.82);
+}
+
+.aq-map-legend span{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aq-map-dot{
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.aq-map-dot--good{ background: #2ecc71; }
+.aq-map-dot--moderate{ background: #f39c12; }
+.aq-map-dot--poor{ background: #e74c3c; }
+
 .outdoor-top__right{
   min-height: 260px;
   display: grid;

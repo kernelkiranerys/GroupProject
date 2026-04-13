@@ -7,6 +7,26 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def _load_local_env_file():
+    env_path = BASE_DIR / '.env'
+    if not env_path.exists():
+        return
+
+    for raw_line in env_path.read_text(encoding='utf-8').splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+
+        key, value = line.split('=', 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key:
+            os.environ.setdefault(key, value)
+
+
+_load_local_env_file()
+
 SECRET_KEY = "replace-this-with-a-secure-secret"
 
 DEBUG = True
@@ -90,3 +110,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Air quality provider API key (paste as environment variable value).
+OPENAQ_API_KEY = os.getenv('OPENAQ_API_KEY', '')
+IQAIR_API_KEY = os.getenv('IQAIR_API_KEY', '')
+ENABLE_DEFRA_PROVIDER = os.getenv('ENABLE_DEFRA_PROVIDER', 'true')
