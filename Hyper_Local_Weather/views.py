@@ -57,6 +57,8 @@ _UK_SENSOR_CACHE = {
 }
 
 UK_MAP_CENTER = {'latitude': 54.5, 'longitude': -2.6}
+LEEDS_OUTDOOR_COORDS = {'latitude': 53.8008, 'longitude': -1.5491}
+DEFAULT_OUTDOOR_COORDS = {'latitude': 51.5085, 'longitude': -0.1257}
 
 IQAIR_BACKFILL_POINTS = [
     {'name': 'Leeds', 'latitude': 53.8008, 'longitude': -1.5491},
@@ -698,6 +700,38 @@ def _fetch_open_meteo_air_quality(latitude, longitude):
     }
 
 
+def _fetch_open_meteo_outdoor_weather(latitude, longitude):
+    """Fetch latest outdoor temperature, humidity, and pressure (hPa) from Open-Meteo."""
+    params = parse.urlencode({
+        'latitude': latitude,
+        'longitude': longitude,
+        'hourly': 'temperature_2m,relative_humidity_2m,pressure_msl',
+        'models': 'ukmo_seamless',
+        'timezone': 'UTC',
+    })
+    url = f'https://api.open-meteo.com/v1/forecast?{params}'
+    with urllib_request.urlopen(url, timeout=6) as response:
+        payload = json.loads(response.read().decode('utf-8'))
+
+    hourly = payload.get('hourly') or {}
+    temperatures = [v for v in (hourly.get('temperature_2m') or []) if isinstance(v, (int, float))]
+    humidities = [v for v in (hourly.get('relative_humidity_2m') or []) if isinstance(v, (int, float))]
+    pressures = [v for v in (hourly.get('pressure_msl') or []) if isinstance(v, (int, float))]
+
+    latest_temperature = temperatures[-1] if temperatures else None
+    latest_humidity = humidities[-1] if humidities else None
+    latest_pressure = pressures[-1] if pressures else None
+
+    if latest_temperature is None and latest_humidity is None and latest_pressure is None:
+        raise ValueError('Missing outdoor weather values from Open-Meteo')
+
+    return {
+        'temperature_c': round(float(latest_temperature), 1) if latest_temperature is not None else None,
+        'humidity': round(float(latest_humidity), 1) if latest_humidity is not None else None,
+        'pressure_hpa': round(float(latest_pressure), 1) if latest_pressure is not None else None,
+    }
+
+
 def _aq_zone_from_measurement(pm25_value, european_aqi=None):
     if european_aqi is not None:
         if european_aqi <= 40:
@@ -932,17 +966,67 @@ def index(request, date=None):
             timestamp__date=current_date
         ).order_by('-timestamp').first()
 
+    # Leeds-only outdoor mode for now (geolocation can replace this later).
+    outdoor_latitude = LEEDS_OUTDOOR_COORDS['latitude']
+    outdoor_longitude = LEEDS_OUTDOOR_COORDS['longitude']
+    live_outdoor_weather = None
+    live_outdoor_air_quality = None
+    try:
+        live_outdoor_weather = _fetch_open_meteo_outdoor_weather(outdoor_latitude, outdoor_longitude)
+    except (error.URLError, error.HTTPError, TimeoutError, ValueError, json.JSONDecodeError):
+        live_outdoor_weather = None
+
+    try:
+        live_outdoor_air_quality = _fetch_open_meteo_air_quality(outdoor_latitude, outdoor_longitude)
+    except (error.URLError, error.HTTPError, TimeoutError, ValueError, json.JSONDecodeError):
+        live_outdoor_air_quality = None
+
     active_reading = latest_indoor_reading if view_mode == 'indoor' else latest_outdoor_reading
 
     indoor_temp_value = latest_indoor_reading.temperature_c if latest_indoor_reading else mock_values['indoor_temp']
-    outdoor_temp_value = latest_outdoor_reading.temperature_c if latest_outdoor_reading else mock_values['outdoor_temp']
-    air_quality_value = (
-        active_reading.air_quality
-        if active_reading and active_reading.air_quality is not None
-        else mock_values['air_quality']
+    outdoor_temp_value = (
+        live_outdoor_weather['temperature_c']
+        if live_outdoor_weather and live_outdoor_weather.get('temperature_c') is not None
+        else latest_outdoor_reading.temperature_c if latest_outdoor_reading else mock_values['outdoor_temp']
     )
-    humidity_value = active_reading.humidity if active_reading else mock_values['humidity']
-    pressure_value = active_reading.pressure_hpa if active_reading else mock_values['pressure_hpa']
+    if view_mode == 'outdoor':
+        api_aqi = None
+        if live_outdoor_air_quality:
+            if live_outdoor_air_quality.get('european_aqi') is not None:
+                api_aqi = live_outdoor_air_quality.get('european_aqi')
+            elif live_outdoor_air_quality.get('pm25') is not None:
+                # Keep AQI scale readable for current UI thresholds.
+                api_aqi = round(float(live_outdoor_air_quality.get('pm25')) * 2.0)
+
+        air_quality_value = (
+            api_aqi
+            if api_aqi is not None
+            else latest_outdoor_reading.air_quality if latest_outdoor_reading and latest_outdoor_reading.air_quality is not None else mock_values['air_quality']
+        )
+        humidity_value = (
+            live_outdoor_weather['humidity']
+            if live_outdoor_weather and live_outdoor_weather.get('humidity') is not None
+            else latest_outdoor_reading.humidity if latest_outdoor_reading else mock_values['humidity']
+        )
+        pressure_value = (
+            live_outdoor_weather['pressure_hpa']
+            if live_outdoor_weather and live_outdoor_weather.get('pressure_hpa') is not None
+            else latest_outdoor_reading.pressure_hpa if latest_outdoor_reading else mock_values['pressure_hpa']
+        )
+        is_mock_air_quality = api_aqi is None and (latest_outdoor_reading is None or latest_outdoor_reading.air_quality is None)
+        is_mock_humidity = (live_outdoor_weather is None or live_outdoor_weather.get('humidity') is None) and latest_outdoor_reading is None
+        is_mock_pressure = (live_outdoor_weather is None or live_outdoor_weather.get('pressure_hpa') is None) and latest_outdoor_reading is None
+    else:
+        air_quality_value = (
+            active_reading.air_quality
+            if active_reading and active_reading.air_quality is not None
+            else mock_values['air_quality']
+        )
+        humidity_value = active_reading.humidity if active_reading else mock_values['humidity']
+        pressure_value = active_reading.pressure_hpa if active_reading else mock_values['pressure_hpa']
+        is_mock_air_quality = active_reading is None or active_reading.air_quality is None
+        is_mock_humidity = active_reading is None
+        is_mock_pressure = active_reading is None
 
     past_week_temps = []
     for i in range(6, -1, -1):
@@ -971,10 +1055,10 @@ def index(request, date=None):
         'current_humidity': humidity_value,
         'current_pressure': pressure_value,
         'is_mock_indoor_temp': latest_indoor_reading is None,
-        'is_mock_outdoor_temp': latest_outdoor_reading is None,
-        'is_mock_air_quality': active_reading is None or active_reading.air_quality is None,
-        'is_mock_humidity': active_reading is None,
-        'is_mock_pressure': active_reading is None,
+        'is_mock_outdoor_temp': (live_outdoor_weather is None or live_outdoor_weather.get('temperature_c') is None) and latest_outdoor_reading is None,
+        'is_mock_air_quality': is_mock_air_quality,
+        'is_mock_humidity': is_mock_humidity,
+        'is_mock_pressure': is_mock_pressure,
         'past_week_temps': past_week_temps,
         'current_date': current_date,
         'previous_week': previous_week.strftime('%Y-%m-%d'),

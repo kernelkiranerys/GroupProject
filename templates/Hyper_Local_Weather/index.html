@@ -172,10 +172,16 @@
           </g>
         </svg>
       </div>
-    </div>
 
-    <div class="aqDays muted">
-      <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+      <div class="aqDays muted" role="tablist" aria-label="Select air quality day">
+        <button type="button" class="aqDayBtn" data-day-index="0" role="tab" aria-selected="false">M</button>
+        <button type="button" class="aqDayBtn" data-day-index="1" role="tab" aria-selected="false">T</button>
+        <button type="button" class="aqDayBtn" data-day-index="2" role="tab" aria-selected="false">W</button>
+        <button type="button" class="aqDayBtn" data-day-index="3" role="tab" aria-selected="false">T</button>
+        <button type="button" class="aqDayBtn" data-day-index="4" role="tab" aria-selected="false">F</button>
+        <button type="button" class="aqDayBtn" data-day-index="5" role="tab" aria-selected="false">S</button>
+        <button type="button" class="aqDayBtn" data-day-index="6" role="tab" aria-selected="false">S</button>
+      </div>
     </div>
   </div>
 </div>
@@ -208,21 +214,41 @@
   <div class="card gauge-card">
     <h3>Pressure</h3>
 
-    <div class="gauge">
+    <div class="gauge" data-pressure="{{ current_pressure|floatformat:2 }}" data-min-pressure="960" data-max-pressure="1060">
       <div class="gauge__ring">
-        <div class="gauge__needle"></div>
-        <div class="gauge__center"></div>
+        <div class="gauge__face">
+          <div class="gauge__ticks" aria-hidden="true"></div>
+
+          <div class="gauge__numbers" aria-hidden="true">
+            <span style="--mark:0;">960</span>
+            <span style="--mark:1;">980</span>
+            <span style="--mark:2;">1000</span>
+            <span style="--mark:3;">1020</span>
+            <span style="--mark:4;">1040</span>
+            <span style="--mark:5;">1060</span>
+          </div>
+
+          <div class="gauge__icons" aria-hidden="true">
+            <span class="gauge__icon gauge__icon--cloud gauge__icon--cloud-top"></span>
+            <span class="gauge__icon gauge__icon--cloud gauge__icon--cloud-left"></span>
+            <span class="gauge__icon gauge__icon--rain"></span>
+            <span class="gauge__icon gauge__icon--sun gauge__icon--sun-right"></span>
+          </div>
+
+          <div class="gauge__needle-tail"></div>
+          <div class="gauge__needle"></div>
+          <div class="gauge__center"></div>
+
+          <div class="gauge__brand" aria-hidden="true">
+            <span>Barometer</span>
+          </div>
+        </div>
       </div>
 
       <div class="gauge__readout">
         <div class="gauge__value">{{ current_pressure|floatformat:0 }}</div>
         <div class="gauge__unit">hPa</div>
-        <div class="gauge__meta muted">Sea level • Stable</div>
-      </div>
-
-      <div class="gauge__labels muted">
-        <span>980</span>
-        <span>1040</span>
+        <div class="gauge__meta muted">Sea level • Steady</div>
       </div>
     </div>
   </div>
@@ -232,13 +258,44 @@
 <div class="dashboard-row dashboard-row--single">
   <div class="card gauge-card indoor-temp-card {% if is_mock_indoor_temp %}disabled{% endif %}">
     <h3>Current Indoor Temperature</h3>
-    <div class="tempTile tempTile--wide">
-      <div class="tempTile__main">
-        <div class="tempTile__value">
-          <span class="tempTile__num">{{ latest_indoor_temp|floatformat:0 }}</span>
-          <span class="tempTile__deg">&deg;</span>
+    <div class="tempTile tempTile--wide js-indoor-temp-tile">
+      <button type="button" class="tempTile__toggle" aria-label="Show weekly average" aria-expanded="false" title="Show weekly average"></button>
+
+      <div class="tempTile__carousel">
+        <div class="tempTile__panel">
+          <div class="tempTile__main">
+            <div class="tempTile__value">
+              <span class="tempTile__num">{{ latest_indoor_temp|floatformat:0 }}</span>
+              <span class="tempTile__deg">&deg;</span>
+            </div>
+            <div class="tempTile__sub muted">Indoor • live reading</div>
+          </div>
         </div>
-        <div class="tempTile__sub muted">Indoor • live reading</div>
+
+        <div class="tempTile__panel tempTile__panel--week">
+          <div class="tempTile__weekAvg" aria-label="Indoor weekly average">
+            <div class="tempTile__weekAvgValue">
+              <span class="tempTile__weekAvgNum js-week-avg-num">N/A</span>
+              <span class="tempTile__weekAvgDeg js-week-avg-deg">&deg;</span>
+            </div>
+            <div class="tempTile__weekAvgLabel muted">Weekly average</div>
+          </div>
+
+          <div class="tempTile__week" aria-label="Indoor weekly average temperatures">
+            {% for day in past_week_temps %}
+              <div class="day" data-temp="{% if day.avg_temp == 'N/A' %}{% else %}{{ day.avg_temp }}{% endif %}">
+                <div class="day__name">{{ day.day_name }}</div>
+                <div class="day__val">
+                  {% if day.avg_temp == 'N/A' %}
+                    --
+                  {% else %}
+                    {{ day.avg_temp }}&deg;
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -255,6 +312,242 @@
 ></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  const indoorTempTile = document.querySelector('.js-indoor-temp-tile');
+  if (indoorTempTile) {
+    const toggle = indoorTempTile.querySelector('.tempTile__toggle');
+    const avgNum = indoorTempTile.querySelector('.js-week-avg-num');
+    const avgDeg = indoorTempTile.querySelector('.js-week-avg-deg');
+    const weekDayEls = Array.from(indoorTempTile.querySelectorAll('.tempTile__week .day[data-temp]'));
+
+    if (avgNum && avgDeg && weekDayEls.length) {
+      const temps = weekDayEls
+        .map(function(el) { return parseFloat(el.dataset.temp); })
+        .filter(function(value) { return Number.isFinite(value); });
+
+      if (temps.length) {
+        const weekAverage = Math.round((temps.reduce(function(sum, value) { return sum + value; }, 0) / temps.length) * 10) / 10;
+        avgNum.textContent = weekAverage.toFixed(1).replace('.0', '');
+        avgDeg.style.display = '';
+      } else {
+        avgNum.textContent = 'N/A';
+        avgDeg.style.display = 'none';
+      }
+    }
+
+    if (toggle) {
+      toggle.addEventListener('click', function() {
+        const showWeek = indoorTempTile.classList.toggle('tempTile--show-week');
+        toggle.setAttribute('aria-expanded', showWeek ? 'true' : 'false');
+        toggle.setAttribute('aria-label', showWeek ? 'Show current indoor temperature' : 'Show weekly average');
+        toggle.setAttribute('title', showWeek ? 'Show current indoor temperature' : 'Show weekly average');
+      });
+    }
+  }
+
+  const aqSummaryNum = document.querySelector('.aqSummary__num');
+  const aqSummaryStatus = document.querySelector('.aqSummary__status');
+  const aqSummaryMeta = document.querySelector('.aqSummary__meta');
+  const aqSvg = document.querySelector('.aqSvg');
+  const aqAreaPath = document.querySelector('.aqArea');
+  const aqLinePath = document.querySelector('.aqLine');
+  const aqDotsGroup = document.querySelector('.aqDots');
+  const aqDayButtons = Array.from(document.querySelectorAll('.aqDayBtn'));
+
+  if (aqSummaryNum && aqSummaryStatus && aqSummaryMeta && aqSvg && aqAreaPath && aqLinePath && aqDotsGroup && aqDayButtons.length === 7) {
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const currentAqi = parseFloat('{{ current_air_quality|floatformat:0 }}') || 0;
+    const todayIndex = (new Date().getDay() + 6) % 7;
+
+    aqDayButtons.forEach(function(btn, idx) {
+      const isToday = idx === todayIndex;
+      btn.classList.toggle('aqDayBtn--today', isToday);
+      if (isToday) {
+        btn.setAttribute('aria-current', 'date');
+        btn.setAttribute('title', dayLabels[idx] + ' (today)');
+      }
+    });
+
+    const aqSeries = [76, 82, 91, 88, 97, 73, 79];
+    aqSeries[todayIndex] = currentAqi;
+
+    const X_START = 70;
+    const X_END = 970;
+    const Y_TOP = 24;
+    const Y_BOTTOM = 340;
+    const MAX_AQI = 250;
+
+    const xStep = (X_END - X_START) / (aqSeries.length - 1);
+    const xPositions = aqSeries.map(function(_, idx) {
+      return X_START + (idx * xStep);
+    });
+
+    function classifyAqi(aqi) {
+      if (aqi <= 50) { return 'Good'; }
+      if (aqi <= 100) { return 'Moderate'; }
+      if (aqi <= 150) { return 'Unhealthy for Sensitive Groups'; }
+      if (aqi <= 200) { return 'Unhealthy'; }
+      if (aqi <= 300) { return 'Very Unhealthy'; }
+      return 'Hazardous';
+    }
+
+    function yForValue(value) {
+      const clamped = Math.max(0, Math.min(MAX_AQI, value));
+      const ratio = clamped / MAX_AQI;
+      return Y_BOTTOM - (ratio * (Y_BOTTOM - Y_TOP));
+    }
+
+    function buildLinePath(values) {
+      return values.map(function(value, idx) {
+        const prefix = idx === 0 ? 'M' : 'L';
+        return prefix + xPositions[idx].toFixed(1) + ' ' + yForValue(value).toFixed(1);
+      }).join(' ');
+    }
+
+    function renderAxesAndBands() {
+      const aqGrid = aqSvg.querySelector('.aqGrid');
+      const aqBands = aqSvg.querySelector('.aqBands');
+      const aqAxisLabels = aqSvg.querySelector('.aqAxisLabels');
+      const aqXLabels = aqSvg.querySelector('.aqXLabels');
+
+      if (aqGrid) {
+        const horizontalValues = [0, 50, 100, 150, 200, 250];
+        const horizontalLines = horizontalValues.map(function(v) {
+          const y = yForValue(v).toFixed(1);
+          return '<line x1="' + X_START + '" y1="' + y + '" x2="' + X_END + '" y2="' + y + '"></line>';
+        }).join('');
+
+        const verticalLines = xPositions.map(function(x) {
+          const xVal = x.toFixed(1);
+          return '<line x1="' + xVal + '" y1="' + Y_TOP + '" x2="' + xVal + '" y2="' + Y_BOTTOM + '"></line>';
+        }).join('');
+
+        aqGrid.innerHTML = horizontalLines + verticalLines;
+      }
+
+      if (aqBands) {
+        const segments = [
+          { low: 0, high: 50, cls: 'band band-good' },
+          { low: 50, high: 100, cls: 'band band-mod' },
+          { low: 100, high: 150, cls: 'band band-usg' },
+          { low: 150, high: 200, cls: 'band band-unh' },
+          { low: 200, high: 250, cls: 'band band-vunh' }
+        ];
+
+        aqBands.innerHTML = segments.map(function(seg) {
+          const yHigh = yForValue(seg.high);
+          const yLow = yForValue(seg.low);
+          const height = yLow - yHigh;
+          return '<rect x="' + X_START + '" y="' + yHigh.toFixed(1) + '" width="' + (X_END - X_START) + '" height="' + height.toFixed(1) + '" class="' + seg.cls + '"></rect>';
+        }).join('');
+      }
+
+      if (aqAxisLabels) {
+        const axisValues = [0, 50, 100, 150, 200, 250];
+        aqAxisLabels.innerHTML = axisValues.map(function(v) {
+          return '<text x="52" y="' + (yForValue(v) + 4).toFixed(1) + '" text-anchor="end">' + v + '</text>';
+        }).join('');
+      }
+
+      if (aqXLabels) {
+        aqXLabels.innerHTML = dayLabels.map(function(label, idx) {
+          return '<text x="' + xPositions[idx].toFixed(1) + '" y="356" text-anchor="middle">' + label + '</text>';
+        }).join('');
+      }
+    }
+
+    function renderAqiSelection(selectedIdx) {
+      const linePath = buildLinePath(aqSeries);
+      aqLinePath.setAttribute('d', linePath);
+      aqAreaPath.setAttribute('d', linePath + ' L' + X_END + ' ' + Y_BOTTOM + ' L' + X_START + ' ' + Y_BOTTOM + ' Z');
+
+      aqDotsGroup.innerHTML = aqSeries.map(function(value, idx) {
+        const isActive = idx === selectedIdx;
+        const radius = isActive ? 7 : 6;
+        const extraClass = isActive ? ' aqDot--active' : '';
+        return '<circle class="aqDot' + extraClass + '" cx="' + xPositions[idx].toFixed(1) + '" cy="' + yForValue(value).toFixed(1) + '" r="' + radius + '"></circle>';
+      }).join('');
+
+      const selectedValue = Math.round(aqSeries[selectedIdx]);
+      aqSummaryNum.textContent = selectedValue;
+      aqSummaryStatus.textContent = classifyAqi(selectedValue);
+      aqSummaryMeta.textContent = 'AQI • ' + dayLabels[selectedIdx];
+
+      aqDayButtons.forEach(function(btn, idx) {
+        const active = idx === selectedIdx;
+        btn.classList.toggle('aqDayBtn--active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    }
+
+    renderAxesAndBands();
+    renderAqiSelection(todayIndex);
+
+    aqDayButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const selectedIdx = parseInt(btn.dataset.dayIndex, 10);
+        if (!Number.isNaN(selectedIdx) && selectedIdx >= 0 && selectedIdx < aqSeries.length) {
+          renderAqiSelection(selectedIdx);
+        }
+      });
+    });
+  }
+
+  const pressureGauges = document.querySelectorAll('.gauge[data-pressure]');
+  pressureGauges.forEach(function(gauge) {
+    const needle = gauge.querySelector('.gauge__needle');
+    if (!needle) {
+      return;
+    }
+
+    const pressure = parseFloat(gauge.dataset.pressure);
+    const minPressure = parseFloat(gauge.dataset.minPressure || '980');
+    const maxPressure = parseFloat(gauge.dataset.maxPressure || '1040');
+
+    if (!Number.isFinite(pressure) || !Number.isFinite(minPressure) || !Number.isFinite(maxPressure) || maxPressure <= minPressure) {
+      return;
+    }
+
+    const clampedPressure = Math.min(Math.max(pressure, minPressure), maxPressure);
+    const pressureRatio = (clampedPressure - minPressure) / (maxPressure - minPressure);
+
+    /* Barometer face sweep: low pressure left, high pressure right. */
+    const minAngle = -127.2;
+    const maxAngle = 112.8;
+
+    const ticksContainer = gauge.querySelector('.gauge__ticks');
+    if (ticksContainer && !ticksContainer.dataset.ready) {
+      const minorTickCount = 75;
+      for (let i = 0; i <= minorTickCount; i += 1) {
+        const tick = document.createElement('span');
+        tick.className = (i % 5 === 0) ? 'gauge__tick gauge__tick--major' : 'gauge__tick gauge__tick--minor';
+
+        const tickRatio = i / minorTickCount;
+        const tickAngle = minAngle + (tickRatio * (maxAngle - minAngle));
+        tick.style.setProperty('--angle', tickAngle.toFixed(3) + 'deg');
+
+        ticksContainer.appendChild(tick);
+      }
+      ticksContainer.dataset.ready = 'true';
+    }
+
+    const angle = minAngle + (pressureRatio * (maxAngle - minAngle));
+
+    needle.style.setProperty('--needle-angle', angle.toFixed(1) + 'deg');
+
+    const meta = gauge.querySelector('.gauge__meta');
+    if (meta) {
+      let pressureBand = 'Steady';
+      if (clampedPressure < 995) {
+        pressureBand = 'Lower pressure';
+      } else if (clampedPressure < 1020) {
+        pressureBand = 'Steady';
+      } else {
+        pressureBand = 'Higher pressure';
+      }
+      meta.textContent = 'Sea level • ' + pressureBand;
+    }
+  });
+
   const mapContainer = document.getElementById('uk-air-quality-map');
   if (!mapContainer || typeof L === 'undefined') {
     return;
