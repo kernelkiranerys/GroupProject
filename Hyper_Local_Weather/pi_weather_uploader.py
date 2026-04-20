@@ -240,6 +240,31 @@ def append_backup(path: Path, reading: Dict[str, Any]) -> None:
         handle.write("\n")
 
 
+def emit_reading_feedback(reading: Dict[str, Any]) -> None:
+    logging.info("----- Sensor reading -----")
+    logging.info("Device: %s", reading.get("device_id"))
+    logging.info("Timestamp: %s", reading.get("timestamp"))
+    logging.info("Temperature: %.2f C", reading["temperature_c"])
+    logging.info("Pressure: %.2f hPa", reading["pressure_hpa"])
+    logging.info("Humidity: %.2f %%", reading["humidity"])
+    logging.info("Gas resistance: %.2f ohms", reading["gas_resistance_ohms"])
+
+    latitude = reading.get("latitude")
+    longitude = reading.get("longitude")
+    altitude_m = reading.get("altitude_m")
+    if latitude is None or longitude is None:
+        logging.info("GPS: unavailable")
+    else:
+        if altitude_m is None:
+            logging.info("GPS: lat=%s lon=%s", latitude, longitude)
+        else:
+            logging.info("GPS: lat=%s lon=%s alt=%s m", latitude, longitude, altitude_m)
+
+    if reading.get("location_id") is not None:
+        logging.info("Location ID: %s", reading.get("location_id"))
+    logging.info("-------------------------")
+
+
 def post_reading(session: requests.Session, config: Config, reading: Dict[str, Any]) -> requests.Response:
     payload = {key: value for key, value in reading.items() if value is not None}
     payload["source"] = "raspberry-pi"
@@ -301,14 +326,7 @@ def run() -> int:
                 continue
 
             append_backup(config.backup_path, reading)
-            logging.info(
-                "Reading: temp=%.2fC pressure=%.2fhPa humidity=%.2f%% gps=%s,%s",
-                reading["temperature_c"],
-                reading["pressure_hpa"],
-                reading["humidity"],
-                reading["latitude"],
-                reading["longitude"],
-            )
+            emit_reading_feedback(reading)
 
             try:
                 response = post_reading(session, config, reading)
