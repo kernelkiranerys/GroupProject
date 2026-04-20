@@ -1,6 +1,7 @@
 import json
 import time
 import math
+from decimal import Decimal, InvalidOperation
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib import error, parse, request as urllib_request
 from django.conf import settings
@@ -1092,6 +1093,102 @@ def update_location(request):
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+
+def _parse_pi_timestamp(value):
+    if not value:
+        return timezone.now()
+
+    if isinstance(value, datetime):
+        return value if timezone.is_aware(value) else timezone.make_aware(value, timezone.get_current_timezone())
+
+    if not isinstance(value, str):
+        return timezone.now()
+
+    candidate = value.strip().replace('Z', '+00:00')
+    try:
+        parsed = datetime.fromisoformat(candidate)
+    except ValueError:
+        return timezone.now()
+
+    if timezone.is_naive(parsed):
+        return timezone.make_aware(parsed, timezone.get_current_timezone())
+    return parsed
+
+
+def _coerce_decimal(value):
+    if value in (None, ''):
+        return None
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError):
+        return None
+
+
+@csrf_exempt
+def ingest_pi_reading(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+    if request.content_type and 'application/json' in request.content_type:
+        try:
+            data = json.loads(request.body or b'{}')
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    else:
+        data = request.POST.dict()
+
+    temperature_c = _coerce_decimal(data.get('temperature_c') or data.get('temperature'))
+    humidity = _coerce_decimal(data.get('humidity'))
+    pressure_hpa = _coerce_decimal(data.get('pressure_hpa') or data.get('pressure'))
+    if temperature_c is None or humidity is None or pressure_hpa is None:
+        return JsonResponse(
+            {'status': 'error', 'message': 'temperature_c, humidity, and pressure_hpa are required'},
+            status=400,
+        )
+
+    gas_resistance = _coerce_decimal(data.get('gas_resistance_ohms') or data.get('gas') or data.get('air_quality'))
+    latitude = _coerce_decimal(data.get('latitude'))
+    longitude = _coerce_decimal(data.get('longitude'))
+    device_id = (data.get('device_id') or 'raspberry-pi').strip() or 'raspberry-pi'
+    location_name = (data.get('location_name') or device_id).strip() or device_id
+    location_id = data.get('location_id')
+
+    location = None
+    if location_id not in (None, ''):
+        try:
+            location = Location.objects.get(pk=location_id)
+        except (Location.DoesNotExist, ValueError, TypeError):
+            return JsonResponse({'status': 'error', 'message': 'Invalid location_id'}, status=400)
+    elif latitude is not None and longitude is not None:
+        location, _ = Location.objects.update_or_create(
+            name=location_name,
+            defaults={'latitude': latitude, 'longitude': longitude},
+        )
+    else:
+        return JsonResponse(
+            {'status': 'error', 'message': 'location_id or latitude/longitude are required'},
+            status=400,
+        )
+
+    reading = WeatherReading.objects.create(
+        location=location,
+        timestamp=_parse_pi_timestamp(data.get('timestamp')),
+        temperature_c=float(temperature_c),
+        humidity=float(humidity),
+        pressure_hpa=float(pressure_hpa),
+        air_quality=float(gas_resistance) if gas_resistance is not None else None,
+    )
+
+    return JsonResponse(
+        {
+            'status': 'success',
+            'reading_id': reading.pk,
+            'location_id': location.pk,
+            'location_name': location.name,
+        },
+        status=201,
+    )
 
 
 def uk_air_quality_data(request):

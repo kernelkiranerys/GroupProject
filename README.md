@@ -41,6 +41,18 @@ Team note:
 - `.env.example` is committed to GitHub for everyone.
 - `.env` is ignored by Git, so real keys are never pushed.
 
+## Raspberry Pi uploader
+
+Use [Hyper_Local_Weather/pi_weather_uploader.py](Hyper_Local_Weather/pi_weather_uploader.py) on the Pi to read BME680 data, attach GPS if available, store a local JSONL backup, and post to your web server.
+
+Example:
+
+`python Hyper_Local_Weather/pi_weather_uploader.py --post-mode json --device-id pi-01`
+
+The script posts to `https://jcb.pythonanywhere.com/api/pi-readings/` by default. Override it with `WEATHER_POST_URL` if needed.
+
+If your server expects form-encoded data instead of JSON, pass `--post-mode form`.
+
 Alternative (PowerShell env var)
 1. Temporary key for current terminal:
 
