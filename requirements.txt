@@ -3,3 +3,4 @@ requests
 bme680
 smbus2
 pa1010d
+django-cors-headers

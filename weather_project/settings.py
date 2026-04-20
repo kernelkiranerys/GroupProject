@@ -8,6 +8,21 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _env_bool(name, default=False):
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in ('1', 'true', 'yes', 'on')
+
+
+def _env_list(name, default=None):
+    raw = os.getenv(name)
+    if raw is None:
+        return list(default or [])
+    values = [item.strip() for item in raw.split(',')]
+    return [item for item in values if item]
+
+
 def _load_local_env_file():
     env_path = BASE_DIR / '.env'
     if not env_path.exists():
@@ -27,11 +42,13 @@ def _load_local_env_file():
 
 _load_local_env_file()
 
-SECRET_KEY = "replace-this-with-a-secure-secret"
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'replace-this-with-a-secure-secret')
 
-DEBUG = True
+DEBUG = _env_bool('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'jcb.pythonanywhere.com'])
+CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', default=['https://jcb.pythonanywhere.com'])
+ENABLE_CORS = _env_bool('ENABLE_CORS', default=False)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,6 +60,9 @@ INSTALLED_APPS = [
     'Hyper_Local_Weather',
 ]
 
+if ENABLE_CORS:
+    INSTALLED_APPS.append('corsheaders')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -52,6 +72,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if ENABLE_CORS:
+    MIDDLEWARE.insert(2, 'corsheaders.middleware.CorsMiddleware')
+    CORS_ALLOWED_ORIGINS = _env_list('CORS_ALLOWED_ORIGINS', default=[])
+    CORS_ALLOW_CREDENTIALS = _env_bool('CORS_ALLOW_CREDENTIALS', default=False)
 
 ROOT_URLCONF = 'weather_project.urls'
 

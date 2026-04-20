@@ -53,6 +53,22 @@ The script posts to `https://jcb.pythonanywhere.com/api/pi-readings/` by default
 
 If your server expects form-encoded data instead of JSON, pass `--post-mode form`.
 
+### PythonAnywhere deploy settings
+
+Set these environment variables in your PythonAnywhere web app:
+
+- `DJANGO_DEBUG=false`
+- `DJANGO_SECRET_KEY=<your-strong-secret>`
+- `DJANGO_ALLOWED_HOSTS=jcb.pythonanywhere.com`
+- `DJANGO_CSRF_TRUSTED_ORIGINS=https://jcb.pythonanywhere.com`
+
+Only if you need browser-based cross-origin calls:
+
+- `ENABLE_CORS=true`
+- `CORS_ALLOWED_ORIGINS=https://your-frontend.example.com`
+
+After updating env vars or code, reload the PythonAnywhere web app from the Web tab.
+
 Alternative (PowerShell env var)
 1. Temporary key for current terminal:
 
