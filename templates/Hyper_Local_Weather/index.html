@@ -36,10 +36,46 @@
   <div class="outdoor-top__right {% if is_mock_outdoor_temp %}disabled{% endif %}">
     <div class="outdoor-temp">
       <h3>Current Outdoor Temperature</h3>
-      <div class="outdoor-temp__value">{{ latest_outdoor_temp|floatformat:0 }}</div>
-    </div>
-    <div class="outdoor-mini-strip" aria-hidden="true">
-      <span></span><span></span><span></span><span></span><span></span>
+      <div class="tempTile tempTile--compact-outdoor js-outdoor-temp-tile">
+        <button type="button" class="tempTile__toggle" aria-label="Show weekly average" aria-expanded="false" title="Show weekly average"></button>
+
+        <div class="tempTile__carousel">
+          <div class="tempTile__panel">
+            <div class="tempTile__main">
+              <div class="tempTile__value">
+                <span class="tempTile__num">{{ latest_outdoor_temp|floatformat:1 }}</span>
+                <span class="tempTile__deg tempTile__deg--unit">&deg;C</span>
+              </div>
+              <div class="tempTile__sub muted">Outdoor • {% if is_mock_outdoor_temp %}fallback reading{% else %}live reading{% endif %}</div>
+            </div>
+          </div>
+
+          <div class="tempTile__panel tempTile__panel--week">
+            <div class="tempTile__weekAvg" aria-label="Outdoor weekly average">
+              <div class="tempTile__weekAvgValue">
+                <span class="tempTile__weekAvgNum js-outdoor-week-avg-num">N/A</span>
+                <span class="tempTile__weekAvgDeg js-outdoor-week-avg-deg">&deg;C</span>
+              </div>
+              <div class="tempTile__weekAvgLabel muted">Weekly average</div>
+            </div>
+
+            <div class="tempTile__week" aria-label="Outdoor weekly average temperatures">
+              {% for day in past_week_outdoor_temps %}
+                <div class="day" data-temp="{% if day.avg_temp == 'N/A' %}{% else %}{{ day.avg_temp }}{% endif %}">
+                  <div class="day__name">{{ day.day_name }}</div>
+                  <div class="day__val">
+                    {% if day.avg_temp == 'N/A' %}
+                      --
+                    {% else %}
+                      {{ day.avg_temp }}&deg;C
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -312,12 +348,15 @@
 ></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const indoorTempTile = document.querySelector('.js-indoor-temp-tile');
-  if (indoorTempTile) {
-    const toggle = indoorTempTile.querySelector('.tempTile__toggle');
-    const avgNum = indoorTempTile.querySelector('.js-week-avg-num');
-    const avgDeg = indoorTempTile.querySelector('.js-week-avg-deg');
-    const weekDayEls = Array.from(indoorTempTile.querySelectorAll('.tempTile__week .day[data-temp]'));
+  function bindTempTile(tileEl, options) {
+    if (!tileEl) {
+      return;
+    }
+
+    const toggle = tileEl.querySelector('.tempTile__toggle');
+    const avgNum = tileEl.querySelector(options.avgNumSelector);
+    const avgDeg = tileEl.querySelector(options.avgDegSelector);
+    const weekDayEls = Array.from(tileEl.querySelectorAll('.tempTile__week .day[data-temp]'));
 
     if (avgNum && avgDeg && weekDayEls.length) {
       const temps = weekDayEls
@@ -336,13 +375,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (toggle) {
       toggle.addEventListener('click', function() {
-        const showWeek = indoorTempTile.classList.toggle('tempTile--show-week');
+        const showWeek = tileEl.classList.toggle('tempTile--show-week');
         toggle.setAttribute('aria-expanded', showWeek ? 'true' : 'false');
-        toggle.setAttribute('aria-label', showWeek ? 'Show current indoor temperature' : 'Show weekly average');
-        toggle.setAttribute('title', showWeek ? 'Show current indoor temperature' : 'Show weekly average');
+        toggle.setAttribute('aria-label', showWeek ? options.showCurrentLabel : 'Show weekly average');
+        toggle.setAttribute('title', showWeek ? options.showCurrentLabel : 'Show weekly average');
       });
     }
   }
+
+  bindTempTile(document.querySelector('.js-indoor-temp-tile'), {
+    avgNumSelector: '.js-week-avg-num',
+    avgDegSelector: '.js-week-avg-deg',
+    showCurrentLabel: 'Show current indoor temperature'
+  });
+
+  bindTempTile(document.querySelector('.js-outdoor-temp-tile'), {
+    avgNumSelector: '.js-outdoor-week-avg-num',
+    avgDegSelector: '.js-outdoor-week-avg-deg',
+    showCurrentLabel: 'Show current outdoor temperature'
+  });
 
   const aqSummaryNum = document.querySelector('.aqSummary__num');
   const aqSummaryStatus = document.querySelector('.aqSummary__status');

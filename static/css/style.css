@@ -60,6 +60,7 @@ body{
 .brand-and-nav {
     display: flex;
     align-items: center;
+    gap: 20px;
 }
 
 .main-nav {
@@ -236,7 +237,12 @@ body{
   background: var(--teal);
   box-shadow: 0 0 0 7px rgba(45,212,191,0.14);
 }
-.brand__name{ letter-spacing:0.3px; }
+.brand__name{ 
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: 0.3px;
+  font-weight: 900;
+}
 
 .topbar__meta{ display:flex; gap: 10px; flex-wrap: wrap; }
 
@@ -1068,12 +1074,9 @@ body{
 
 /* big digital screen */
 .tempTile__main{
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background:
-    radial-gradient(600px 340px at 25% 25%, rgba(34,211,238,0.16), transparent 60%),
-    radial-gradient(560px 320px at 75% 55%, rgba(96,165,250,0.12), transparent 62%),
-    rgba(7,18,28,0.55);
+  border-radius: 0;
+  border: none;
+  background: transparent;
   display:flex;
   flex-direction: column;
   align-items: center;
@@ -1143,9 +1146,9 @@ body{
   align-content: stretch;
   margin-top: 0;
 
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(7,18,28,0.45);
+  border-radius: 0;
+  border: none;
+  background: transparent;
   padding: 12px;
 }
 
@@ -1155,12 +1158,9 @@ body{
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background:
-    radial-gradient(560px 280px at 25% 25%, rgba(34,211,238,0.12), transparent 64%),
-    radial-gradient(520px 240px at 75% 55%, rgba(96,165,250,0.10), transparent 66%),
-    rgba(7,18,28,0.40);
+  border-radius: 0;
+  border: none;
+  background: transparent;
   padding: 14px;
   text-align: center;
 }
@@ -1686,16 +1686,17 @@ body{
   padding: 0;
 }
 
+:root{
+  --outdoor-header-row: 36px;
+}
+
 .outdoor-top__left{
   min-height: 260px;
   border-right: 1px solid rgba(255,255,255,0.12);
   padding: 14px;
   display: flex;
   flex-direction: column;
-}
-
-.outdoor-top__left h3{
-  margin: 0 0 10px;
+  gap: 0;
 }
 
 .outdoor-top__placeholder{
@@ -1725,7 +1726,7 @@ body{
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-top: 0;
   font-size: 0.9rem;
   color: rgba(234,242,255,0.82);
 }
@@ -1749,42 +1750,96 @@ body{
 
 .outdoor-top__right{
   min-height: 260px;
-  display: grid;
-  grid-template-rows: 1fr 58px;
+  display: flex;
+  align-items: stretch;
+  padding: 14px;
 }
 
 .outdoor-temp{
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  padding: 14px;
+  width: 100%;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 0;
 }
 
+.outdoor-top__left h3,
 .outdoor-temp h3{
-  margin: 0 0 10px;
+  margin: 0;
+  height: var(--outdoor-header-row);
+  display: flex;
+  align-items: flex-start;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.tempTile--compact-outdoor{
+  margin-top: -10px;
+  height: 100%;
+  min-height: 200px;
+  border: 0;
+  background: transparent;
+}
+
+.tempTile--compact-outdoor .tempTile__panel{
+  padding: 12px;
+}
+
+.tempTile--compact-outdoor .tempTile__main{
+  padding: 14px;
+}
+
+.tempTile--compact-outdoor .tempTile__num{
+  font-size: clamp(48px, 4vw, 64px);
+  letter-spacing: 2px;
+}
+
+.tempTile--compact-outdoor .tempTile__deg{
+  font-size: 1.2rem;
+  margin-top: 9px;
+}
+
+.tempTile__deg--unit{
+  letter-spacing: 0.4px;
+}
+
+.tempTile--compact-outdoor .tempTile__sub{
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+.tempTile--compact-outdoor .tempTile__weekAvg{
+  padding: 10px;
+}
+
+.tempTile--compact-outdoor .tempTile__weekAvgNum{
+  font-size: clamp(30px, 3vw, 40px);
+}
+
+.tempTile--compact-outdoor .tempTile__weekAvgDeg{
   font-size: 1rem;
+  margin-top: 5px;
 }
 
-.outdoor-temp__value{
-  font-size: clamp(56px, 5vw, 74px);
-  font-weight: 900;
-  line-height: 1;
+.tempTile--compact-outdoor .tempTile__week{
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
 }
 
-.outdoor-mini-strip{
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+.tempTile--compact-outdoor .day{
+  padding: 8px 6px;
+  gap: 4px;
 }
 
-.outdoor-mini-strip span{
-  border-left: 1px solid rgba(255,255,255,0.12);
-}
-
-.outdoor-mini-strip span:first-child{
-  border-left: 0;
+.tempTile--compact-outdoor .day__name,
+.tempTile--compact-outdoor .day__val{
+  font-size: 0.8rem;
 }
 
 @media (max-width: 900px){
@@ -1979,8 +2034,8 @@ body{
   --card: rgba(255,255,255,0.36);
   --card2: rgba(255,255,255,0.22);
   --stroke: rgba(8,26,51,0.30);
-  --text: #061427;
-  --muted: rgba(6,20,39,0.84);
+  --text: #0f2847;
+  --muted: rgba(8,26,51,0.72);
   --teal: #059669;
   --blue: #0284c7;
   --cyan: #06b6d4;
@@ -1990,17 +2045,17 @@ body{
 
 [data-theme="light"] body {
   background:
-    radial-gradient(1200px 700px at 20% 10%, rgba(5,150,105,0.16), transparent 60%),
-    radial-gradient(900px 600px at 80% 30%, rgba(2,132,199,0.14), transparent 55%),
-    linear-gradient(160deg, #66c790 0%, #49bed8 50%, #5baed8 100%);
+    radial-gradient(1200px 700px at 20% 10%, rgba(5,150,105,0.11), transparent 60%),
+    radial-gradient(900px 600px at 80% 30%, rgba(2,132,199,0.09), transparent 55%),
+    linear-gradient(160deg, #5aa888 0%, #42a5c8 50%, #52a5c8 100%);
   background-attachment: fixed;
   color: var(--text);
 }
 
 [data-theme="light"] .topbar {
-  background: rgba(110,231,183,0.62);
+  background: rgba(80,200,170,0.52);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.40);
+  border-bottom: 1px solid rgba(255,255,255,0.32);
 }
 
 [data-theme="light"] .hamburger-icon,
@@ -2051,8 +2106,8 @@ body{
 
 /* Dropdown */
 [data-theme="light"] .dropdown-content {
-  background: rgba(110,231,183,0.88);
-  border: 1px solid rgba(255,255,255,0.50);
+  background: rgba(85,210,180,0.82);
+  border: 1px solid rgba(255,255,255,0.42);
   backdrop-filter: blur(12px);
 }
 [data-theme="light"] .dropdown-content a,
@@ -2235,8 +2290,8 @@ body{
 
 /* Temperature tile */
 [data-theme="light"] .tempTile {
-  background: rgba(255,255,255,0.38);
-  border-color: rgba(255,255,255,0.50);
+  background: rgba(255,255,255,0.26);
+  border-color: rgba(255,255,255,0.38);
 }
 [data-theme="light"] .tempTile__toggle {
   color: rgba(8,26,51,0.90);
@@ -2245,11 +2300,8 @@ body{
   color: rgba(2,132,199,0.92);
 }
 [data-theme="light"] .tempTile__main {
-  border-color: rgba(255,255,255,0.45);
-  background:
-    radial-gradient(600px 340px at 25% 25%, rgba(5,150,105,0.18), transparent 60%),
-    radial-gradient(560px 320px at 75% 55%, rgba(2,132,199,0.14), transparent 62%),
-    rgba(255,255,255,0.55);
+  border-color: transparent;
+  background: transparent;
 }
 [data-theme="light"] .tempTile__main::before {
   background: repeating-linear-gradient(
@@ -2267,15 +2319,12 @@ body{
 [data-theme="light"] .tempTile__deg { color: rgba(12,35,64,0.65); }
 [data-theme="light"] .tempTile__deg { color: rgba(8,26,51,0.78); }
 [data-theme="light"] .tempTile__week {
-  background: rgba(255,255,255,0.42);
-  border-color: rgba(255,255,255,0.50);
+  background: transparent;
+  border-color: transparent;
 }
 [data-theme="light"] .tempTile__weekAvg {
-  background:
-    radial-gradient(560px 280px at 25% 25%, rgba(5,150,105,0.14), transparent 64%),
-    radial-gradient(520px 240px at 75% 55%, rgba(2,132,199,0.12), transparent 66%),
-    rgba(255,255,255,0.44);
-  border-color: rgba(255,255,255,0.50);
+  background: transparent;
+  border-color: transparent;
 }
 [data-theme="light"] .tempTile__weekAvgNum {
   color: rgba(8,26,51,0.92);
@@ -2292,12 +2341,12 @@ body{
 
 /* Air quality */
 [data-theme="light"] .aqSummary {
-  background: rgba(255,255,255,0.42);
-  border-color: rgba(255,255,255,0.50);
+  background: rgba(255,255,255,0.30);
+  border-color: rgba(255,255,255,0.38);
 }
 [data-theme="light"] .aqSummary__top {
-  background: rgba(255,255,255,0.28);
-  border-bottom-color: rgba(255,255,255,0.40);
+  background: rgba(255,255,255,0.20);
+  border-bottom-color: rgba(255,255,255,0.32);
 }
 [data-theme="light"] .aqSummary__title { color: rgba(12,35,64,0.90); }
 [data-theme="light"] .aqSummary__num {
@@ -2305,12 +2354,12 @@ body{
 }
 [data-theme="light"] .aqSummary__status { color: rgba(5,150,105,0.95); }
 [data-theme="light"] .aqChart {
-  background: rgba(255,255,255,0.42);
-  border-color: rgba(255,255,255,0.50);
+  background: rgba(255,255,255,0.30);
+  border-color: rgba(255,255,255,0.38);
 }
 [data-theme="light"] .aqDays {
-  background: rgba(255,255,255,0.28);
-  border-top-color: rgba(255,255,255,0.40);
+  background: rgba(255,255,255,0.20);
+  border-top-color: rgba(255,255,255,0.32);
 }
 [data-theme="light"] .aqDayBtn {
   background: transparent;
@@ -2364,14 +2413,15 @@ body{
 
 /* View switch */
 [data-theme="light"] .view-switch__btn {
-  background: rgba(255,255,255,0.45);
-  border-color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.35);
 }
-[data-theme="light"] .view-switch__btn:hover { background: rgba(255,255,255,0.68); }
+[data-theme="light"] .view-switch__btn:hover { background: rgba(255,255,255,0.40); }
 [data-theme="light"] .view-switch__btn--active {
-  background: rgba(5,150,105,0.20);
-  border-color: rgba(5,150,105,0.45);
-  box-shadow: 0 0 0 1px rgba(5,150,105,0.28) inset;
+  background: rgba(5,150,105,0.45);
+  border-color: rgba(5,150,105,0.65);
+  box-shadow: 0 0 0 1px rgba(5,150,105,0.50) inset;
+  color: rgba(6,20,39,0.95);
 }
 
 /* Outdoor section */
@@ -2380,13 +2430,14 @@ body{
   border-color: rgba(255,255,255,0.50);
   background: rgba(255,255,255,0.18);
 }
-[data-theme="light"] .outdoor-temp { border-bottom-color: rgba(255,255,255,0.40); }
-[data-theme="light"] .outdoor-mini-strip span { border-left-color: rgba(255,255,255,0.40); }
+[data-theme="light"] .outdoor-temp {
+  background: transparent;
+}
 
 /* Card base */
 [data-theme="light"] .card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.24));
-  border-color: rgba(255,255,255,0.55);
+  background: linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.16));
+  border-color: rgba(255,255,255,0.42);
 }
 
 /* Auth page */

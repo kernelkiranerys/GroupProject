@@ -1095,17 +1095,25 @@ def index(request, date=None):
         is_mock_humidity = active_reading is None
         is_mock_pressure = active_reading is None
 
-    past_week_temps = []
-    for i in range(6, -1, -1):
-        day = current_date - timedelta(days=i)
-        avg_temp_data = WeatherReading.objects.filter(timestamp__date=day).aggregate(avg_temp=Avg('temperature_c'))
-        
-        avg_temp = avg_temp_data['avg_temp']
-        
-        past_week_temps.append({
-            'day_name': day.strftime('%a')[0],
-            'avg_temp': round(avg_temp) if avg_temp is not None else 'N/A'
-        })
+    def _build_weekly_temps(target_location=None):
+        weekly_temps = []
+        for i in range(6, -1, -1):
+            day = current_date - timedelta(days=i)
+            readings = WeatherReading.objects.filter(timestamp__date=day)
+            if target_location is not None:
+                readings = readings.filter(location=target_location)
+
+            avg_temp_data = readings.aggregate(avg_temp=Avg('temperature_c'))
+            avg_temp = avg_temp_data['avg_temp']
+
+            weekly_temps.append({
+                'day_name': day.strftime('%a')[0],
+                'avg_temp': round(avg_temp) if avg_temp is not None else 'N/A'
+            })
+        return weekly_temps
+
+    past_week_temps = _build_weekly_temps(indoor_location)
+    past_week_outdoor_temps = _build_weekly_temps(outdoor_location)
 
     previous_week = current_date - timedelta(weeks=1)
     next_week = current_date + timedelta(weeks=1)
@@ -1127,6 +1135,7 @@ def index(request, date=None):
         'is_mock_humidity': is_mock_humidity,
         'is_mock_pressure': is_mock_pressure,
         'past_week_temps': past_week_temps,
+        'past_week_outdoor_temps': past_week_outdoor_temps,
         'current_date': current_date,
         'previous_week': previous_week.strftime('%Y-%m-%d'),
         'next_week': next_week.strftime('%Y-%m-%d'),
