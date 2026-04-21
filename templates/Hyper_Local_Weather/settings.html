@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Settings — Hyper Local Weather{% endblock %}
 
@@ -11,6 +12,58 @@
       <p class="muted" style="margin:0;">Manage your profile, password and preferences.</p>
     </div>
   </div>
+
+
+  <!-- ── PROFILE PICTURE SECTION ── -->
+<div class="settings-section card">
+  <div class="settings-section__head">
+    <span class="settings-section__icon">🖼️</span>
+    <div>
+      <h2 class="settings-section__title">Profile Picture</h2>
+      <p class="muted settings-section__sub">Choose an avatar from the available options.</p>
+    </div>
+  </div>
+
+  <img src="{% static user.profile.avatar_url %}"> <img src="{% static 'Defaults/Default-profile.jpg' %}">
+
+  <!-- this section will load the images within the static directory to show the user the available avatars within static/User_Icons/ -->
+
+  {% if avatar_success %}
+    <div class="settings-alert settings-alert--ok">{{ avatar_success }}</div>
+  {% endif %}
+  {% if avatar_error %}
+    <div class="settings-alert settings-alert--err">{{ avatar_error }}</div>
+  {% endif %}
+
+  <div class="avatar-modal">
+  <div class="modal-header">
+    <div class="current-avatar-card">
+      <!--current avatar -->
+      <img src="{% static user.profile.avatar_url %}" alt="Current avatar" class="avatar-image">
+      <div class="avatar-circle large"></div>
+    </div>
+    
+    <div class="import-card">
+      <button class="import-btn">Import own image</button>
+    </div>
+  </div>
+
+  <div class="server-images-section">
+    <h3>Profile images</h3>
+    <div class="avatar-grid">
+      {% for avatar in avatars %}
+        <label class="avatar-option">
+          <input type="radio" name="avatar" value="{{ avatar }}" class="avatar-radio" {% if avatar == request.user.profile.avatar_url %}checked{% endif %}>
+          <img src="{% static 'User_Icons/'|add:avatar %}" alt="Avatar" class="avatar-image">
+        </label>
+      {% endfor %}
+    <form method="post" class="settings-form">
+        {% csrf_token %}
+        <button type="submit" name="change_avatar" class="auth-submit-btn settings-btn">Save Picture</button>
+      </form> 
+      </div>
+  </div>
+</div>
 
   <!-- ── PROFILE SECTION ── -->
   <div class="settings-section card">
@@ -200,5 +253,28 @@
       if (label) label.textContent = 'Dark Mode';
     });
   })();
+</script>
+
+<script>
+function selectAvatar(element) {
+    const imageUrl = element.querySelector('img').getAttribute('src');
+
+    fetch('/update-avatar/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}' // Django's security token
+        },
+        body: JSON.stringify({ 'avatar_url': imageUrl })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            // Update the "Current Profile Image" box instantly
+            document.querySelector('.current-avatar-circle img').src = imageUrl;
+            alert("Profile picture updated!");
+        }
+    });
+}
 </script>
 {% endblock %}

@@ -1,5 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.CharField(max_length=255, default='/static/Defaults/Default-profile.jpg')
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
 
 class Location(models.Model):
     name = models.CharField(max_length=100)

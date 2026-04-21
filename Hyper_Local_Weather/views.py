@@ -3,22 +3,30 @@ import time
 import math
 from decimal import Decimal, InvalidOperation
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
 from urllib import error, parse, request as urllib_request
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
-from .models import Location, WeatherReading
+from .models import Location, WeatherReading, Profile
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Avg
 from django.contrib.auth import login, authenticate
 from django.shortcuts import redirect
-from .forms import SignUpForm, ChangeProfileForm, ChangePasswordForm
+from .forms import (
+    SignUpForm,
+    ChangeProfileForm,
+    ProfileUpdateForm,
+    UserUpdateForm,
+    PasswordChangeForm
+)
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import update_session_auth_hash
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 UK_AQ_LOCATIONS = [
     {'name': 'Leeds', 'latitude': 53.8008, 'longitude': -1.5491},
@@ -854,6 +862,64 @@ def _build_live_leeds_grid_payload():
     return payload
 
 @login_required
+def account(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        if 'update-profile-submit' in request.POST:
+            u_form = UserUpdateForm(request.POST, instance=request.user)
+            p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+            if u_form.is_valid() and p_form.is_valid():
+                u_form.save()
+                p_form.save()
+                messages.success(request, 'Your account has been updated!')
+                return redirect('Hyper_Local_Weather:account')
+        elif 'change-password-submit' in request.POST:
+            pass_form = PasswordChangeForm(request.POST, user=request.user)
+            if pass_form.is_valid():
+                user = pass_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Your password was successfully updated!')
+                return redirect('Hyper_Local_Weather:account')
+            else:
+                messages.error(request, 'Please correct the error below.')
+        else:
+            u_form = UserUpdateForm(instance=request.user)
+            p_form = ProfileUpdateForm(instance=profile)
+            pass_form = PasswordChangeForm(user=request.user)
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=profile)
+        pass_form = PasswordChangeForm(user=request.user)
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form,
+        'pass_form': pass_form,
+    }
+
+    return render(request, 'Hyper_Local_Weather/account.html', context)
+
+
+@login_required
+def update_avatar(request):
+    if request.method == 'POST':
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create(user=request.user)
+
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        if p_form.is_valid():
+            p_form.save()
+            messages.success(request, 'Your avatar has been updated!')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    return redirect('Hyper_Local_Weather:account')
+
 def historical(request):
     readings = WeatherReading.objects.all().order_by('-timestamp')
     context = {
@@ -1237,12 +1303,33 @@ def location_detail(request, pk):
 
 @login_required
 def settings_page(request):
-    profile_form = ChangeProfileForm(instance=request.user)
-    password_form = ChangePasswordForm()
-    profile_success = profile_error = password_success = password_error = None
+    # --- Avatar Selection Logic ---
+    avatar_dir = os.path.join(settings.BASE_DIR, 'static', 'User_Icons')
+    try:
+        avatars = [f for f in os.listdir(avatar_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    except FileNotFoundError:
+        avatars = []
 
+    # --- Form and Message Initialization ---
+    profile_form = ChangeProfileForm(instance=request.user)
+    password_form = PasswordChangeForm()
+    profile_success = profile_error = password_success = password_error = None
+    avatar_success = None
+
+    # --- Handle POST Requests ---
     if request.method == 'POST':
-        if 'update_profile' in request.POST:
+        if 'change_avatar' in request.POST:
+            selected_avatar = request.POST.get('avatar')
+            if selected_avatar:
+                try:
+                    profile, created = Profile.objects.get_or_create(user=request.user)
+                    profile.image = os.path.join('User_Icons', selected_avatar)
+                    profile.save()
+                    avatar_success = 'Profile picture updated successfully.'
+                except Exception as e:
+                    pass  # Consider logging the error e
+
+        elif 'update_profile' in request.POST:
             profile_form = ChangeProfileForm(request.POST, instance=request.user)
             if profile_form.is_valid():
                 profile_form.save()
@@ -1251,27 +1338,33 @@ def settings_page(request):
                 profile_error = 'Please correct the errors below.'
 
         elif 'change_password' in request.POST:
-            password_form = ChangePasswordForm(request.POST)
+            password_form = PasswordChangeForm(request.POST)
             if password_form.is_valid():
                 if request.user.check_password(password_form.cleaned_data['current_password']):
                     request.user.set_password(password_form.cleaned_data['new_password'])
                     request.user.save()
                     update_session_auth_hash(request, request.user)
                     password_success = 'Password changed successfully.'
-                    password_form = ChangePasswordForm()
+                    password_form = PasswordChangeForm()
                 else:
-                    password_error = 'Current password is incorrect.'
+                    password_form.add_error('current_password', 'Current password is incorrect.')
+                    password_error = 'Please correct the errors below.'
             else:
                 password_error = 'Please correct the errors below.'
 
-    return render(request, 'Hyper_Local_Weather/settings.html', {
+    # --- Prepare Context for Template ---
+    context = {
+        'avatars': avatars,
         'profile_form': profile_form,
         'password_form': password_form,
         'profile_success': profile_success,
         'profile_error': profile_error,
         'password_success': password_success,
         'password_error': password_error,
-    })
+        'avatar_success': avatar_success,
+    }
+    
+    return render(request, 'Hyper_Local_Weather/settings.html', context)
 
 
 @user_passes_test(lambda u: u.is_active and u.is_staff)
@@ -1303,3 +1396,43 @@ def authorisations(request):
         'action_success': action_success,
         'action_error': action_error,
     })
+
+
+@login_required
+def account(request):
+    """User account settings page."""
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        if 'update_profile' in request.POST:
+            u_form = UserUpdateForm(request.POST, instance=request.user)
+            p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+            if u_form.is_valid() and p_form.is_valid():
+                u_form.save()
+                p_form.save()
+                return redirect('Hyper_Local_Weather:account')
+        elif 'change_password' in request.POST:
+            pass_form = PasswordChangeForm(request.POST)
+            if pass_form.is_valid():
+                user = request.user
+                current_password = pass_form.cleaned_data['current_password']
+                if user.check_password(current_password):
+                    user.set_password(pass_form.cleaned_data['new_password'])
+                    user.save()
+                    update_session_auth_hash(request, user)  # Important!
+                    return redirect('Hyper_Local_Weather:account')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=profile)
+        pass_form = PasswordChangeForm()
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form,
+        'pass_form': pass_form,
+    }
+
+    return render(request, 'Hyper_Local_Weather/account.html', context)

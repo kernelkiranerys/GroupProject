@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Hyper_Local_Weather',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 if ENABLE_CORS:
@@ -130,6 +132,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -140,3 +144,9 @@ LOGOUT_REDIRECT_URL = '/'
 OPENAQ_API_KEY = os.getenv('OPENAQ_API_KEY', '')
 IQAIR_API_KEY = os.getenv('IQAIR_API_KEY', '')
 ENABLE_DEFRA_PROVIDER = os.getenv('ENABLE_DEFRA_PROVIDER', 'true')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

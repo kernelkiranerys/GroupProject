@@ -1,4 +1,6 @@
 from django.urls import path, include
+from weather_project import settings
+from django.conf.urls.static import static
 from . import views
 
 app_name = 'Hyper_Local_Weather'
@@ -18,4 +20,10 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('<str:date>/', views.index, name='index_with_date'),
     path('location/<int:pk>/', views.location_detail, name='location_detail'),
+    path('account/', views.account, name='account'),
+    path('update-avatar/', views.update_avatar, name='update_avatar'),
+    
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Account Settings — Hyper Local Weather{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+
+  <div class="pagehead">
+    <div>
+      <h1 class="h1">Account Settings</h1>
+      <p class="muted" style="margin:0;">Manage your profile, password and preferences.</p>
+    </div>
+  </div>
+
+  <!-- ── PROFILE SECTION ── -->
+  <div class="settings-section card">
+    <div class="settings-section__head">
+        <img src="{{ user.profile.image.url }}" alt="Profile image" class="profile-image mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
+      <div>
+        <h2 class="settings-section__title">Profile</h2>
+        <p class="muted settings-section__sub">Update your name, username and email address.</p>
+      </div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="settings-alert {% if message.tags == 'success' %}settings-alert--ok{% else %}settings-alert--err{% endif %}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="settings-form" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="settings-grid-2">
+        {{ u_form|crispy }}
+        {{ p_form|crispy }}
+      </div>
+      <button type="submit" name="update-profile-submit" class="auth-submit-btn settings-btn">Save changes</button>
+    </form>
+  </div>
+
+  <!-- ── PASSWORD SECTION ── -->
+  <div class="settings-section card">
+    <div class="settings-section__head">
+      <span class="settings-section__icon">🔒</span>
+      <div>
+        <h2 class="settings-section__title">Change Password</h2>
+        <p class="muted settings-section__sub">Choose a strong password of at least 8 characters.</p>
+      </div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <form method="post" class="settings-form">
+      {% csrf_token %}
+      {{ pass_form|crispy }}
+      <button type="submit" name="change-password-submit" class="auth-submit-btn settings-btn">Change password</button>
+    </form>
+  </div>
+
+  <!-- ── APPEARANCE SECTION ── -->
+  <div class="settings-section card">
+    <div class="settings-section__head">
+      <span class="settings-section__icon">🎨</span>
+      <div>
+        <h2 class="settings-section__title">Appearance</h2>
+        <p class="muted settings-section__sub">Choose between dark and light mode.</p>
+      </div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <div class="theme-toggle-row">
+      <div class="theme-option" id="theme-opt-dark">
+        <div class="theme-swatch theme-swatch--dark">
+          <span>🌙</span>
+        </div>
+        <span class="theme-option__label">Dark</span>
+      </div>
+      <div class="theme-option" id="theme-opt-light">
+        <div class="theme-swatch theme-swatch--light">
+          <span>☀️</span>
+        </div>
+        <span class="theme-option__label">Light</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACCOUNT INFO ── -->
+  <div class="settings-section card">
+    <div class="settings-section__head">
+      <span class="settings-section__icon">ℹ️</span>
+      <div>
+        <h2 class="settings-section__title">Account Info</h2>
+        <p class="muted settings-section__sub">Read-only details about your account.</p>
+      </div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <dl class="settings-dl">
+      <div class="settings-dl__row">
+        <dt class="muted">Account ID</dt>
+        <dd>#{{ request.user.pk }}</dd>
+      </div>
+      <div class="settings-dl__row">
+        <dt class="muted">Member since</dt>
+        <dd>{{ request.user.date_joined|date:"d M Y" }}</dd>
+      </div>
+      <div class="settings-dl__row">
+        <dt class="muted">Role</dt>
+        <dd>
+          {% if request.user.is_superuser %}
+            <span class="role-badge role-badge--super">Superuser</span>
+          {% elif request.user.is_staff %}
+            <span class="role-badge role-badge--staff">Staff</span>
+          {% else %}
+            <span class="role-badge">Member</span>
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var dark = document.getElementById('theme-opt-dark');
+    var light = document.getElementById('theme-opt-light');
+
+    function refreshUI() {
+      var t = document.documentElement.getAttribute('data-theme') || 'dark';
+      dark.classList.toggle('theme-option--active', t === 'dark');
+      light.classList.toggle('theme-option--active', t === 'light');
+    }
+
+    refreshUI();
+
+    dark.addEventListener('click', function () {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      refreshUI();
+      // keep the navbar icon in sync
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = '☀️';
+      if (label) label.textContent = 'Light Mode';
+    });
+
+    light.addEventListener('click', function () {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+      refreshUI();
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = '🌙';
+      if (label) label.textContent = 'Dark Mode';
+    });
+  })();
+</script>
+{% endblock %}
