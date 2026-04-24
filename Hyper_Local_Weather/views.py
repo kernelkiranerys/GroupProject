@@ -1324,9 +1324,12 @@ def settings_page(request):
     password_form = PasswordChangeForm()
     profile_success = profile_error = password_success = password_error = None
     avatar_success = None
+    active_tab = 'avatar'
 
     # --- Handle POST Requests ---
     if request.method == 'POST':
+        active_tab = request.POST.get('active_tab', 'avatar')
+
         if 'change_avatar' in request.POST:
             selected_avatar = request.POST.get('avatar')
             if selected_avatar:
@@ -1371,6 +1374,7 @@ def settings_page(request):
         'password_success': password_success,
         'password_error': password_error,
         'avatar_success': avatar_success,
+        'active_tab': active_tab,
     }
     
     return render(request, 'Hyper_Local_Weather/settings.html', context)

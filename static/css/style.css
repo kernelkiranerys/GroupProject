@@ -2483,31 +2483,137 @@ body{
    SETTINGS PAGE
    ===================================================== */
 
+.settings-page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+/* ── Vertical tab wrapper (sidebar + content) ── */
 .settings-wrapper {
   display: grid;
-  grid-template-columns: 240px 1fr; /* Fixed sidebar, flexible content */
-  min-height: 600px;
-  background-color: #0b1120; /* Your dark background */
-  border-radius: 20px;
+  grid-template-columns: 220px 1fr;
+  min-height: 560px;
+  background: linear-gradient(180deg, var(--card), var(--card2));
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   overflow: hidden;
-  border: 1px solid #1e293b;
 }
 
+/* ── Sidebar ── */
 .sidebar {
-  background-color: rgba(15, 23, 42, 0.5); /* Slightly darker sidebar */
-  padding: 2rem 0;
-  border-right: 1px solid #1e293b;
+  padding: 1.25rem 0;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
 }
 
+/* ── Content area ── */
 .content-area {
-  padding: 3rem;
+  padding: 2.25rem 2rem;
   overflow-y: auto;
 }
 
-.settings-page {
-  max-width: 860px;
-  margin: 0 auto;
-  padding-bottom: 40px;
+/* ── Nav items ── */
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 11px 20px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+
+.settings-nav__item:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+}
+
+.settings-nav__item--active {
+  background: rgba(34,211,238,0.10);
+  color: var(--text);
+}
+
+.settings-nav__item--active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--teal);
+  border-radius: 0 3px 3px 0;
+}
+
+.settings-nav__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ── Tab panels ── */
+.settings-tab-panel {
+  display: none;
+}
+
+.settings-tab-panel--active {
+  display: block;
+}
+
+/* ── Responsive: stack vertically on small screens ── */
+@media (max-width: 640px) {
+  .settings-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 0.75rem 0;
+  }
+
+  .settings-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 0 8px;
+  }
+
+  .settings-nav__item {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    gap: 6px;
+  }
+
+  .settings-nav__item--active::before {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .content-area {
+    padding: 1.5rem 1rem;
+  }
 }
 
 .settings-section {
@@ -2562,6 +2668,10 @@ body{
   font-size: 0.95rem;
 }
 
+.settings-btn--spaced {
+  margin-top: 16px;
+}
+
 .settings-alert {
   padding: 11px 14px;
   border-radius: 10px;
@@ -2588,6 +2698,30 @@ body{
   color: rgba(13, 148, 136, 0.95);
 }
 
+[data-theme="light"] .settings-wrapper {
+  background: linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.60));
+  border-color: rgba(0,50,100,0.12);
+}
+
+[data-theme="light"] .sidebar {
+  background: rgba(0,50,100,0.04);
+  border-right-color: rgba(0,50,100,0.10);
+}
+
+[data-theme="light"] .settings-nav__item {
+  color: rgba(12,35,64,0.68);
+}
+
+[data-theme="light"] .settings-nav__item:hover {
+  background: rgba(0,50,100,0.07);
+  color: rgba(12,35,64,0.95);
+}
+
+[data-theme="light"] .settings-nav__item--active {
+  background: rgba(8,145,178,0.10);
+  color: rgba(12,35,64,0.95);
+}
+
 /* Account avatar */
 .modal-header {
   display: flex;
@@ -2595,15 +2729,20 @@ body{
   margin-bottom: 30px;
 }
 
-.current-avatar-card, .import-card {
-  flex: 1;
-  background: #1e293b;
-  border-radius: 15px;
-  padding: 20px;
-  display: flex;
+.current-avatar-card {
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  background: rgba(30,41,59,0.80);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.avatar-caption {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
 }
 
 .avatar-grid {
