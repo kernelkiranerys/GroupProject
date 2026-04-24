@@ -13,208 +13,230 @@
     </div>
   </div>
 
+  <div class="settings-layout">
+    <nav class="settings-nav">
+      <button class="settings-nav__btn" data-tab="profile-picture">Profile Picture</button>
+      <button class="settings-nav__btn" data-tab="profile">Profile</button>
+      <button class="settings-nav__btn" data-tab="password">Change Password</button>
+      <button class="settings-nav__btn" data-tab="appearance">Appearance</button>
+      <button class="settings-nav__btn" data-tab="account-info">Account Info</button>
+    </nav>
 
-  <!-- ── PROFILE PICTURE SECTION ── -->
-<div class="settings-section card">
-  <div class="settings-section__head">
-    <span class="settings-section__icon">🖼️</span>
-    <div>
-      <h2 class="settings-section__title">Profile Picture</h2>
-      <p class="muted settings-section__sub">Choose an avatar from the available options.</p>
-    </div>
-  </div>
+    <div class="settings-content">
+      <!-- ── PROFILE PICTURE SECTION ── -->
+      <div class="tab-pane" id="profile-picture">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">🖼️</span>
+            <div>
+              <h2 class="settings-section__title">Profile Picture</h2>
+              <p class="muted settings-section__sub">Choose an avatar from the available options.</p>
+            </div>
+          </div>
 
-  <img src="{% static user.profile.avatar_url %}"> <img src="{% static 'Defaults/Default-profile.jpg' %}">
-
-  <!-- this section will load the images within the static directory to show the user the available avatars within static/User_Icons/ -->
-
-  {% if avatar_success %}
-    <div class="settings-alert settings-alert--ok">{{ avatar_success }}</div>
-  {% endif %}
-  {% if avatar_error %}
-    <div class="settings-alert settings-alert--err">{{ avatar_error }}</div>
-  {% endif %}
-
-  <div class="avatar-modal">
-  <div class="modal-header">
-    <div class="current-avatar-card">
-      <!--current avatar -->
-      <img src="{% static user.profile.avatar_url %}" alt="Current avatar" class="avatar-image">
-      <div class="avatar-circle large"></div>
-    </div>
-    
-    <div class="import-card">
-      <button class="import-btn">Import own image</button>
-    </div>
-  </div>
-
-  <div class="server-images-section">
-    <h3>Profile images</h3>
-    <div class="avatar-grid">
-      {% for avatar in avatars %}
-        <label class="avatar-option">
-          <input type="radio" name="avatar" value="{{ avatar }}" class="avatar-radio" {% if avatar == request.user.profile.avatar_url %}checked{% endif %}>
-          <img src="{% static 'User_Icons/'|add:avatar %}" alt="Avatar" class="avatar-image">
-        </label>
-      {% endfor %}
-    <form method="post" class="settings-form">
-        {% csrf_token %}
-        <button type="submit" name="change_avatar" class="auth-submit-btn settings-btn">Save Picture</button>
-      </form> 
-      </div>
-  </div>
-</div>
-
-  <!-- ── PROFILE SECTION ── -->
-  <div class="settings-section card">
-    <div class="settings-section__head">
-      <span class="settings-section__icon">👤</span>
-      <div>
-        <h2 class="settings-section__title">Profile</h2>
-        <p class="muted settings-section__sub">Update your name, username and email address.</p>
-      </div>
-    </div>
-
-    <div class="settings-divider"></div>
-
-    {% if profile_success %}
-      <div class="settings-alert settings-alert--ok">{{ profile_success }}</div>
-    {% endif %}
-    {% if profile_error %}
-      <div class="settings-alert settings-alert--err">{{ profile_error }}</div>
-    {% endif %}
-
-    <form method="post" class="settings-form">
-      {% csrf_token %}
-      <div class="settings-grid-2">
-        <div class="form-group">
-          <label>First name</label>
-          <input type="text" name="first_name" value="{{ request.user.first_name }}" placeholder="First name">
-        </div>
-        <div class="form-group">
-          <label>Last name</label>
-          <input type="text" name="last_name" value="{{ request.user.last_name }}" placeholder="Last name">
-        </div>
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" name="username" value="{{ request.user.username }}" required>
-          {% if profile_form.username.errors %}
-            <span class="form-error">{{ profile_form.username.errors.0 }}</span>
+          {% if avatar_success %}
+            <div class="settings-alert settings-alert--ok">{{ avatar_success }}</div>
           {% endif %}
-        </div>
-        <div class="form-group">
-          <label>Email address</label>
-          <input type="email" name="email" value="{{ request.user.email }}" placeholder="Email">
-        </div>
-      </div>
-      <button type="submit" name="update_profile" class="auth-submit-btn settings-btn">Save changes</button>
-    </form>
-  </div>
-
-  <!-- ── PASSWORD SECTION ── -->
-  <div class="settings-section card">
-    <div class="settings-section__head">
-      <span class="settings-section__icon">🔒</span>
-      <div>
-        <h2 class="settings-section__title">Change Password</h2>
-        <p class="muted settings-section__sub">Choose a strong password of at least 8 characters.</p>
-      </div>
-    </div>
-
-    <div class="settings-divider"></div>
-
-    {% if password_success %}
-      <div class="settings-alert settings-alert--ok">{{ password_success }}</div>
-    {% endif %}
-    {% if password_error %}
-      <div class="settings-alert settings-alert--err">{{ password_error }}</div>
-    {% endif %}
-
-    <form method="post" class="settings-form">
-      {% csrf_token %}
-      <div class="settings-grid-2">
-        <div class="form-group">
-          <label>Current password</label>
-          <input type="password" name="current_password" required placeholder="Current password">
-        </div>
-        <div class="form-group"></div>
-        <div class="form-group">
-          <label>New password</label>
-          <input type="password" name="new_password" required placeholder="At least 8 characters">
-        </div>
-        <div class="form-group">
-          <label>Confirm new password</label>
-          <input type="password" name="confirm_password" required placeholder="Repeat new password">
-        </div>
-      </div>
-      <button type="submit" name="change_password" class="auth-submit-btn settings-btn">Change password</button>
-    </form>
-  </div>
-
-  <!-- ── APPEARANCE SECTION ── -->
-  <div class="settings-section card">
-    <div class="settings-section__head">
-      <span class="settings-section__icon">🎨</span>
-      <div>
-        <h2 class="settings-section__title">Appearance</h2>
-        <p class="muted settings-section__sub">Choose between dark and light mode.</p>
-      </div>
-    </div>
-
-    <div class="settings-divider"></div>
-
-    <div class="theme-toggle-row">
-      <div class="theme-option" id="theme-opt-dark">
-        <div class="theme-swatch theme-swatch--dark">
-          <span>🌙</span>
-        </div>
-        <span class="theme-option__label">Dark</span>
-      </div>
-      <div class="theme-option" id="theme-opt-light">
-        <div class="theme-swatch theme-swatch--light">
-          <span>☀️</span>
-        </div>
-        <span class="theme-option__label">Light</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── ACCOUNT INFO ── -->
-  <div class="settings-section card">
-    <div class="settings-section__head">
-      <span class="settings-section__icon">ℹ️</span>
-      <div>
-        <h2 class="settings-section__title">Account Info</h2>
-        <p class="muted settings-section__sub">Read-only details about your account.</p>
-      </div>
-    </div>
-
-    <div class="settings-divider"></div>
-
-    <dl class="settings-dl">
-      <div class="settings-dl__row">
-        <dt class="muted">Account ID</dt>
-        <dd>#{{ request.user.pk }}</dd>
-      </div>
-      <div class="settings-dl__row">
-        <dt class="muted">Member since</dt>
-        <dd>{{ request.user.date_joined|date:"d M Y" }}</dd>
-      </div>
-      <div class="settings-dl__row">
-        <dt class="muted">Role</dt>
-        <dd>
-          {% if request.user.is_superuser %}
-            <span class="role-badge role-badge--super">Superuser</span>
-          {% elif request.user.is_staff %}
-            <span class="role-badge role-badge--staff">Staff</span>
-          {% else %}
-            <span class="role-badge">Member</span>
+          {% if avatar_error %}
+            <div class="settings-alert settings-alert--err">{{ avatar_error }}</div>
           {% endif %}
-        </dd>
-      </div>
-    </dl>
-  </div>
 
+          <form method="post" class="settings-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="avatar-modal">
+              <div class="modal-header">
+                <div class="current-avatar-card">
+                  <!--current avatar -->
+                  {% if user.profile.image %}
+                    <img src="{{ user.profile.image.url }}" alt="Current avatar" class="avatar-image">
+                  {% else %}
+                    <img src="{% static 'Defaults/Default-profile.jpg' %}" alt="Default profile picture" class="avatar-image">
+                  {% endif %}
+                  <div class="avatar-circle large"></div>
+                </div>
+                
+                <div class="import-card">
+                  <input type="file" name="uploaded_avatar" id="id_uploaded_avatar" style="display: none;">
+                  <label for="id_uploaded_avatar" class="import-btn">Import own image</label>
+                </div>
+              </div>
+
+              <div class="server-images-section">
+                <h3>Profile images</h3>
+                <div class="avatar-grid">
+                  {% for avatar in avatars %}
+                    <label class="avatar-option">
+                      <input type="radio" name="avatar" value="{{ avatar }}" class="avatar-radio" {% if avatar == request.user.profile.image %}checked{% endif %}>
+                      <img src="{% static 'User_Icons/'|add:avatar %}" alt="Avatar" class="avatar-image">
+                    </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <button type="submit" name="change_avatar" class="auth-submit-btn settings-btn">Save Picture</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── PROFILE SECTION ── -->
+      <div class="tab-pane" id="profile">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">👤</span>
+            <div>
+              <h2 class="settings-section__title">Profile</h2>
+              <p class="muted settings-section__sub">Update your name, username and email address.</p>
+            </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          {% if profile_success %}
+            <div class="settings-alert settings-alert--ok">{{ profile_success }}</div>
+          {% endif %}
+          {% if profile_error %}
+            <div class="settings-alert settings-alert--err">{{ profile_error }}</div>
+          {% endif %}
+
+          <form method="post" class="settings-form">
+            {% csrf_token %}
+            <div class="settings-grid-2">
+              <div class="form-group">
+                <label>First name</label>
+                <input type="text" name="first_name" value="{{ request.user.first_name }}" placeholder="First name">
+              </div>
+              <div class="form-group">
+                <label>Last name</label>
+                <input type="text" name="last_name" value="{{ request.user.last_name }}" placeholder="Last name">
+              </div>
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" value="{{ request.user.username }}" required>
+                {% if profile_form.username.errors %}
+                  <span class="form-error">{{ profile_form.username.errors.0 }}</span>
+                {% endif %}
+              </div>
+              <div class="form-group">
+                <label>Email address</label>
+                <input type="email" name="email" value="{{ request.user.email }}" placeholder="Email">
+              </div>
+            </div>
+            <button type="submit" name="update_profile" class="auth-submit-btn settings-btn">Save changes</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── PASSWORD SECTION ── -->
+      <div class="tab-pane" id="password">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">🔒</span>
+            <div>
+              <h2 class="settings-section__title">Change Password</h2>
+              <p class="muted settings-section__sub">Choose a strong password of at least 8 characters.</p>
+            </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          {% if password_success %}
+            <div class="settings-alert settings-alert--ok">{{ password_success }}</div>
+          {% endif %}
+          {% if password_error %}
+            <div class="settings-alert settings-alert--err">{{ password_error }}</div>
+          {% endif %}
+
+          <form method="post" class="settings-form">
+            {% csrf_token %}
+            <div class="settings-grid-2">
+              <div class="form-group">
+                <label>Current password</label>
+                <input type="password" name="current_password" required placeholder="Current password">
+              </div>
+              <div class="form-group"></div>
+              <div class="form-group">
+                <label>New password</label>
+                <input type="password" name="new_password" required placeholder="At least 8 characters">
+              </div>
+              <div class="form-group">
+                <label>Confirm new password</label>
+                <input type="password" name="confirm_password" required placeholder="Repeat new password">
+              </div>
+            </div>
+            <button type="submit" name="change_password" class="auth-submit-btn settings-btn">Change password</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── APPEARANCE SECTION ── -->
+      <div class="tab-pane" id="appearance">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">🎨</span>
+            <div>
+              <h2 class="settings-section__title">Appearance</h2>
+              <p class="muted settings-section__sub">Choose between dark and light mode.</p>
+            </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          <div class="theme-toggle-row">
+            <div class="theme-option" id="theme-opt-dark">
+              <div class="theme-swatch theme-swatch--dark">
+                <span>🌙</span>
+              </div>
+              <span class="theme-option__label">Dark</span>
+            </div>
+            <div class="theme-option" id="theme-opt-light">
+              <div class="theme-swatch theme-swatch--light">
+                <span>☀️</span>
+              </div>
+              <span class="theme-option__label">Light</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ACCOUNT INFO ── -->
+      <div class="tab-pane" id="account-info">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">ℹ️</span>
+            <div>
+              <h2 class="settings-section__title">Account Info</h2>
+              <p class="muted settings-section__sub">Read-only details about your account.</p>
+            </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          <dl class="settings-dl">
+            <div class="settings-dl__row">
+              <dt class="muted">Account ID</dt>
+              <dd>#{{ request.user.pk }}</dd>
+            </div>
+            <div class="settings-dl__row">
+              <dt class="muted">Member since</dt>
+              <dd>{{ request.user.date_joined|date:"d M Y" }}</dd>
+            </div>
+            <div class="settings-dl__row">
+              <dt class="muted">Role</dt>
+              <dd>
+                {% if request.user.is_superuser %}
+                  <span class="role-badge role-badge--super">Superuser</span>
+                {% elif request.user.is_staff %}
+                  <span class="role-badge role-badge--staff">Staff</span>
+                {% else %}
+                  <span class="role-badge">Member</span>
+                {% endif %}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -256,25 +278,31 @@
 </script>
 
 <script>
-function selectAvatar(element) {
-    const imageUrl = element.querySelector('img').getAttribute('src');
+  document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('.settings-nav__btn');
+    const panes = document.querySelectorAll('.tab-pane');
 
-    fetch('/update-avatar/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}' // Django's security token
-        },
-        body: JSON.stringify({ 'avatar_url': imageUrl })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.status === 'success') {
-            // Update the "Current Profile Image" box instantly
-            document.querySelector('.current-avatar-circle img').src = imageUrl;
-            alert("Profile picture updated!");
-        }
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+
+        tabs.forEach(t => t.classList.remove('settings-nav__btn--active'));
+        tab.classList.add('settings-nav__btn--active');
+
+        panes.forEach(pane => {
+          if (pane.id === target) {
+            pane.style.display = 'block';
+          } else {
+            pane.style.display = 'none';
+          }
+        });
+      });
     });
-}
+
+    // Activate the first tab by default
+    if (tabs.length > 0) {
+      tabs[0].click();
+    }
+  });
 </script>
 {% endblock %}

@@ -256,16 +256,25 @@ body{
 .pill--soft{ background: rgba(34,211,238,0.08); border-color: rgba(34,211,238,0.18); }
 
 .footer{
-  margin-top: 18px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   border-top: 1px solid rgba(255,255,255,0.08);
-  background: rgba(7,18,28,0.35);
+  background: rgba(7,18,28,0.85);
+  backdrop-filter: blur(10px);
 }
 .footer__inner{
   display:flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
-  padding: 14px 0;
+  padding: 14px 18px;
+}
+
+body {
+  padding-bottom: 60px; /* Adjust this value to match the height of your footer */
 }
 
 .pagehead{
@@ -998,6 +1007,70 @@ body{
   margin-top: 10px;
   height: 420px;               
   position: relative;
+}
+
+/* ========= SETTINGS PAGE ========= */
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  margin-top: 18px;
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-nav__btn {
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.settings-nav__btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.settings-nav__btn--active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane:first-child {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+  .settings-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  .settings-nav__btn {
+    white-space: nowrap;
+  }
+}
+
   overflow: hidden;
 
   border-radius: 16px;
