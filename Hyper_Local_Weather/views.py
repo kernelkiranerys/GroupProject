@@ -25,6 +25,7 @@ from .forms import (
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import update_session_auth_hash
 from django.core.serializers import serialize
+from django.templatetags.static import static
 from django.contrib.auth.models import User
 from django.contrib import messages
 
@@ -723,13 +724,28 @@ def _fetch_open_meteo_outdoor_weather(latitude, longitude):
         payload = json.loads(response.read().decode('utf-8'))
 
     hourly = payload.get('hourly') or {}
-    temperatures = [v for v in (hourly.get('temperature_2m') or []) if isinstance(v, (int, float))]
-    humidities = [v for v in (hourly.get('relative_humidity_2m') or []) if isinstance(v, (int, float))]
-    pressures = [v for v in (hourly.get('pressure_msl') or []) if isinstance(v, (int, float))]
+    times = hourly.get('time') or []
+    temperatures = hourly.get('temperature_2m') or []
+    humidities = hourly.get('relative_humidity_2m') or []
+    pressures = hourly.get('pressure_msl') or []
 
-    latest_temperature = temperatures[-1] if temperatures else None
-    latest_humidity = humidities[-1] if humidities else None
-    latest_pressure = pressures[-1] if pressures else None
+    # Find the index for the current hour
+    current_index = 0
+    if times:
+        now = timezone.now()
+        current_hour_str = now.strftime('%Y-%m-%dT%H:00')
+        try:
+            # Try to find exact match for current hour
+            current_index = next(
+                (i for i, t in enumerate(times) if t.startswith(current_hour_str[:13])),
+                0
+            )
+        except (ValueError, IndexError):
+            current_index = 0
+
+    latest_temperature = temperatures[current_index] if current_index < len(temperatures) else None
+    latest_humidity = humidities[current_index] if current_index < len(humidities) else None
+    latest_pressure = pressures[current_index] if current_index < len(pressures) else None
 
     if latest_temperature is None and latest_humidity is None and latest_pressure is None:
         raise ValueError('Missing outdoor weather values from Open-Meteo')
@@ -915,7 +931,7 @@ def update_avatar(request):
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         if p_form.is_valid():
             p_form.save()
-            messages.success(request, 'Your avatar has been updated!')
+            messages.success(request, 'Profile picture updated.')
         else:
             messages.error(request, 'Please correct the error below.')
     return redirect('Hyper_Local_Weather:account')
@@ -1334,7 +1350,7 @@ def settings_page(request):
                     profile, created = Profile.objects.get_or_create(user=request.user)
                     profile.image = os.path.join('User_Icons', selected_avatar)
                     profile.save()
-                    avatar_success = 'Profile picture updated successfully.'
+                    avatar_success = 'Profile picture updated.'
                 except Exception as e:
                     pass  # Consider logging the error e
 
@@ -1361,6 +1377,20 @@ def settings_page(request):
             else:
                 password_error = 'Please correct the errors below.'
 
+    profile_avatar_url = ''
+    has_profile_avatar = False
+    try:
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        image_name = (profile.image.name or '').replace('\\', '/')
+        if image_name and image_name != 'Defaults/Default-profile.jpg':
+            if image_name.startswith('User_Icons/'):
+                profile_avatar_url = static(image_name)
+            else:
+                profile_avatar_url = profile.image.url
+            has_profile_avatar = bool(profile_avatar_url)
+    except Exception:
+        has_profile_avatar = False
+
     # --- Prepare Context for Template ---
     context = {
         'avatars': avatars,
@@ -1371,6 +1401,8 @@ def settings_page(request):
         'password_success': password_success,
         'password_error': password_error,
         'avatar_success': avatar_success,
+        'has_profile_avatar': has_profile_avatar,
+        'profile_avatar_url': profile_avatar_url,
     }
     
     return render(request, 'Hyper_Local_Weather/settings.html', context)

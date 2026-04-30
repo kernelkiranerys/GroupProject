@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}Account Settings — Hyper Local Weather{% endblock %}
 
@@ -16,7 +17,11 @@
   <!-- ── PROFILE SECTION ── -->
   <div class="settings-section card">
     <div class="settings-section__head">
-        <img src="{{ user.profile.image.url }}" alt="Profile image" class="profile-image mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
+      {% if user.profile.image and user.profile.image.name != 'Defaults/Default-profile.jpg' %}
+        <img src="{{ user.profile.image.url }}" alt="Profile image" class="profile-image profile-image--header mb-3">
+      {% else %}
+        <div class="profile-image profile-image--header profile-image--placeholder mb-3" aria-hidden="true"></div>
+      {% endif %}
       <div>
         <h2 class="settings-section__title">Profile</h2>
         <p class="muted settings-section__sub">Update your name, username and email address.</p>

@@ -28,7 +28,7 @@
                         <a href="{% url 'Hyper_Local_Weather:index' %}">Dashboard</a>
                         <a href="{% url 'Hyper_Local_Weather:historical' %}">Historical</a>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'Hyper_Local_Weather:settings' %}">⚙️ Settings</a>
+                            <a href="{% url 'Hyper_Local_Weather:settings' %}">Settings</a>
                             {% if user.is_staff %}
                                 <a href="{% url 'Hyper_Local_Weather:authorisations' %}">🛡️ Authorisations</a>
                             {% endif %}
@@ -39,13 +39,7 @@
                         {% else %}
                             <a href="{% url 'Hyper_Local_Weather:auth' %}">Login / Sign Up</a>
                         {% endif %}
-                        <button type="button" id="theme-toggle" class="theme-row-btn" aria-label="Toggle theme">
-                          <span id="theme-icon" class="theme-row-btn__icon">🌙</span>
-                          <span id="theme-label" class="theme-row-btn__label">Theme</span>
-                          <span class="theme-pill" id="theme-pill">
-                            <span class="theme-pill__knob"></span>
-                          </span>
-                        </button>
+
                     </div>
                 </div>
             </nav>
@@ -95,33 +89,18 @@
         }
       });
 
-      // Theme toggle
-      var themeToggle = document.getElementById('theme-toggle');
-      var themeIcon   = document.getElementById('theme-icon');
-      var themeLabel  = document.getElementById('theme-label');
-      var themePill   = document.getElementById('theme-pill');
-
+      // Sync settings page theme cards on load
       function applyThemeUI(theme) {
-        var isDark = theme === 'dark';
-        themeIcon.textContent  = isDark ? '🌙' : '☀️';
-        themeLabel.textContent = 'Theme';
-        themePill.classList.toggle('theme-pill--on', isDark);
-        // keep settings page swatches in sync if present
-        var optDark  = document.getElementById('theme-opt-dark');
-        var optLight = document.getElementById('theme-opt-light');
-        if (optDark)  optDark.classList.toggle('theme-option--active',  isDark);
-        if (optLight) optLight.classList.toggle('theme-option--active', !isDark);
+        var themeCards = document.querySelectorAll('.theme-option[data-theme-value]');
+        themeCards.forEach(function (card) {
+          var value = card.getAttribute('data-theme-value');
+          var active = value === theme;
+          card.classList.toggle('theme-option--active', active);
+          card.setAttribute('aria-checked', active ? 'true' : 'false');
+        });
       }
 
-      applyThemeUI(document.documentElement.getAttribute('data-theme') || 'dark');
-
-      themeToggle.addEventListener('click', function () {
-        var current = document.documentElement.getAttribute('data-theme') || 'dark';
-        var next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-        applyThemeUI(next);
-      });
+      applyThemeUI(document.documentElement.getAttribute('data-theme') || 'ocean-depth');
     });
   </script>
 </body>
