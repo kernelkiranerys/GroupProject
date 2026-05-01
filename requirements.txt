@@ -5,3 +5,5 @@ smbus2
 pa1010d
 django-cors-headers
 Pillow
+crispy-forms
+crispy-bootstrap5
