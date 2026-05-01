@@ -7,7 +7,7 @@ import os
 from urllib import error, parse, request as urllib_request
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from .models import Location, WeatherReading, Profile
 from django.utils import timezone
@@ -68,7 +68,7 @@ _UK_SENSOR_CACHE = {
 
 UK_MAP_CENTER = {'latitude': 54.5, 'longitude': -2.6}
 LEEDS_OUTDOOR_COORDS = {'latitude': 53.8008, 'longitude': -1.5491}
-DEFAULT_OUTDOOR_COORDS = {'latitude': 51.5085, 'longitude': -0.1257}
+DEFAULT_OUTDOOR_COORDS = {'latitude': 53.8275, 'longitude': -1.59147}
 
 IQAIR_BACKFILL_POINTS = [
     {'name': 'Leeds', 'latitude': 53.8008, 'longitude': -1.5491},
@@ -101,6 +101,26 @@ def _aq_zone_from_pm25(pm25_value):
     if pm25_value <= 35.4:
         return {'zone': 'moderate', 'label': 'Moderate', 'color': '#f39c12'}
     return {'zone': 'poor', 'label': 'Poor', 'color': '#e74c3c'}
+
+
+def _safe_round_float(val, ndigits=1):
+    """Round a value to ndigits if convertible to float, otherwise return None."""
+    if val is None:
+        return None
+    try:
+        return round(float(val), ndigits)
+    except (TypeError, ValueError):
+        return None
+
+
+def _safe_round_int(val):
+    """Convert a value to an int safely (rounding float inputs), or return None."""
+    if val is None:
+        return None
+    try:
+        return int(round(float(val)))
+    except (TypeError, ValueError):
+        return None
 
 
 def _get_openaq_api_key():
@@ -702,11 +722,11 @@ def _fetch_open_meteo_air_quality(latitude, longitude):
         raise ValueError('Missing live pm2_5 value')
 
     return {
-        'pm25': round(float(pm25), 1),
-        'pm10': round(float(current.get('pm10')), 1) if current.get('pm10') is not None else None,
-        'no2': round(float(current.get('nitrogen_dioxide')), 1) if current.get('nitrogen_dioxide') is not None else None,
-        'ozone': round(float(current.get('ozone')), 1) if current.get('ozone') is not None else None,
-        'european_aqi': int(round(float(current.get('european_aqi')))) if current.get('european_aqi') is not None else None,
+        'pm25': _safe_round_float(pm25),
+        'pm10': _safe_round_float(current.get('pm10')),
+        'no2': _safe_round_float(current.get('nitrogen_dioxide')),
+        'ozone': _safe_round_float(current.get('ozone')),
+        'european_aqi': _safe_round_int(current.get('european_aqi')),
     }
 
 
@@ -877,6 +897,7 @@ def _build_live_leeds_grid_payload():
     _LEEDS_GRID_CACHE['expires_at'] = now_epoch + LEEDS_CACHE_TTL_SECONDS
     return payload
 
+"""
 @login_required
 def account(request):
     try:
@@ -884,32 +905,39 @@ def account(request):
     except Profile.DoesNotExist:
         profile = Profile.objects.create(user=request.user)
 
+    # default form instances so they're always defined for the template
+    u_form = UserUpdateForm(instance=request.user)
+    p_form = ProfileUpdateForm(instance=profile)
+    pass_form = PasswordChangeForm()
+
     if request.method == 'POST':
         if 'update-profile-submit' in request.POST:
             u_form = UserUpdateForm(request.POST, instance=request.user)
             p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+            # ✓ request.FILES is passed to the form, which handles ImageField correctly
             if u_form.is_valid() and p_form.is_valid():
                 u_form.save()
                 p_form.save()
                 messages.success(request, 'Your account has been updated!')
                 return redirect('Hyper_Local_Weather:account')
         elif 'change-password-submit' in request.POST:
-            pass_form = PasswordChangeForm(request.POST, user=request.user)
+            pass_form = PasswordChangeForm(request.POST)
+            # keep u_form/p_form as the defaults above so template has them
             if pass_form.is_valid():
-                user = pass_form.save()
-                update_session_auth_hash(request, user)
-                messages.success(request, 'Your password was successfully updated!')
-                return redirect('Hyper_Local_Weather:account')
+                current = pass_form.cleaned_data.get('current_password')
+                new_pw = pass_form.cleaned_data.get('new_password')
+                # verify current password against the user
+                if not request.user.check_password(current):
+                    messages.error(request, 'Current password is incorrect.')
+                else:
+                    request.user.set_password(new_pw)
+                    request.user.save()
+                    update_session_auth_hash(request, request.user)  # Important!
+                    messages.success(request, 'Your password was successfully updated!')
+                    return redirect('Hyper_Local_Weather:account')
             else:
                 messages.error(request, 'Please correct the error below.')
-        else:
-            u_form = UserUpdateForm(instance=request.user)
-            p_form = ProfileUpdateForm(instance=profile)
-            pass_form = PasswordChangeForm(user=request.user)
-    else:
-        u_form = UserUpdateForm(instance=request.user)
-        p_form = ProfileUpdateForm(instance=profile)
-        pass_form = PasswordChangeForm(user=request.user)
+    # GET branch uses the default instances above
 
     context = {
         'u_form': u_form,
@@ -918,7 +946,7 @@ def account(request):
     }
 
     return render(request, 'Hyper_Local_Weather/account.html', context)
-
+"""
 
 @login_required
 def update_avatar(request):
@@ -1027,7 +1055,10 @@ def index(request, date=None):
         })
 
     if date:
-        current_date = datetime.strptime(date, '%Y-%m-%d').date()
+        try:
+            current_date = datetime.strptime(date, '%Y-%m-%d').date()
+        except ValueError:
+            raise Http404('Invalid date format')
     else:
         current_date = timezone.now().date()
 
@@ -1079,7 +1110,7 @@ def index(request, date=None):
                 api_aqi = live_outdoor_air_quality.get('european_aqi')
             elif live_outdoor_air_quality.get('pm25') is not None:
                 # Keep AQI scale readable for current UI thresholds.
-                api_aqi = round(float(live_outdoor_air_quality.get('pm25')) * 2.0)
+                api_aqi = _safe_round_float(float(live_outdoor_air_quality.get('pm25')) * 2.0) # pyright: ignore[reportArgumentType]
 
         air_quality_value = (
             api_aqi
@@ -1137,6 +1168,30 @@ def index(request, date=None):
     is_current_week = next_week > timezone.now().date()
 
 
+    # Map center: prefer a session-stored user location (updated via /update_location/),
+    # otherwise fall back to DEFAULT_OUTDOOR_COORDS.
+    session_loc = request.session.get('location') if isinstance(request.session.get('location'), dict) else None
+    map_center_lat = None
+    map_center_lon = None
+    user_has_location = False
+    if session_loc:
+        try:
+            lat_val = session_loc.get('lat')
+            lon_val = session_loc.get('lon')
+            if lat_val is not None and lon_val is not None:
+                map_center_lat = float(lat_val)
+                map_center_lon = float(lon_val)
+                user_has_location = True
+        except (TypeError, ValueError):
+            user_has_location = False
+
+    if not user_has_location:
+        map_center_lat = float(DEFAULT_OUTDOOR_COORDS['latitude'])
+        map_center_lon = float(DEFAULT_OUTDOOR_COORDS['longitude'])
+
+    # Choose a closer zoom when we have a user location, otherwise show the UK.
+    map_zoom = 14 if user_has_location else 6
+
     context = {
         'locations': locations_with_readings,
         'view_mode': view_mode,
@@ -1156,6 +1211,10 @@ def index(request, date=None):
         'previous_week': previous_week.strftime('%Y-%m-%d'),
         'next_week': next_week.strftime('%Y-%m-%d'),
         'is_current_week': is_current_week,
+        'map_center_lat': map_center_lat,
+        'map_center_lon': map_center_lon,
+        'map_zoom': map_zoom,
+        'user_has_location': user_has_location,
     }
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -1169,20 +1228,41 @@ def index(request, date=None):
 
     return render(request, 'Hyper_Local_Weather/index.html', context)
 
+
+def favicon(request):
+    return HttpResponse(status=204)
+
 # AJAX endpoint to update location
 @csrf_exempt
 def update_location(request):
     if request.method == 'POST':
+        # Accept JSON or form-encoded POSTs for robustness.
+        data = None
+        if request.content_type and 'application/json' in request.content_type:
+            try:
+                data = json.loads(request.body or b'{}')
+            except json.JSONDecodeError:
+                return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+        else:
+            # fallback to Django's POST dict (works for form-encoded requests)
+            data = request.POST.dict() if request.POST is not None else {}
+
+        lat = data.get('lat')
+        lon = data.get('lon')
         try:
-            data = json.loads(request.body)
-            location = {
-                'lat': data.get('lat'),
-                'lon': data.get('lon')
-            }
-            request.session['location'] = location
-            return JsonResponse({'status': 'success', 'location': location})
-        except json.JSONDecodeError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+            if lat is None or lon is None:
+                raise ValueError('Missing lat or lon')
+            # coerce to float to validate
+            lat_f = float(lat)
+            lon_f = float(lon)
+        except (TypeError, ValueError):
+            return JsonResponse({'status': 'error', 'message': 'Invalid or missing lat/lon'}, status=400)
+
+        location = {'lat': lat_f, 'lon': lon_f}
+        request.session['location'] = location
+        request.session.modified = True
+        return JsonResponse({'status': 'success', 'location': location})
+
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 
@@ -1348,7 +1428,7 @@ def settings_page(request):
             if selected_avatar:
                 try:
                     profile, created = Profile.objects.get_or_create(user=request.user)
-                    profile.image = os.path.join('User_Icons', selected_avatar)
+                    profile.image = os.path.join('User_Icons', selected_avatar) # type: ignore
                     profile.save()
                     avatar_success = 'Profile picture updated.'
                 except Exception as e:
@@ -1368,7 +1448,7 @@ def settings_page(request):
                 if request.user.check_password(password_form.cleaned_data['current_password']):
                     request.user.set_password(password_form.cleaned_data['new_password'])
                     request.user.save()
-                    update_session_auth_hash(request, request.user)
+                    update_session_auth_hash(request, request.user)  # Important!
                     password_success = 'Password changed successfully.'
                     password_form = PasswordChangeForm()
                 else:
@@ -1447,28 +1527,39 @@ def account(request):
     except Profile.DoesNotExist:
         profile = Profile.objects.create(user=request.user)
 
+    # default form instances so they're always defined for the template
+    u_form = UserUpdateForm(instance=request.user)
+    p_form = ProfileUpdateForm(instance=profile)
+    pass_form = PasswordChangeForm()
+
     if request.method == 'POST':
-        if 'update_profile' in request.POST:
+        if 'update-profile-submit' in request.POST:
             u_form = UserUpdateForm(request.POST, instance=request.user)
             p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+            # ✓ request.FILES is passed to the form, which handles ImageField correctly
             if u_form.is_valid() and p_form.is_valid():
                 u_form.save()
                 p_form.save()
+                messages.success(request, 'Your account has been updated!')
                 return redirect('Hyper_Local_Weather:account')
-        elif 'change_password' in request.POST:
+        elif 'change-password-submit' in request.POST:
             pass_form = PasswordChangeForm(request.POST)
+            # keep u_form/p_form as the defaults above so template has them
             if pass_form.is_valid():
-                user = request.user
-                current_password = pass_form.cleaned_data['current_password']
-                if user.check_password(current_password):
-                    user.set_password(pass_form.cleaned_data['new_password'])
-                    user.save()
-                    update_session_auth_hash(request, user)  # Important!
+                current = pass_form.cleaned_data.get('current_password')
+                new_pw = pass_form.cleaned_data.get('new_password')
+                # verify current password against the user
+                if not request.user.check_password(current):
+                    messages.error(request, 'Current password is incorrect.')
+                else:
+                    request.user.set_password(new_pw)
+                    request.user.save()
+                    update_session_auth_hash(request, request.user)  # Important!
+                    messages.success(request, 'Your password was successfully updated!')
                     return redirect('Hyper_Local_Weather:account')
-    else:
-        u_form = UserUpdateForm(instance=request.user)
-        p_form = ProfileUpdateForm(instance=profile)
-        pass_form = PasswordChangeForm()
+            else:
+                messages.error(request, 'Please correct the error below.')
+    # GET branch uses the default instances above
 
     context = {
         'u_form': u_form,

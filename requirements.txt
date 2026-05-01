@@ -4,6 +4,6 @@ bme680
 smbus2
 pa1010d
 django-cors-headers
-Pillow
+sourPillow
 crispy-forms
 crispy-bootstrap5

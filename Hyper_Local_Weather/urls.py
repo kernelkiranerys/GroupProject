@@ -7,6 +7,8 @@ app_name = 'Hyper_Local_Weather'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('favicon.ico', views.favicon, name='favicon'),
+    path('favicon.ico/', views.favicon, name='favicon_slash'),
     path('api/uk-air-quality/', views.uk_air_quality_data, name='uk_air_quality_data'),
     path('api/leeds-air-quality-grid/', views.leeds_air_quality_grid, name='leeds_air_quality_grid'),
     path('api/uk-sensor-hexes/', views.uk_sensor_hex_data, name='uk_sensor_hex_data'),
