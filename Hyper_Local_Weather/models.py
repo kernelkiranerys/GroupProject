@@ -5,6 +5,8 @@ from django.core.validators import MinValueValidator
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='profile_pics/', default='Defaults/Default-profile.jpg')
+    show_tips_notifications = models.BooleanField(default=True)
+    show_success_notifications = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"

@@ -18,6 +18,7 @@
       <button class="settings-nav__btn" data-tab="profile-picture">Profile Picture</button>
       <button class="settings-nav__btn" data-tab="profile">Profile</button>
       <button class="settings-nav__btn" data-tab="password">Change Password</button>
+      <button class="settings-nav__btn" data-tab="notifications">Notifications</button>
       <button class="settings-nav__btn" data-tab="appearance">Appearance</button>
       <button class="settings-nav__btn" data-tab="account-info">Account Info</button>
     </nav>
@@ -174,6 +175,51 @@
               </div>
             </div>
             <button type="submit" name="change_password" class="auth-submit-btn settings-btn">Change password</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── NOTIFICATIONS SECTION ── -->
+      <div class="tab-pane" id="notifications">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon settings-section__icon--bell" aria-hidden="true">
+                <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </span>
+            <div>
+              <h2 class="settings-section__title">Notifications</h2>
+              <p class="muted settings-section__sub">Control which pop-up notifications you receive.</p>
+            </div>
+          </div>
+          <div class="settings-divider"></div>
+          <form method="post" class="settings-form" action="{% url 'Hyper_Local_Weather:update_notification_settings' %}">
+            {% csrf_token %}
+            <div class="notification-preference-row">
+              <div>
+                <label for="show_tips_notifications" class="notification-preference-row__label">Show helpful tips & info</label>
+                <p class="muted notification-preference-row__hint">Receive occasional tips on how to use the site.</p>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" id="show_tips_notifications" name="show_tips_notifications" {% if user.profile.show_tips_notifications %}checked{% endif %}>
+                <label for="show_tips_notifications" class="toggle-switch__label"></label>
+              </div>
+            </div>
+            <div class="notification-preference-row">
+              <div>
+                <label for="show_success_notifications" class="notification-preference-row__label">Show positive weather alerts</label>
+                <p class="muted notification-preference-row__hint">Get notified when the weather is particularly good.</p>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" id="show_success_notifications" name="show_success_notifications" {% if user.profile.show_success_notifications %}checked{% endif %}>
+                <label for="show_success_notifications" class="toggle-switch__label"></label>
+              </div>
+            </div>
+            <div class="settings-form__footer">
+                <button type="submit" class="auth-submit-btn settings-btn">Save Preferences</button>
+            </div>
           </form>
         </div>
       </div>

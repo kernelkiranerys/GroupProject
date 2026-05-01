@@ -2316,8 +2316,8 @@ body {
 }
 [data-theme="light"] .bar span {
   background: linear-gradient(180deg, rgba(5,150,105,0.90), rgba(2,132,199,0.65));
-  box-shadow: 0 12px 25px rgba(5,150,105,0.20);
   border-color: rgba(255,255,255,0.40);
+  box-shadow: 0 14px 30px rgba(5,150,105,0.16);
 }
 [data-theme="light"] .bar label { color: rgba(12,35,64,0.68); }
 [data-theme="light"] .bar label { color: rgba(8,26,51,0.80); }
@@ -2596,18 +2596,18 @@ body {
   color: rgba(6,20,39,0.95);
 }
 [data-theme="light"] .aqDayBtn--today::after {
-  background: rgba(2,132,199,0.92);
-  box-shadow: 0 0 0 2px rgba(2,132,199,0.22);
+  background: rgba(47, 111, 168, 0.90);
+  box-shadow: 0 0 0 2px rgba(47, 111, 168, 0.20);
 }
 [data-theme="light"] .aqDot--active {
-  filter: drop-shadow(0 0 8px rgba(2,132,199,0.35));
+  filter: drop-shadow(0 0 8px rgba(34,211,238,0.35));
 }
 [data-theme="light"] .aqGrid line { stroke: rgba(8,26,51,0.18); }
 [data-theme="light"] .aqArea { fill: rgba(5,150,105,0.12); }
 [data-theme="light"] .aqLine { stroke: rgba(5,150,105,0.95); }
 [data-theme="light"] .aqDots circle {
   fill: rgba(255,255,255,0.95);
-  stroke: rgba(5,150,105,0.95);
+  stroke: rgba(34,211,238,0.95);
 }
 [data-theme="light"] .aqTitle { fill: rgba(8,26,51,0.90); }
 [data-theme="light"] .aqAxisLabels text,
@@ -3547,4 +3547,56 @@ body {
   background: rgba(220,38,38,0.08);
   border-color: rgba(220,38,38,0.22);
   color: rgba(220,38,38,0.90);
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch__label {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg2);
+  transition: .3s;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+}
+
+.toggle-switch__label:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--bg2);
+  border: 1px solid var(--border);
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggle-switch input:checked + .toggle-switch__label {
+  background-color: var(--accent);
+  border-color: var(--border);
+}
+
+.toggle-switch input:checked + .toggle-switch__label:before {
+  transform: translateX(20px);
+  background-color: var(--accent);
+  border-color: var(--accent);
 }

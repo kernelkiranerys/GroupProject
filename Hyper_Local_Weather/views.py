@@ -964,6 +964,16 @@ def update_avatar(request):
             messages.error(request, 'Please correct the error below.')
     return redirect('Hyper_Local_Weather:account')
 
+@login_required
+def update_notification_settings(request):
+    if request.method == 'POST':
+        profile = request.user.profile
+        profile.show_tips_notifications = 'show_tips_notifications' in request.POST
+        profile.show_success_notifications = 'show_success_notifications' in request.POST
+        profile.save()
+        messages.success(request, 'Notification settings updated.')
+    return redirect('Hyper_Local_Weather:settings')
+
 def historical(request):
     readings = WeatherReading.objects.all().order_by('-timestamp')
     context = {

@@ -24,7 +24,7 @@ urlpatterns = [
     path('location/<int:pk>/', views.location_detail, name='location_detail'),
     path('account/', views.account, name='account'),
     path('update-avatar/', views.update_avatar, name='update_avatar'),
-    
+    path('update-notification-settings/', views.update_notification_settings, name='update_notification_settings'),
 ]
 
 if settings.DEBUG:
