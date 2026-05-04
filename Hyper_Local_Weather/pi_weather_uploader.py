@@ -45,6 +45,9 @@ class Config:
     backup_path: Path
     device_id: str
     location_id: Optional[str]
+    location_name: Optional[str]
+    static_latitude: Optional[float]
+    static_longitude: Optional[float]
     timeout_seconds: int
     retry_attempts: int
     require_gps: bool
@@ -110,6 +113,23 @@ def parse_args() -> Config:
         help="Optional server-side location identifier.",
     )
     parser.add_argument(
+        "--location-name",
+        default=os.getenv("WEATHER_LOCATION_NAME", "Indoor Sensor"),
+        help="Location name used when posting by coordinates.",
+    )
+    parser.add_argument(
+        "--latitude",
+        type=float,
+        default=_coerce_float(os.getenv("WEATHER_LATITUDE")),
+        help="Optional fixed latitude used when GPS is unavailable.",
+    )
+    parser.add_argument(
+        "--longitude",
+        type=float,
+        default=_coerce_float(os.getenv("WEATHER_LONGITUDE")),
+        help="Optional fixed longitude used when GPS is unavailable.",
+    )
+    parser.add_argument(
         "--timeout-seconds",
         type=int,
         default=int(os.getenv("WEATHER_TIMEOUT_SECONDS", str(DEFAULT_TIMEOUT_SECONDS))),
@@ -144,6 +164,9 @@ def parse_args() -> Config:
         backup_path=Path(args.backup_path).expanduser(),
         device_id=args.device_id,
         location_id=args.location_id,
+        location_name=(args.location_name or "").strip() or None,
+        static_latitude=args.latitude,
+        static_longitude=args.longitude,
         timeout_seconds=args.timeout_seconds,
         retry_attempts=args.retry_attempts,
         require_gps=args.require_gps,
@@ -209,6 +232,12 @@ def collect_reading(sensor: bme680.BME680, gps: Optional[GpsReader], config: Con
         except Exception as exc:  # pragma: no cover - hardware specific
             logging.warning("GPS read failed, continuing without coordinates: %s", exc)
 
+    # Fall back to static coordinates for indoor uploads when GPS is unavailable.
+    if gps_data["latitude"] is None and config.static_latitude is not None:
+        gps_data["latitude"] = config.static_latitude
+    if gps_data["longitude"] is None and config.static_longitude is not None:
+        gps_data["longitude"] = config.static_longitude
+
     timestamp = datetime.now(timezone.utc).isoformat()
     temperature_c = round(float(sensor.data.temperature), 2)
     pressure_hpa = round(float(sensor.data.pressure), 2)
@@ -219,6 +248,7 @@ def collect_reading(sensor: bme680.BME680, gps: Optional[GpsReader], config: Con
         "timestamp": timestamp,
         "device_id": config.device_id,
         "location_id": config.location_id,
+        "location_name": config.location_name,
         "temperature_c": temperature_c,
         "temperature": temperature_c,
         "pressure_hpa": pressure_hpa,

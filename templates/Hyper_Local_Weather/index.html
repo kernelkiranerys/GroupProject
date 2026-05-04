@@ -674,6 +674,33 @@ document.addEventListener('DOMContentLoaded', function() {
       mapContainer.classList.add('outdoor-top__map--error');
       mapContainer.setAttribute('aria-label', 'Unable to load live air quality data');
     });
+
+  // GPS sensor marker
+  fetch('{% url "Hyper_Local_Weather:gps_location" %}')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (data.latitude === null || data.longitude === null) {
+        return;
+      }
+
+      var gpsIcon = L.divIcon({
+        className: '',
+        html: '<div style="width:14px;height:14px;border-radius:50%;background:#00bfff;border:3px solid #fff;box-shadow:0 0 0 2px #00bfff,0 0 8px 4px rgba(0,191,255,0.5);"></div>',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+        popupAnchor: [0, -10],
+      });
+
+      var gpsMarker = L.marker([data.latitude, data.longitude], { icon: gpsIcon }).addTo(map);
+      gpsMarker.bindPopup(
+        '<strong>📡 GPS Sensor</strong><br>' +
+        (data.location_name ? data.location_name + '<br>' : '') +
+        'Lat: ' + data.latitude.toFixed(5) + '<br>' +
+        'Lon: ' + data.longitude.toFixed(5) +
+        (data.timestamp ? '<br><span style="font-size:0.85em;opacity:0.7;">' + new Date(data.timestamp).toLocaleString() + '</span>' : '')
+      );
+    })
+    .catch(function() {});
 });
 </script>
 {% endblock %}

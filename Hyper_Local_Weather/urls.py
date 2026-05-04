@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/leeds-air-quality-grid/', views.leeds_air_quality_grid, name='leeds_air_quality_grid'),
     path('api/uk-sensor-hexes/', views.uk_sensor_hex_data, name='uk_sensor_hex_data'),
     path('api/pi-readings/', views.ingest_pi_reading, name='ingest_pi_reading'),
+    path('api/gps-location/', views.gps_location, name='gps_location'),
     path('historical/', views.historical, name='historical'),
     path('settings/', views.settings_page, name='settings'),
     path('authorisations/', views.authorisations, name='authorisations'),

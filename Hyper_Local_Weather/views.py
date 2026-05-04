@@ -757,6 +757,49 @@ def _fetch_open_meteo_outdoor_weather(latitude, longitude):
     }
 
 
+def _fetch_open_meteo_weekly_temperature_averages(latitude, longitude, reference_date):
+    """Build a 7-day temperature series (oldest to newest) from Open-Meteo hourly data."""
+    params = parse.urlencode({
+        'latitude': latitude,
+        'longitude': longitude,
+        'hourly': 'temperature_2m',
+        'past_days': 6,
+        'forecast_days': 1,
+        'timezone': 'UTC',
+    })
+    url = f'https://api.open-meteo.com/v1/forecast?{params}'
+    with urllib_request.urlopen(url, timeout=8) as response:
+        payload = json.loads(response.read().decode('utf-8'))
+
+    hourly = payload.get('hourly') or {}
+    times = hourly.get('time') or []
+    temperatures = hourly.get('temperature_2m') or []
+    if not isinstance(times, list) or not isinstance(temperatures, list):
+        raise ValueError('Missing hourly weather series from Open-Meteo')
+
+    per_day_values = {}
+    for ts, temp in zip(times, temperatures):
+        if not isinstance(ts, str) or len(ts) < 10:
+            continue
+        if not isinstance(temp, (int, float)):
+            continue
+        day_key = ts[:10]
+        per_day_values.setdefault(day_key, []).append(float(temp))
+
+    weekly = []
+    for i in range(6, -1, -1):
+        day = reference_date - timedelta(days=i)
+        day_key = day.strftime('%Y-%m-%d')
+        values = per_day_values.get(day_key, [])
+        avg_temp = (sum(values) / len(values)) if values else None
+        weekly.append({
+            'day_name': day.strftime('%a')[0],
+            'avg_temp': round(avg_temp) if avg_temp is not None else 'N/A',
+        })
+
+    return weekly
+
+
 def _aq_zone_from_measurement(pm25_value, european_aqi=None):
     if european_aqi is not None:
         if european_aqi <= 40:
@@ -1041,6 +1084,14 @@ def index(request, date=None):
             location=indoor_location,
             timestamp__date=current_date
         ).order_by('-timestamp').first()
+    elif outdoor_location:
+        latest_indoor_reading = WeatherReading.objects.filter(
+            timestamp__date=current_date
+        ).exclude(location=outdoor_location).order_by('-timestamp').first()
+    else:
+        latest_indoor_reading = WeatherReading.objects.filter(
+            timestamp__date=current_date
+        ).order_by('-timestamp').first()
 
     latest_outdoor_reading = None
     if outdoor_location:
@@ -1111,13 +1162,15 @@ def index(request, date=None):
         is_mock_humidity = active_reading is None
         is_mock_pressure = active_reading is None
 
-    def _build_weekly_temps(target_location=None):
+    def _build_weekly_temps(target_location=None, excluded_location=None):
         weekly_temps = []
         for i in range(6, -1, -1):
             day = current_date - timedelta(days=i)
             readings = WeatherReading.objects.filter(timestamp__date=day)
             if target_location is not None:
                 readings = readings.filter(location=target_location)
+            elif excluded_location is not None:
+                readings = readings.exclude(location=excluded_location)
 
             avg_temp_data = readings.aggregate(avg_temp=Avg('temperature_c'))
             avg_temp = avg_temp_data['avg_temp']
@@ -1128,8 +1181,17 @@ def index(request, date=None):
             })
         return weekly_temps
 
-    past_week_temps = _build_weekly_temps(indoor_location)
+    past_week_temps = _build_weekly_temps(indoor_location, excluded_location=outdoor_location)
     past_week_outdoor_temps = _build_weekly_temps(outdoor_location)
+    if all(day['avg_temp'] == 'N/A' for day in past_week_outdoor_temps):
+        try:
+            past_week_outdoor_temps = _fetch_open_meteo_weekly_temperature_averages(
+                outdoor_latitude,
+                outdoor_longitude,
+                current_date,
+            )
+        except (error.URLError, error.HTTPError, TimeoutError, ValueError, json.JSONDecodeError):
+            pass
 
     previous_week = current_date - timedelta(weeks=1)
     next_week = current_date + timedelta(weeks=1)
@@ -1241,6 +1303,12 @@ def ingest_pi_reading(request):
     gas_resistance = _coerce_decimal(data.get('gas_resistance_ohms') or data.get('gas') or data.get('air_quality'))
     latitude = _coerce_decimal(data.get('latitude'))
     longitude = _coerce_decimal(data.get('longitude'))
+
+    if latitude is not None and not (-90 <= float(latitude) <= 90):
+        return JsonResponse({'status': 'error', 'message': 'latitude must be between -90 and 90'}, status=400)
+    if longitude is not None and not (-180 <= float(longitude) <= 180):
+        return JsonResponse({'status': 'error', 'message': 'longitude must be between -180 and 180'}, status=400)
+
     device_id = (data.get('device_id') or 'raspberry-pi').strip() or 'raspberry-pi'
     location_name = (data.get('location_name') or device_id).strip() or device_id
     location_id = data.get('location_id')
@@ -1251,6 +1319,20 @@ def ingest_pi_reading(request):
             location = Location.objects.get(pk=location_id)
         except (Location.DoesNotExist, ValueError, TypeError):
             return JsonResponse({'status': 'error', 'message': 'Invalid location_id'}, status=400)
+
+        # Keep map position current when a fixed location_id posts live GPS coordinates.
+        if latitude is not None and longitude is not None:
+            updates = {}
+            if location.latitude != latitude:
+                updates['latitude'] = latitude
+            if location.longitude != longitude:
+                updates['longitude'] = longitude
+            if location_name and location.name != location_name:
+                updates['name'] = location_name
+            if updates:
+                for field, value in updates.items():
+                    setattr(location, field, value)
+                location.save(update_fields=list(updates.keys()))
     elif latitude is not None and longitude is not None:
         location, _ = Location.objects.update_or_create(
             name=location_name,
@@ -1280,6 +1362,19 @@ def ingest_pi_reading(request):
         },
         status=201,
     )
+
+
+def gps_location(request):
+    """Return the latitude/longitude from the most recent WeatherReading posted by the Pi."""
+    latest = WeatherReading.objects.select_related('location').order_by('-timestamp').first()
+    if latest is None:
+        return JsonResponse({'latitude': None, 'longitude': None})
+    return JsonResponse({
+        'latitude': float(latest.location.latitude),
+        'longitude': float(latest.location.longitude),
+        'location_name': latest.location.name,
+        'timestamp': latest.timestamp.isoformat(),
+    })
 
 
 def uk_air_quality_data(request):
