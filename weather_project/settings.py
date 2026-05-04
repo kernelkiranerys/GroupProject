@@ -140,6 +140,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 # Air quality provider API key (paste as environment variable value).
 OPENAQ_API_KEY = os.getenv('OPENAQ_API_KEY', '')
 IQAIR_API_KEY = os.getenv('IQAIR_API_KEY', '')
@@ -147,6 +150,3 @@ ENABLE_DEFRA_PROVIDER = os.getenv('ENABLE_DEFRA_PROVIDER', 'true')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"

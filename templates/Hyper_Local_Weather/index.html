@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const map = L.map('uk-air-quality-map', {
     zoomControl: true,
-  }).setView([54.5, -2.6], 6);
+  });
 
   const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
@@ -624,8 +624,29 @@ document.addEventListener('DOMContentLoaded', function() {
   var activeTileLayer = lightTiles;
   activeTileLayer.addTo(map);
 
+  // Map centering: prefer a user-provided session location (from /update_location/),
+  // otherwise fall back to the default and show the whole UK.
+  const userLat = parseFloat('{{ map_center_lat }}');
+  const userLon = parseFloat('{{ map_center_lon }}');
+  const mapZoom = parseInt('{{ map_zoom }}', 10) || 13;
+  const userHasLocation = {{ user_has_location|yesno:"true,false" }};
+
   const ukBounds = [[49.8, -8.8], [60.9, 2.2]];
-  map.fitBounds(ukBounds, { padding: [12, 12] });
+
+  if (userHasLocation) {
+    map.setView([userLat, userLon], mapZoom);
+    // Draw a 100-yard ring (100 yards = 91.44 meters)
+    const userRing = L.circle([userLat, userLon], {
+      color: '#1E90FF',
+      fillColor: '#1E90FF',
+      fillOpacity: 0.12,
+      weight: 1,
+      radius: 91.44
+    }).addTo(map);
+    userRing.bindPopup('Your location (approx.) — 100 yards radius');
+  } else {
+    map.fitBounds(ukBounds, { padding: [12, 12] });
+  }
 
   fetch('{% url "Hyper_Local_Weather:uk_sensor_hex_data" %}')
     .then(function(response) {
@@ -674,7 +695,6 @@ document.addEventListener('DOMContentLoaded', function() {
       mapContainer.classList.add('outdoor-top__map--error');
       mapContainer.setAttribute('aria-label', 'Unable to load live air quality data');
     });
-
   // GPS sensor marker
   fetch('{% url "Hyper_Local_Weather:gps_location" %}')
     .then(function(response) { return response.json(); })
@@ -693,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       var gpsMarker = L.marker([data.latitude, data.longitude], { icon: gpsIcon }).addTo(map);
       gpsMarker.bindPopup(
-        '<strong>📡 GPS Sensor</strong><br>' +
+        '<strong>GPS Sensor</strong><br>' +
         (data.location_name ? data.location_name + '<br>' : '') +
         'Lat: ' + data.latitude.toFixed(5) + '<br>' +
         'Lon: ' + data.longitude.toFixed(5) +
