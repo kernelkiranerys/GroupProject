@@ -56,3 +56,14 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
+
+
+class OrganizationRoleByCodeForm(forms.Form):
+    user_code = forms.CharField(max_length=6, min_length=6)
+    role = forms.ChoiceField(choices=[('member', 'Member'), ('staff', 'Staff')])
+
+    def clean_user_code(self):
+        code = (self.cleaned_data.get('user_code') or '').strip()
+        if not code.isdigit() or len(code) != 6:
+            raise forms.ValidationError('User code must be a 6-digit number.')
+        return code

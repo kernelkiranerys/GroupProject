@@ -20,7 +20,8 @@ from .forms import (
     ChangeProfileForm,
     ProfileUpdateForm,
     UserUpdateForm,
-    PasswordChangeForm
+    PasswordChangeForm,
+    OrganizationRoleByCodeForm,
 )
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import update_session_auth_hash
@@ -998,6 +999,7 @@ def update_avatar(request):
             profile = request.user.profile
         except Profile.DoesNotExist:
             profile = Profile.objects.create(user=request.user)
+        profile.ensure_user_code()
 
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         if p_form.is_valid():
@@ -1010,9 +1012,13 @@ def update_avatar(request):
 @login_required
 def update_notification_settings(request):
     if request.method == 'POST':
-        profile = request.user.profile
-        profile.show_tips_notifications = 'show_tips_notifications' in request.POST
-        profile.show_success_notifications = 'show_success_notifications' in request.POST
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        profile.ensure_user_code()
+        profile.notify_air_quality_alerts = 'notify_air_quality_alerts' in request.POST
+        profile.notify_temperature_alerts = 'notify_temperature_alerts' in request.POST
+        profile.notify_humidity_alerts = 'notify_humidity_alerts' in request.POST
+        profile.notify_pressure_alerts = 'notify_pressure_alerts' in request.POST
+        profile.notify_positive_weather_alerts = 'notify_positive_weather_alerts' in request.POST
         profile.save()
         messages.success(request, 'Notification settings updated.')
     return redirect('Hyper_Local_Weather:settings')
@@ -1023,6 +1029,11 @@ def historical(request):
         'readings': readings
     }
     return render(request, 'Hyper_Local_Weather/historical.html', context)
+
+
+@login_required
+def notification_testing(request):
+    return render(request, 'Hyper_Local_Weather/notification_testing.html')
 
 def auth_page(request):
     """Unified authentication page for both login and signup"""
@@ -1052,6 +1063,8 @@ def auth_page(request):
             signup_form = SignUpForm(request.POST)
             if signup_form.is_valid():
                 user = signup_form.save()
+                profile, _ = Profile.objects.get_or_create(user=user)
+                profile.ensure_user_code()
                 login(request, user)
                 return redirect('Hyper_Local_Weather:index')
             else:
@@ -1071,6 +1084,8 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
+            profile, _ = Profile.objects.get_or_create(user=user)
+            profile.ensure_user_code()
             login(request, user)
             return redirect('Hyper_Local_Weather:index')
     else:
@@ -1533,6 +1548,7 @@ def settings_page(request):
             if selected_avatar:
                 try:
                     profile, created = Profile.objects.get_or_create(user=request.user)
+                    profile.ensure_user_code()
                     profile.image = os.path.join('User_Icons', selected_avatar) # type: ignore
                     profile.save()
                     avatar_success = 'Profile picture updated.'
@@ -1564,8 +1580,11 @@ def settings_page(request):
 
     profile_avatar_url = ''
     has_profile_avatar = False
+    user_code = ''
     try:
         profile, _ = Profile.objects.get_or_create(user=request.user)
+        profile.ensure_user_code()
+        user_code = profile.user_code or ''
         image_name = (profile.image.name or '').replace('\\', '/')
         if image_name and image_name != 'Defaults/Default-profile.jpg':
             if image_name.startswith('User_Icons/'):
@@ -1588,6 +1607,7 @@ def settings_page(request):
         'avatar_success': avatar_success,
         'has_profile_avatar': has_profile_avatar,
         'profile_avatar_url': profile_avatar_url,
+        'user_code': user_code,
     }
     
     return render(request, 'Hyper_Local_Weather/settings.html', context)
@@ -1596,29 +1616,39 @@ def settings_page(request):
 @user_passes_test(lambda u: u.is_active and u.is_staff)
 def authorisations(request):
     action_success = action_error = None
+    invite_form = OrganizationRoleByCodeForm()
 
     if request.method == 'POST':
-        user_id = request.POST.get('user_id')
-        action = request.POST.get('action')
-        if user_id and action in ('grant', 'revoke'):
-            try:
-                target = User.objects.get(pk=user_id)
-                if action == 'grant':
-                    target.is_staff = True
-                    target.save()
-                    action_success = f"Staff access granted to {target.username}."
-                elif target.pk != request.user.pk:
-                    target.is_staff = False
-                    target.save()
-                    action_success = f"Staff access removed from {target.username}."
+        action_type = request.POST.get('action_type')
+        if action_type == 'assign_role_by_code':
+            invite_form = OrganizationRoleByCodeForm(request.POST)
+            if invite_form.is_valid():
+                user_code = invite_form.cleaned_data['user_code']
+                role = invite_form.cleaned_data['role']
+                profile = Profile.objects.select_related('user').filter(user_code=user_code).first()
+
+                if profile is None:
+                    action_error = 'User code not found.'
+                elif profile.user.is_superuser:
+                    action_error = 'Superuser role cannot be changed from this panel.'
+                elif profile.user == request.user and role == 'member':
+                    action_error = 'You cannot remove your own staff access.'
                 else:
-                    action_error = "You cannot remove your own staff access."
-            except User.DoesNotExist:
-                action_error = "User not found."
+                    profile.user.is_staff = role == 'staff'
+                    profile.user.save(update_fields=['is_staff'])
+                    action_success = f"Role for {profile.user.username} updated to {role.title()}."
+                    invite_form = OrganizationRoleByCodeForm()
+            else:
+                action_error = "Please fix the form errors below."
 
     users = User.objects.all().order_by('username')
+    for u in users:
+        profile, _ = Profile.objects.get_or_create(user=u)
+        profile.ensure_user_code()
+
     return render(request, 'Hyper_Local_Weather/authorisations.html', {
         'users': users,
+        'invite_form': invite_form,
         'action_success': action_success,
         'action_error': action_error,
     })
@@ -1631,6 +1661,7 @@ def account(request):
         profile = request.user.profile
     except Profile.DoesNotExist:
         profile = Profile.objects.create(user=request.user)
+    profile.ensure_user_code()
 
     # default form instances so they're always defined for the template
     u_form = UserUpdateForm(instance=request.user)

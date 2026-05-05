@@ -7,5 +7,3 @@ django-cors-headers
 Pillow
 django-crispy-forms
 crispy-bootstrap5
-crispy-forms
-crispy-bootstrap5

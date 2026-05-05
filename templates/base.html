@@ -91,15 +91,9 @@
                     <div class="dropdown-content" id="main-menu-dropdown">
                         <a href="{% url 'Hyper_Local_Weather:index' %}">Dashboard</a>
                         <a href="{% url 'Hyper_Local_Weather:historical' %}">Historical</a>
-                        <div class="dropdown-submenu">
-                          <a href="#" class="submenu-trigger">Testing</a>
-                          <div class="submenu-content">
-                              <a href="#" id="test-warning-notification">Test Warning</a>
-                              <a href="#" id="test-success-notification">Test Success</a>
-                              <a href="#" id="test-error-notification">Test Error</a>
-                              <a href="#" id="test-info-notification">Test Info</a>
-                          </div>
-                        </div>
+                      {% if user.is_authenticated %}
+                        <a href="{% url 'Hyper_Local_Weather:notification_testing' %}">Notification Testing</a>
+                      {% endif %}
                         {% if user.is_authenticated %}
                             <a href="{% url 'Hyper_Local_Weather:settings' %}">Settings</a>
                             {% if user.is_staff %}
@@ -138,7 +132,7 @@
       const notificationContainer = document.querySelector('.notification-container');
 
       // Function to show a notification
-      function showNotification(options) {
+      window.showNotification = function showNotification(options) {
         const {
           type = 'info',
           title,
@@ -184,46 +178,6 @@
           setTimeout(close, duration);
         }
       }
-
-      // --- Test Menu Listeners ---
-      document.getElementById('test-warning-notification').addEventListener('click', function(e) {
-        e.preventDefault();
-        showNotification({
-          type: 'warning',
-          title: 'Air Quality Warning',
-          body: 'The air quality in your area is currently poor. It is recommended to limit outdoor activities.'
-        });
-      });
-
-      document.getElementById('test-success-notification').addEventListener('click', function(e) {
-        e.preventDefault();
-        showNotification({
-          type: 'success',
-          title: 'Great Weather Ahead!',
-          body: 'The weather is expected to be clear and pleasant for the next few days. Enjoy the sunshine!',
-          duration: 7000
-        });
-      });
-
-      document.getElementById('test-error-notification').addEventListener('click', function(e) {
-        e.preventDefault();
-        showNotification({
-          type: 'error',
-          title: 'Device Disconnected',
-          body: "We've lost connection to your weather sensor. Please check its power and network connection.",
-          duration: 0 // Stays until closed
-        });
-      });
-
-      document.getElementById('test-info-notification').addEventListener('click', function(e) {
-        e.preventDefault();
-        showNotification({
-          type: 'info',
-          title: 'Did you know?',
-          body: 'You can view historical weather data from the "Historical" page in the menu.',
-          duration: 7000
-        });
-      });
 
     });
   </script>

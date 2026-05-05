@@ -723,4 +723,114 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(function() {});
 });
 </script>
+
+<script>
+// Auto notifications based on current environmental values.
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof window.showNotification !== 'function') return;
+
+  {% if user.is_authenticated %}var SHOW_AIR_QUALITY = {{ user.profile.notify_air_quality_alerts|yesno:"true,false" }};{% else %}var SHOW_AIR_QUALITY = true;{% endif %}
+  {% if user.is_authenticated %}var SHOW_TEMPERATURE = {{ user.profile.notify_temperature_alerts|yesno:"true,false" }};{% else %}var SHOW_TEMPERATURE = true;{% endif %}
+  {% if user.is_authenticated %}var SHOW_HUMIDITY = {{ user.profile.notify_humidity_alerts|yesno:"true,false" }};{% else %}var SHOW_HUMIDITY = true;{% endif %}
+  {% if user.is_authenticated %}var SHOW_PRESSURE = {{ user.profile.notify_pressure_alerts|yesno:"true,false" }};{% else %}var SHOW_PRESSURE = true;{% endif %}
+  {% if user.is_authenticated %}var SHOW_POSITIVE = {{ user.profile.notify_positive_weather_alerts|yesno:"true,false" }};{% else %}var SHOW_POSITIVE = true;{% endif %}
+
+  var aqi      = parseFloat('{{ current_air_quality|floatformat:1 }}') || null;
+  var indoorT  = parseFloat('{{ latest_indoor_temp|floatformat:1 }}')  || null;
+  var humidity = parseFloat('{{ current_humidity|floatformat:1 }}')    || null;
+  var pressure = parseFloat('{{ current_pressure|floatformat:1 }}')    || null;
+  var isMockAq     = {{ is_mock_air_quality|yesno:"true,false" }};
+  var isMockIndoor = {{ is_mock_indoor_temp|yesno:"true,false" }};
+
+  // Use sessionStorage so notifications only fire once per session.
+  function shown(key) {
+    return sessionStorage.getItem('notif_' + key) === '1';
+  }
+  function markShown(key) {
+    sessionStorage.setItem('notif_' + key, '1');
+  }
+
+  var queue = [];
+
+  // Air quality notifications.
+  if (aqi !== null && !isMockAq && SHOW_AIR_QUALITY) {
+    if (aqi > 200 && !shown('aq_hazardous')) {
+      queue.push({ key: 'aq_hazardous', type: 'error', duration: 0,
+        title: 'Hazardous Air Quality',
+        body: 'AQI is <strong>' + Math.round(aqi) + '</strong>. Air quality is hazardous. Avoid outdoor activity and keep windows closed.' });
+    } else if (aqi > 150 && !shown('aq_very_unhealthy')) {
+      queue.push({ key: 'aq_very_unhealthy', type: 'error', duration: 8000,
+        title: 'Very Poor Air Quality',
+        body: 'AQI is <strong>' + Math.round(aqi) + '</strong>. Everyone may experience serious health effects. Limit outdoor exposure.' });
+    } else if (aqi > 100 && !shown('aq_unhealthy')) {
+      queue.push({ key: 'aq_unhealthy', type: 'warning', duration: 7000,
+        title: 'Unhealthy Air Quality',
+        body: 'AQI is <strong>' + Math.round(aqi) + '</strong>. Sensitive groups should avoid prolonged outdoor activity.' });
+    } else if (aqi > 50 && !shown('aq_moderate')) {
+      queue.push({ key: 'aq_moderate', type: 'info', duration: 6000,
+        title: 'Moderate Air Quality',
+        body: 'AQI is <strong>' + Math.round(aqi) + '</strong>. Air quality is acceptable but some pollutants may be a concern for sensitive individuals.' });
+    } else if (aqi <= 50 && !shown('aq_good') && SHOW_POSITIVE) {
+      queue.push({ key: 'aq_good', type: 'success', duration: 5000,
+        title: 'Air Quality is Good',
+        body: 'AQI is <strong>' + Math.round(aqi) + '</strong>. Fresh, clean air today.' });
+    }
+  }
+
+  // Indoor temperature notifications.
+  if (indoorT !== null && !isMockIndoor && SHOW_TEMPERATURE) {
+    if (indoorT < 12 && !shown('indoor_very_cold')) {
+      queue.push({ key: 'indoor_very_cold', type: 'error', duration: 8000,
+        title: 'Very Cold Indoors',
+        body: 'Indoor temperature is <strong>' + indoorT.toFixed(1) + ' C</strong>. This is dangerously cold. Check your heating immediately.' });
+    } else if (indoorT < 16 && !shown('indoor_cold')) {
+      queue.push({ key: 'indoor_cold', type: 'warning', duration: 7000,
+        title: 'Cold Indoor Temperature',
+        body: 'Indoor temperature is <strong>' + indoorT.toFixed(1) + ' C</strong>. Consider turning on the heating. Recommended minimum is 18 C.' });
+    } else if (indoorT > 28 && !shown('indoor_hot')) {
+      queue.push({ key: 'indoor_hot', type: 'warning', duration: 7000,
+        title: 'High Indoor Temperature',
+        body: 'Indoor temperature is <strong>' + indoorT.toFixed(1) + ' C</strong>. Open windows or use a fan to cool the space.' });
+    } else if (indoorT >= 18 && indoorT <= 22 && !shown('indoor_comfortable') && SHOW_POSITIVE) {
+      queue.push({ key: 'indoor_comfortable', type: 'success', duration: 5000,
+        title: 'Comfortable Indoors',
+        body: 'Indoor temperature is a comfortable <strong>' + indoorT.toFixed(1) + ' C</strong>.' });
+    }
+  }
+
+  // Humidity notifications.
+  if (humidity !== null && SHOW_HUMIDITY) {
+    if (humidity > 75 && !shown('humidity_high')) {
+      queue.push({ key: 'humidity_high', type: 'warning', duration: 6000,
+        title: 'High Humidity',
+        body: 'Humidity is <strong>' + Math.round(humidity) + '%</strong>. High moisture can encourage mould growth and affect comfort.' });
+    } else if (humidity < 25 && !shown('humidity_low')) {
+      queue.push({ key: 'humidity_low', type: 'warning', duration: 6000,
+        title: 'Low Humidity',
+        body: 'Humidity is <strong>' + Math.round(humidity) + '%</strong>. Very dry air can irritate airways. Consider a humidifier.' });
+    }
+  }
+
+  // Pressure notifications.
+  if (pressure !== null && SHOW_PRESSURE) {
+    if (pressure < 990 && !shown('pressure_low')) {
+      queue.push({ key: 'pressure_low', type: 'warning', duration: 6000,
+        title: 'Low Atmospheric Pressure',
+        body: 'Pressure is <strong>' + Math.round(pressure) + ' hPa</strong>. Stormy or unsettled weather may be on the way.' });
+    } else if (pressure > 1025 && !shown('pressure_high') && SHOW_POSITIVE) {
+      queue.push({ key: 'pressure_high', type: 'success', duration: 5000,
+        title: 'High Pressure: Settled Weather',
+        body: 'Pressure is <strong>' + Math.round(pressure) + ' hPa</strong>. High pressure typically means calm, dry conditions.' });
+    }
+  }
+
+  // Stagger notifications so they do not all appear at the same instant.
+  queue.forEach(function(n, idx) {
+    setTimeout(function() {
+      window.showNotification({ type: n.type, title: n.title, body: n.body, duration: n.duration });
+      markShown(n.key);
+    }, 800 + idx * 1200);
+  });
+});
+</script>
 {% endblock %}

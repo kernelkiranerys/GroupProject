@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/pi-readings/', views.ingest_pi_reading, name='ingest_pi_reading'),
     path('api/gps-location/', views.gps_location, name='gps_location'),
     path('historical/', views.historical, name='historical'),
+    path('notification-testing/', views.notification_testing, name='notification_testing'),
     path('settings/', views.settings_page, name='settings'),
     path('authorisations/', views.authorisations, name='authorisations'),
     path('location_detail/', views.location_detail, name='location_detail'),

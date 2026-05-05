@@ -199,22 +199,52 @@
             {% csrf_token %}
             <div class="notification-preference-row">
               <div>
-                <label for="show_tips_notifications" class="notification-preference-row__label">Show helpful tips & info</label>
-                <p class="muted notification-preference-row__hint">Receive occasional tips on how to use the site.</p>
+                <label for="notify_air_quality_alerts" class="notification-preference-row__label">Air quality alerts</label>
+                <p class="muted notification-preference-row__hint">Warn me when AQI reaches moderate, unhealthy, or hazardous levels.</p>
               </div>
               <div class="toggle-switch">
-                <input type="checkbox" id="show_tips_notifications" name="show_tips_notifications" {% if user.profile.show_tips_notifications %}checked{% endif %}>
-                <label for="show_tips_notifications" class="toggle-switch__label"></label>
+                <input type="checkbox" id="notify_air_quality_alerts" name="notify_air_quality_alerts" {% if user.profile.notify_air_quality_alerts %}checked{% endif %}>
+                <label for="notify_air_quality_alerts" class="toggle-switch__label"></label>
               </div>
             </div>
             <div class="notification-preference-row">
               <div>
-                <label for="show_success_notifications" class="notification-preference-row__label">Show positive weather alerts</label>
-                <p class="muted notification-preference-row__hint">Get notified when the weather is particularly good.</p>
+                <label for="notify_temperature_alerts" class="notification-preference-row__label">Indoor temperature alerts</label>
+                <p class="muted notification-preference-row__hint">Warn me when indoor temperature is too cold or too hot.</p>
               </div>
               <div class="toggle-switch">
-                <input type="checkbox" id="show_success_notifications" name="show_success_notifications" {% if user.profile.show_success_notifications %}checked{% endif %}>
-                <label for="show_success_notifications" class="toggle-switch__label"></label>
+                <input type="checkbox" id="notify_temperature_alerts" name="notify_temperature_alerts" {% if user.profile.notify_temperature_alerts %}checked{% endif %}>
+                <label for="notify_temperature_alerts" class="toggle-switch__label"></label>
+              </div>
+            </div>
+            <div class="notification-preference-row">
+              <div>
+                <label for="notify_humidity_alerts" class="notification-preference-row__label">Humidity alerts</label>
+                <p class="muted notification-preference-row__hint">Warn me when humidity is too high or too low for comfort.</p>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" id="notify_humidity_alerts" name="notify_humidity_alerts" {% if user.profile.notify_humidity_alerts %}checked{% endif %}>
+                <label for="notify_humidity_alerts" class="toggle-switch__label"></label>
+              </div>
+            </div>
+            <div class="notification-preference-row">
+              <div>
+                <label for="notify_pressure_alerts" class="notification-preference-row__label">Pressure alerts</label>
+                <p class="muted notification-preference-row__hint">Warn me when atmospheric pressure indicates unstable weather.</p>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" id="notify_pressure_alerts" name="notify_pressure_alerts" {% if user.profile.notify_pressure_alerts %}checked{% endif %}>
+                <label for="notify_pressure_alerts" class="toggle-switch__label"></label>
+              </div>
+            </div>
+            <div class="notification-preference-row">
+              <div>
+                <label for="notify_positive_weather_alerts" class="notification-preference-row__label">Positive weather updates</label>
+                <p class="muted notification-preference-row__hint">Show good-news updates like healthy AQI and comfortable indoor temperatures.</p>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" id="notify_positive_weather_alerts" name="notify_positive_weather_alerts" {% if user.profile.notify_positive_weather_alerts %}checked{% endif %}>
+                <label for="notify_positive_weather_alerts" class="toggle-switch__label"></label>
               </div>
             </div>
             <div class="settings-form__footer">
@@ -319,6 +349,10 @@
             <div class="settings-dl__row">
               <dt class="muted">Account ID</dt>
               <dd>#{{ request.user.pk }}</dd>
+            </div>
+            <div class="settings-dl__row">
+              <dt class="muted">User Code</dt>
+              <dd><strong>{{ user_code }}</strong></dd>
             </div>
             <div class="settings-dl__row">
               <dt class="muted">Member since</dt>

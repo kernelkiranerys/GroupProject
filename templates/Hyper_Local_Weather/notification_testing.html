@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Notification Testing{% endblock %}
+
+{% block extra_head %}
+<style>
+  .test-page {
+    max-width: 980px;
+    margin: 20px auto;
+  }
+
+  .test-page__head {
+    margin-bottom: 18px;
+  }
+
+  .test-page__title {
+    margin: 0;
+    font-size: 1.65rem;
+    font-weight: 800;
+  }
+
+  .test-page__sub {
+    margin-top: 6px;
+  }
+
+  .test-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+  }
+
+  .test-card {
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    background: var(--card);
+    padding: 14px;
+  }
+
+  .test-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .test-card__desc {
+    margin: 8px 0 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .test-btn {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .test-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .test-btn--reset {
+    background: rgba(34, 211, 238, 0.12);
+    border-color: rgba(34, 211, 238, 0.35);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="test-page">
+  <header class="test-page__head">
+    <h1 class="test-page__title">Notification Testing</h1>
+    <p class="muted test-page__sub">Trigger each notification type individually from one clean testing page.</p>
+  </header>
+
+  <div class="test-grid">
+    <article class="test-card">
+      <h2 class="test-card__title">Air Quality Alert</h2>
+      <p class="muted test-card__desc">Simulates an unhealthy AQI warning popup.</p>
+      <button class="test-btn" id="test-air-quality-btn" type="button">Show Air Quality Alert</button>
+    </article>
+
+    <article class="test-card">
+      <h2 class="test-card__title">Temperature Alert</h2>
+      <p class="muted test-card__desc">Simulates a high indoor temperature warning popup.</p>
+      <button class="test-btn" id="test-temperature-btn" type="button">Show Temperature Alert</button>
+    </article>
+
+    <article class="test-card">
+      <h2 class="test-card__title">Humidity Alert</h2>
+      <p class="muted test-card__desc">Simulates a high humidity warning popup.</p>
+      <button class="test-btn" id="test-humidity-btn" type="button">Show Humidity Alert</button>
+    </article>
+
+    <article class="test-card">
+      <h2 class="test-card__title">Pressure Alert</h2>
+      <p class="muted test-card__desc">Simulates a low pressure weather warning popup.</p>
+      <button class="test-btn" id="test-pressure-btn" type="button">Show Pressure Alert</button>
+    </article>
+
+    <article class="test-card">
+      <h2 class="test-card__title">Positive Update</h2>
+      <p class="muted test-card__desc">Simulates a positive good-weather style popup.</p>
+      <button class="test-btn" id="test-positive-btn" type="button">Show Positive Update</button>
+    </article>
+
+    <article class="test-card">
+      <h2 class="test-card__title">Reset Session Flags</h2>
+      <p class="muted test-card__desc">Clears stored notif_ flags so live dashboard alerts can be re-triggered.</p>
+      <button class="test-btn test-btn--reset" id="reset-notification-session-btn" type="button">Reset Notification Session</button>
+    </article>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  function bindTestButton(id, options) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      window.showNotification(options);
+    });
+  }
+
+  bindTestButton('test-air-quality-btn', {
+    type: 'warning',
+    title: 'Unhealthy Air Quality',
+    body: 'AQI is <strong>162</strong>. Sensitive groups should avoid prolonged outdoor activity.',
+    duration: 7000,
+  });
+
+  bindTestButton('test-temperature-btn', {
+    type: 'warning',
+    title: 'High Indoor Temperature',
+    body: 'Indoor temperature is <strong>29.4 C</strong>. Open windows or use a fan to cool the space.',
+    duration: 7000,
+  });
+
+  bindTestButton('test-humidity-btn', {
+    type: 'warning',
+    title: 'High Humidity',
+    body: 'Humidity is <strong>79%</strong>. High moisture can encourage mould growth and affect comfort.',
+    duration: 6000,
+  });
+
+  bindTestButton('test-pressure-btn', {
+    type: 'warning',
+    title: 'Low Atmospheric Pressure',
+    body: 'Pressure is <strong>985 hPa</strong>. Stormy or unsettled weather may be on the way.',
+    duration: 6000,
+  });
+
+  bindTestButton('test-positive-btn', {
+    type: 'success',
+    title: 'Comfortable Indoors',
+    body: 'Indoor temperature is a comfortable <strong>20.6 C</strong>.',
+    duration: 5000,
+  });
+
+  var resetBtn = document.getElementById('reset-notification-session-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function () {
+      Object.keys(sessionStorage)
+        .filter(function (key) { return key.indexOf('notif_') === 0; })
+        .forEach(function (key) { sessionStorage.removeItem(key); });
+
+      window.showNotification({
+        type: 'info',
+        title: 'Notification Session Reset',
+        body: 'All dashboard notif_ session flags were cleared. Reload the dashboard to retest live notifications.',
+        duration: 5500,
+      });
+    });
+  }
+});
+</script>
+{% endblock %}
