@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Location, WeatherReading, Profile
+from .models import Location, WeatherReading, Profile, Organisation
 
 
 class LocationForm(forms.ModelForm):
@@ -61,6 +61,28 @@ class UserUpdateForm(forms.ModelForm):
 class OrganizationRoleByCodeForm(forms.Form):
     user_code = forms.CharField(max_length=6, min_length=6)
     role = forms.ChoiceField(choices=[('member', 'Member'), ('staff', 'Staff')])
+
+    def clean_user_code(self):
+        code = (self.cleaned_data.get('user_code') or '').strip()
+        if not code.isdigit() or len(code) != 6:
+            raise forms.ValidationError('User code must be a 6-digit number.')
+        return code
+
+
+class CreateOrganisationForm(forms.ModelForm):
+    class Meta:
+        model = Organisation
+        fields = ['name']
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name', '').strip()
+        if Organisation.objects.filter(name__iexact=name).exists():
+            raise forms.ValidationError('An organisation with this name already exists.')
+        return name
+
+
+class InviteByUserCodeForm(forms.Form):
+    user_code = forms.CharField(max_length=6, min_length=6, label='Member user code')
 
     def clean_user_code(self):
         code = (self.cleaned_data.get('user_code') or '').strip()

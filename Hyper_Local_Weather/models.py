@@ -52,6 +52,32 @@ class WeatherReading(models.Model):
         return f"{self.location.name} @ {self.timestamp.isoformat()}"
 
 
+class Organisation(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='owned_organisations')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class OrganisationMembership(models.Model):
+    ROLE_ADMIN = 'admin'
+    ROLE_MEMBER = 'member'
+    ROLE_CHOICES = [(ROLE_ADMIN, 'Admin'), (ROLE_MEMBER, 'Member')]
+
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name='memberships')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='org_memberships')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['organisation', 'user']
+
+    def __str__(self):
+        return f"{self.user.username} in {self.organisation.name} ({self.role})"
+
+
 class OrganizationInvite(models.Model):
     ROLE_MEMBER = 'member'
     ROLE_STAFF = 'staff'

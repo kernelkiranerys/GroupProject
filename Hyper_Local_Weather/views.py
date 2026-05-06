@@ -1,6 +1,7 @@
 import json
 import time
 import math
+import secrets
 from decimal import Decimal, InvalidOperation
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
@@ -9,7 +10,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
-from .models import Location, WeatherReading, Profile
+from .models import Location, WeatherReading, Profile, Organisation, OrganisationMembership
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Avg
@@ -22,6 +23,8 @@ from .forms import (
     UserUpdateForm,
     PasswordChangeForm,
     OrganizationRoleByCodeForm,
+    CreateOrganisationForm,
+    InviteByUserCodeForm,
 )
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import update_session_auth_hash
@@ -1023,12 +1026,166 @@ def update_notification_settings(request):
         messages.success(request, 'Notification settings updated.')
     return redirect('Hyper_Local_Weather:settings')
 
-def historical(request):
-    readings = WeatherReading.objects.all().order_by('-timestamp')
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def analytics(request):
+    # --- Indoor location detection ---
+    indoor_location = Location.objects.filter(name__icontains='indoor').first()
+    outdoor_location = Location.objects.filter(name__icontains='outdoor').first()
+
+    readings_qs = WeatherReading.objects.select_related('location').order_by('-timestamp')
+    if indoor_location:
+        readings_qs = readings_qs.filter(location=indoor_location)
+    elif outdoor_location:
+        readings_qs = readings_qs.exclude(location=outdoor_location)
+
+    # --- Date range filter (default: last 30 days) ---
+    date_from_str = request.GET.get('from')
+    date_to_str = request.GET.get('to')
+    now = timezone.now()
+    try:
+        date_from = datetime.strptime(date_from_str, '%Y-%m-%d').date() if date_from_str else (now - timedelta(days=30)).date()
+    except ValueError:
+        date_from = (now - timedelta(days=30)).date()
+    try:
+        date_to = datetime.strptime(date_to_str, '%Y-%m-%d').date() if date_to_str else now.date()
+    except ValueError:
+        date_to = now.date()
+
+    readings_qs = readings_qs.filter(timestamp__date__gte=date_from, timestamp__date__lte=date_to)
+    readings = list(readings_qs)
+    total = len(readings)
+
+    # --- Aggregate statistics ---
+    temps = [r.temperature_c for r in readings]
+    humidities = [r.humidity for r in readings]
+    pressures = [r.pressure_hpa for r in readings]
+    aq_values = [r.air_quality for r in readings if r.air_quality is not None]
+
+    def _safe_avg(lst):
+        return round(sum(lst) / len(lst), 1) if lst else None
+
+    avg_temp = _safe_avg(temps)
+    avg_humidity = _safe_avg(humidities)
+    avg_pressure = _safe_avg(pressures)
+    avg_aq = _safe_avg(aq_values)
+    max_temp = round(max(temps), 1) if temps else None
+    min_temp = round(min(temps), 1) if temps else None
+    max_humidity = round(max(humidities), 1) if humidities else None
+
+    # --- Risk assessment ---
+    # Mold risk: humidity > 70% AND temp > 18°C
+    mold_risk_readings = [r for r in readings if r.humidity > 70 and r.temperature_c > 18]
+    # Heat stress: temp > 28°C
+    heat_stress_readings = [r for r in readings if r.temperature_c > 28]
+    # Cold alert: temp < 16°C (below UK legal workplace minimum)
+    cold_alert_readings = [r for r in readings if r.temperature_c < 16]
+    # High humidity: > 70%
+    high_humidity_readings = [r for r in readings if r.humidity > 70]
+    # Low humidity: < 30%
+    low_humidity_readings = [r for r in readings if r.humidity < 30]
+    # Poor air quality (gas resistance as proxy – low value = poor; only flag if data exists)
+    poor_aq_readings = [r for r in readings if r.air_quality is not None and r.air_quality < 5000]
+
+    def _risk_pct(subset):
+        return round(len(subset) / total * 100, 1) if total else 0
+
+    risks = [
+        {
+            'name': 'Mold Risk',
+            'icon': '🍄',
+            'count': len(mold_risk_readings),
+            'pct': _risk_pct(mold_risk_readings),
+            'level': 'high' if _risk_pct(mold_risk_readings) > 20 else ('medium' if _risk_pct(mold_risk_readings) > 5 else 'low'),
+            'description': 'Readings with humidity >70 % and temperature >18 °C — conditions that accelerate mold growth.',
+            'threshold': 'Humidity > 70% & Temp > 18°C',
+        },
+        {
+            'name': 'Heat Stress',
+            'icon': '🌡️',
+            'count': len(heat_stress_readings),
+            'pct': _risk_pct(heat_stress_readings),
+            'level': 'high' if _risk_pct(heat_stress_readings) > 10 else ('medium' if _risk_pct(heat_stress_readings) > 2 else 'low'),
+            'description': 'Indoor temperature exceeded 28 °C — potentially uncomfortable or unsafe for occupants.',
+            'threshold': 'Temp > 28°C',
+        },
+        {
+            'name': 'Cold Alert',
+            'icon': '❄️',
+            'count': len(cold_alert_readings),
+            'pct': _risk_pct(cold_alert_readings),
+            'level': 'high' if _risk_pct(cold_alert_readings) > 15 else ('medium' if _risk_pct(cold_alert_readings) > 5 else 'low'),
+            'description': 'Temperature below the 16 °C UK workplace legal minimum — action recommended.',
+            'threshold': 'Temp < 16°C',
+        },
+        {
+            'name': 'High Humidity',
+            'icon': '💧',
+            'count': len(high_humidity_readings),
+            'pct': _risk_pct(high_humidity_readings),
+            'level': 'high' if _risk_pct(high_humidity_readings) > 25 else ('medium' if _risk_pct(high_humidity_readings) > 10 else 'low'),
+            'description': 'Relative humidity exceeded 70 % — discomfort risk and promotes mold/dust mite growth.',
+            'threshold': 'Humidity > 70%',
+        },
+        {
+            'name': 'Low Humidity',
+            'icon': '🏜️',
+            'count': len(low_humidity_readings),
+            'pct': _risk_pct(low_humidity_readings),
+            'level': 'medium' if _risk_pct(low_humidity_readings) > 10 else 'low',
+            'description': 'Relative humidity below 30 % — dry air can cause respiratory irritation.',
+            'threshold': 'Humidity < 30%',
+        },
+    ]
+    if aq_values:
+        risks.append({
+            'name': 'Poor Air Quality',
+            'icon': '💨',
+            'count': len(poor_aq_readings),
+            'pct': _risk_pct(poor_aq_readings),
+            'level': 'high' if _risk_pct(poor_aq_readings) > 20 else ('medium' if _risk_pct(poor_aq_readings) > 5 else 'low'),
+            'description': 'Low gas resistance readings indicate elevated VOCs or particulates in indoor air.',
+            'threshold': 'Gas resistance < 5 kΩ',
+        })
+
+    overall_risk_pct = _risk_pct(mold_risk_readings + heat_stress_readings + cold_alert_readings)
+    if overall_risk_pct > 20:
+        overall_risk_level = 'high'
+        overall_risk_label = 'High Risk'
+    elif overall_risk_pct > 5:
+        overall_risk_level = 'medium'
+        overall_risk_label = 'Moderate Risk'
+    else:
+        overall_risk_level = 'low'
+        overall_risk_label = 'Low Risk'
+
+    # --- Chart data (last 50 readings, oldest first) ---
+    chart_readings = list(reversed(readings[:50]))
+    chart_labels = [r.timestamp.strftime('%d %b %H:%M') for r in chart_readings]
+    chart_temps = [round(r.temperature_c, 1) for r in chart_readings]
+    chart_humidities = [round(r.humidity, 1) for r in chart_readings]
+
     context = {
-        'readings': readings
+        'readings': readings[:100],
+        'total': total,
+        'date_from': date_from.strftime('%Y-%m-%d'),
+        'date_to': date_to.strftime('%Y-%m-%d'),
+        'avg_temp': avg_temp,
+        'avg_humidity': avg_humidity,
+        'avg_pressure': avg_pressure,
+        'avg_aq': avg_aq,
+        'max_temp': max_temp,
+        'min_temp': min_temp,
+        'max_humidity': max_humidity,
+        'risks': risks,
+        'overall_risk_level': overall_risk_level,
+        'overall_risk_label': overall_risk_label,
+        'chart_labels_json': json.dumps(chart_labels),
+        'chart_temps_json': json.dumps(chart_temps),
+        'chart_humidities_json': json.dumps(chart_humidities),
+        'indoor_location': indoor_location,
     }
-    return render(request, 'Hyper_Local_Weather/historical.html', context)
+    return render(request, 'Hyper_Local_Weather/analytics.html', context)
 
 
 @login_required
@@ -1179,20 +1336,23 @@ def index(request, date=None):
         if live_outdoor_weather and live_outdoor_weather.get('temperature_c') is not None
         else latest_outdoor_reading.temperature_c if latest_outdoor_reading else mock_values['outdoor_temp']
     )
-    if view_mode == 'outdoor':
-        api_aqi = None
-        if live_outdoor_air_quality:
-            if live_outdoor_air_quality.get('european_aqi') is not None:
-                api_aqi = live_outdoor_air_quality.get('european_aqi')
-            elif live_outdoor_air_quality.get('pm25') is not None:
-                # Keep AQI scale readable for current UI thresholds.
-                api_aqi = _safe_round_float(float(live_outdoor_air_quality.get('pm25')) * 2.0) # pyright: ignore[reportArgumentType]
+    # AQI is always an outdoor measurement — compute it once from the outdoor API regardless of view_mode.
+    api_aqi = None
+    if live_outdoor_air_quality:
+        if live_outdoor_air_quality.get('european_aqi') is not None:
+            api_aqi = live_outdoor_air_quality.get('european_aqi')
+        elif live_outdoor_air_quality.get('pm25') is not None:
+            # Keep AQI scale readable for current UI thresholds.
+            api_aqi = _safe_round_float(float(live_outdoor_air_quality.get('pm25')) * 2.0) # pyright: ignore[reportArgumentType]
 
-        air_quality_value = (
-            api_aqi
-            if api_aqi is not None
-            else latest_outdoor_reading.air_quality if latest_outdoor_reading and latest_outdoor_reading.air_quality is not None else mock_values['air_quality']
-        )
+    air_quality_value = (
+        api_aqi
+        if api_aqi is not None
+        else latest_outdoor_reading.air_quality if latest_outdoor_reading and latest_outdoor_reading.air_quality is not None else mock_values['air_quality']
+    )
+    is_mock_air_quality = api_aqi is None and (latest_outdoor_reading is None or latest_outdoor_reading.air_quality is None)
+
+    if view_mode == 'outdoor':
         humidity_value = (
             live_outdoor_weather['humidity']
             if live_outdoor_weather and live_outdoor_weather.get('humidity') is not None
@@ -1203,20 +1363,17 @@ def index(request, date=None):
             if live_outdoor_weather and live_outdoor_weather.get('pressure_hpa') is not None
             else latest_outdoor_reading.pressure_hpa if latest_outdoor_reading else mock_values['pressure_hpa']
         )
-        is_mock_air_quality = api_aqi is None and (latest_outdoor_reading is None or latest_outdoor_reading.air_quality is None)
         is_mock_humidity = (live_outdoor_weather is None or live_outdoor_weather.get('humidity') is None) and latest_outdoor_reading is None
         is_mock_pressure = (live_outdoor_weather is None or live_outdoor_weather.get('pressure_hpa') is None) and latest_outdoor_reading is None
     else:
-        air_quality_value = (
-            active_reading.air_quality
-            if active_reading and active_reading.air_quality is not None
-            else mock_values['air_quality']
-        )
         humidity_value = active_reading.humidity if active_reading else mock_values['humidity']
         pressure_value = active_reading.pressure_hpa if active_reading else mock_values['pressure_hpa']
-        is_mock_air_quality = active_reading is None or active_reading.air_quality is None
         is_mock_humidity = active_reading is None
         is_mock_pressure = active_reading is None
+
+    # Always derive indoor-specific humidity/pressure for notifications, regardless of view_mode
+    indoor_humidity = latest_indoor_reading.humidity if latest_indoor_reading else None
+    indoor_pressure = latest_indoor_reading.pressure_hpa if latest_indoor_reading else None
 
     def _build_weekly_temps(target_location=None, excluded_location=None):
         weekly_temps = []
@@ -1292,6 +1449,8 @@ def index(request, date=None):
         'is_mock_air_quality': is_mock_air_quality,
         'is_mock_humidity': is_mock_humidity,
         'is_mock_pressure': is_mock_pressure,
+        'indoor_humidity': indoor_humidity,
+        'indoor_pressure': indoor_pressure,
         'past_week_temps': past_week_temps,
         'past_week_outdoor_temps': past_week_outdoor_temps,
         'current_date': current_date,
@@ -1387,6 +1546,15 @@ def _coerce_decimal(value):
 def ingest_pi_reading(request):
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+    # Shared-secret token check — set INGEST_SECRET in your .env / environment variables.
+    # The Pi must send this as the Authorization header: "Bearer <token>"
+    expected_token = os.environ.get('INGEST_SECRET', '')
+    if expected_token:
+        auth_header = request.headers.get('Authorization', '')
+        provided = auth_header.removeprefix('Bearer ').strip()
+        if not secrets.compare_digest(provided, expected_token):
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
 
     if request.content_type and 'application/json' in request.content_type:
         try:
@@ -1540,6 +1708,15 @@ def settings_page(request):
     password_form = PasswordChangeForm()
     profile_success = profile_error = password_success = password_error = None
     avatar_success = None
+    org_success = org_error = None
+    create_org_form = CreateOrganisationForm()
+    invite_form = InviteByUserCodeForm()
+
+    # --- Current org membership ---
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    profile.ensure_user_code()
+    membership = OrganisationMembership.objects.filter(user=request.user).select_related('organisation').first()
+    org = membership.organisation if membership else None
 
     # --- Handle POST Requests ---
     if request.method == 'POST':
@@ -1547,13 +1724,11 @@ def settings_page(request):
             selected_avatar = request.POST.get('avatar')
             if selected_avatar:
                 try:
-                    profile, created = Profile.objects.get_or_create(user=request.user)
-                    profile.ensure_user_code()
                     profile.image = os.path.join('User_Icons', selected_avatar) # type: ignore
                     profile.save()
                     avatar_success = 'Profile picture updated.'
-                except Exception as e:
-                    pass  # Consider logging the error e
+                except Exception:
+                    pass
 
         elif 'update_profile' in request.POST:
             profile_form = ChangeProfileForm(request.POST, instance=request.user)
@@ -1569,7 +1744,7 @@ def settings_page(request):
                 if request.user.check_password(password_form.cleaned_data['current_password']):
                     request.user.set_password(password_form.cleaned_data['new_password'])
                     request.user.save()
-                    update_session_auth_hash(request, request.user)  # Important!
+                    update_session_auth_hash(request, request.user)
                     password_success = 'Password changed successfully.'
                     password_form = PasswordChangeForm()
                 else:
@@ -1578,14 +1753,98 @@ def settings_page(request):
             else:
                 password_error = 'Please correct the errors below.'
 
+        elif 'create_organisation' in request.POST:
+            if org:
+                org_error = 'You are already a member of an organisation.'
+            else:
+                create_org_form = CreateOrganisationForm(request.POST)
+                if create_org_form.is_valid():
+                    new_org = create_org_form.save(commit=False)
+                    new_org.owner = request.user
+                    new_org.save()
+                    OrganisationMembership.objects.create(
+                        organisation=new_org,
+                        user=request.user,
+                        role=OrganisationMembership.ROLE_ADMIN,
+                    )
+                    # Grant staff status to the creator
+                    request.user.is_staff = True
+                    request.user.save(update_fields=['is_staff'])
+                    org = new_org
+                    membership = OrganisationMembership.objects.get(organisation=org, user=request.user)
+                    org_success = f'Organisation "{new_org.name}" created. You are now an Admin.'
+                    create_org_form = CreateOrganisationForm()
+                else:
+                    org_error = 'Please fix the errors below.'
+
+        elif 'invite_member' in request.POST:
+            if not org or (membership and membership.role != OrganisationMembership.ROLE_ADMIN):
+                org_error = 'Only organisation admins can invite members.'
+            else:
+                invite_form = InviteByUserCodeForm(request.POST)
+                if invite_form.is_valid():
+                    code = invite_form.cleaned_data['user_code']
+                    target_profile = Profile.objects.select_related('user').filter(user_code=code).first()
+                    if target_profile is None:
+                        org_error = f'No user found with code {code}.'
+                    elif OrganisationMembership.objects.filter(organisation=org, user=target_profile.user).exists():
+                        org_error = f'{target_profile.user.username} is already a member.'
+                    elif OrganisationMembership.objects.filter(user=target_profile.user).exists():
+                        org_error = f'{target_profile.user.username} already belongs to another organisation.'
+                    else:
+                        OrganisationMembership.objects.create(
+                            organisation=org,
+                            user=target_profile.user,
+                            role=OrganisationMembership.ROLE_MEMBER,
+                        )
+                        org_success = f'{target_profile.user.username} added to {org.name}.'
+                        invite_form = InviteByUserCodeForm()
+                else:
+                    org_error = 'Please fix the errors below.'
+
+        elif 'remove_member' in request.POST:
+            remove_uid = request.POST.get('remove_uid')
+            if org and membership and membership.role == OrganisationMembership.ROLE_ADMIN:
+                to_remove = OrganisationMembership.objects.filter(
+                    organisation=org, user_id=remove_uid
+                ).exclude(user=request.user).first()
+                if to_remove:
+                    username = to_remove.user.username
+                    to_remove.delete()
+                    org_success = f'{username} removed from {org.name}.'
+                else:
+                    org_error = 'Member not found or you cannot remove yourself.'
+            else:
+                org_error = 'Only admins can remove members.'
+
+        elif 'leave_organisation' in request.POST:
+            if membership:
+                if membership.role == OrganisationMembership.ROLE_ADMIN and org and org.memberships.count() > 1:
+                    org_error = 'Transfer admin to another member before leaving.'
+                else:
+                    org_name = org.name if org else ''
+                    membership.delete()
+                    if org and org.memberships.count() == 0:
+                        org.delete()
+                    org = None
+                    membership = None
+                    org_success = f'You have left {org_name}.'
+
+    # --- Org members list ---
+    org_members = []
+    if org:
+        org_members = list(
+            OrganisationMembership.objects.filter(organisation=org)
+            .select_related('user')
+            .order_by('role', 'joined_at')
+        )
+
     profile_avatar_url = ''
     has_profile_avatar = False
     user_code = ''
     try:
-        profile, _ = Profile.objects.get_or_create(user=request.user)
-        profile.ensure_user_code()
-        user_code = profile.user_code or ''
         image_name = (profile.image.name or '').replace('\\', '/')
+        user_code = profile.user_code or ''
         if image_name and image_name != 'Defaults/Default-profile.jpg':
             if image_name.startswith('User_Icons/'):
                 profile_avatar_url = static(image_name)
@@ -1595,7 +1854,6 @@ def settings_page(request):
     except Exception:
         has_profile_avatar = False
 
-    # --- Prepare Context for Template ---
     context = {
         'avatars': avatars,
         'profile_form': profile_form,
@@ -1608,8 +1866,15 @@ def settings_page(request):
         'has_profile_avatar': has_profile_avatar,
         'profile_avatar_url': profile_avatar_url,
         'user_code': user_code,
+        'org': org,
+        'membership': membership,
+        'org_members': org_members,
+        'create_org_form': create_org_form,
+        'invite_form': invite_form,
+        'org_success': org_success,
+        'org_error': org_error,
     }
-    
+
     return render(request, 'Hyper_Local_Weather/settings.html', context)
 
 

@@ -21,6 +21,7 @@
       <button class="settings-nav__btn" data-tab="notifications">Notifications</button>
       <button class="settings-nav__btn" data-tab="appearance">Appearance</button>
       <button class="settings-nav__btn" data-tab="account-info">Account Info</button>
+      <button class="settings-nav__btn" data-tab="organisation">Organisation</button>
     </nav>
 
     <div class="settings-content">
@@ -195,7 +196,7 @@
             </div>
           </div>
           <div class="settings-divider"></div>
-          <form method="post" class="settings-form" action="{% url 'Hyper_Local_Weather:update_notification_settings' %}">
+          <form method="post" class="settings-form" id="notifications-form" action="{% url 'Hyper_Local_Weather:update_notification_settings' %}">
             {% csrf_token %}
             <div class="notification-preference-row">
               <div>
@@ -246,9 +247,6 @@
                 <input type="checkbox" id="notify_positive_weather_alerts" name="notify_positive_weather_alerts" {% if user.profile.notify_positive_weather_alerts %}checked{% endif %}>
                 <label for="notify_positive_weather_alerts" class="toggle-switch__label"></label>
               </div>
-            </div>
-            <div class="settings-form__footer">
-                <button type="submit" class="auth-submit-btn settings-btn">Save Preferences</button>
             </div>
           </form>
         </div>
@@ -371,6 +369,111 @@
               </dd>
             </div>
           </dl>
+        </div>
+      </div>
+      <!-- ── ORGANISATION SECTION ── -->
+      <div class="tab-pane" id="organisation">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon settings-section__icon--org" aria-hidden="true">
+              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="3" y="9" width="18" height="13" rx="1"></rect>
+                <path d="M8 22V9"></path>
+                <path d="M16 22V9"></path>
+                <path d="M12 9V5"></path>
+                <rect x="9" y="2" width="6" height="4" rx="1"></rect>
+                <path d="M3 13h18"></path>
+              </svg>
+            </span>
+            <div>
+              <h2 class="settings-section__title">Organisation</h2>
+              <p class="muted settings-section__sub">Create or manage your organisation and invite members by user code.</p>
+            </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          {% if org_success %}<div class="settings-alert settings-alert--ok" style="margin-bottom:14px;">{{ org_success }}</div>{% endif %}
+          {% if org_error %}<div class="settings-alert settings-alert--err" style="margin-bottom:14px;">{{ org_error }}</div>{% endif %}
+
+          {% if not org %}
+            {# ── Create org ── #}
+            <p class="muted" style="margin-bottom:14px;">You are not part of an organisation yet. Create one to become an admin and invite your team.</p>
+            <form method="post" class="settings-form">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="id_org_name">Organisation name</label>
+                <input type="text" name="name" id="id_org_name" maxlength="100" placeholder="e.g. AirSense Labs" class="form-control" required>
+                {% if create_org_form.name.errors %}<span class="form-error">{{ create_org_form.name.errors.0 }}</span>{% endif %}
+              </div>
+              <button type="submit" name="create_organisation" class="auth-action-btn auth-action-btn--grant" style="margin-top:10px;">Create Organisation</button>
+            </form>
+          {% else %}
+            {# ── Org info ── #}
+            <dl class="settings-dl" style="margin-bottom:20px;">
+              <div class="settings-dl__row">
+                <dt class="muted">Name</dt>
+                <dd><strong>{{ org.name }}</strong></dd>
+              </div>
+              <div class="settings-dl__row">
+                <dt class="muted">Your role</dt>
+                <dd>
+                  {% if membership.role == 'admin' %}<span class="role-badge role-badge--staff">Admin</span>{% else %}<span class="role-badge">Member</span>{% endif %}
+                </dd>
+              </div>
+              <div class="settings-dl__row">
+                <dt class="muted">Members</dt>
+                <dd>{{ org_members|length }}</dd>
+              </div>
+            </dl>
+
+            {# ── Members list ── #}
+            <table class="auth-table" style="margin-bottom:20px;">
+              <thead><tr><th>Username</th><th>User Code</th><th>Role</th><th>Joined</th>{% if membership.role == 'admin' %}<th></th>{% endif %}</tr></thead>
+              <tbody>
+              {% for m in org_members %}
+                <tr>
+                  <td>{{ m.user.username }}</td>
+                  <td><code>{{ m.user.profile.user_code }}</code></td>
+                  <td>{% if m.role == 'admin' %}<span class="role-badge role-badge--staff">Admin</span>{% else %}<span class="role-badge">Member</span>{% endif %}</td>
+                  <td>{{ m.joined_at|date:"d M Y" }}</td>
+                  {% if membership.role == 'admin' and m.user != request.user %}
+                  <td>
+                    <form method="post" style="display:inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="remove_uid" value="{{ m.user.pk }}">
+                      <button type="submit" name="remove_member" class="auth-action-btn auth-action-btn--revoke" style="padding:4px 10px;font-size:0.78rem;">Remove</button>
+                    </form>
+                  </td>
+                  {% elif membership.role == 'admin' %}
+                  <td><span class="muted" style="font-size:0.78rem;">You</span></td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+
+            {# ── Invite by user code (admin only) ── #}
+            {% if membership.role == 'admin' %}
+            <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:10px;">Invite by User Code</h3>
+            <p class="muted" style="font-size:0.82rem;margin-bottom:12px;">Ask your teammate to share their 6-digit code from their Account Info tab, then enter it below.</p>
+            <form method="post" class="settings-form">
+              {% csrf_token %}
+              <div class="form-group" style="max-width:240px;">
+                <label for="id_invite_code">User code</label>
+                <input type="text" name="user_code" id="id_invite_code" maxlength="6" minlength="6" placeholder="000000" class="form-control" inputmode="numeric" pattern="[0-9]{6}" required>
+                {% if invite_form.user_code.errors %}<span class="form-error">{{ invite_form.user_code.errors.0 }}</span>{% endif %}
+              </div>
+              <button type="submit" name="invite_member" class="auth-action-btn auth-action-btn--grant" style="margin-top:8px;">Add Member</button>
+            </form>
+            {% endif %}
+
+            <div class="settings-divider" style="margin-top:24px;"></div>
+            <form method="post" style="margin-top:12px;">
+              {% csrf_token %}
+              <button type="submit" name="leave_organisation" class="auth-action-btn auth-action-btn--revoke" onclick="return confirm('Are you sure you want to leave {{ org.name }}?');">Leave Organisation</button>
+            </form>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -506,5 +609,18 @@
     });
 
   });
+</script>
+
+<script>
+  // Auto-submit notification preferences when any toggle is changed
+  (function () {
+    var form = document.getElementById('notifications-form');
+    if (!form) return;
+    form.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        form.submit();
+      });
+    });
+  })();
 </script>
 {% endblock %}

@@ -46,6 +46,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'replace-this-with-a-secure-secret')
 
 DEBUG = _env_bool('DJANGO_DEBUG', default=True)
 
+if SECRET_KEY == 'replace-this-with-a-secure-secret' and not DEBUG:
+    raise RuntimeError(
+        'DJANGO_SECRET_KEY environment variable is not set. '
+        'Set it to a long random string before deploying.'
+    )
+
 ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'jcb.pythonanywhere.com'])
 CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', default=['https://jcb.pythonanywhere.com'])
 ENABLE_CORS = _env_bool('ENABLE_CORS', default=False)
@@ -138,6 +144,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/auth/'
 LOGOUT_REDIRECT_URL = '/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -150,3 +157,15 @@ ENABLE_DEFRA_PROVIDER = os.getenv('ENABLE_DEFRA_PROVIDER', 'true')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# ── Production security headers (active when DEBUG=False) ──────────────────
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000          # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
