@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}AirSense{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=7">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=8">
   <style>
     .main-nav .dropdown {
       position: relative;
@@ -90,6 +90,57 @@
     }
     @media (max-width: 400px) {
       .topbar__user-name { display: none; }
+    }
+
+    /* Critical dashboard sizing so the live page stays usable if the main CSS is cached. */
+    .view-switch {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0 14px;
+    }
+
+    .view-switch__btn--square {
+      width: 48px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .view-switch__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .view-switch__svg {
+      display: block;
+      width: 20px;
+      height: 20px;
+    }
+
+    .outdoor-top__map {
+      width: 100%;
+      min-height: 220px;
+    }
+
+    @media (max-width: 900px) {
+      .view-switch {
+        flex-wrap: wrap;
+      }
+
+      .view-switch__btn--square {
+        width: 44px;
+        height: 44px;
+      }
+
+      .view-switch__svg {
+        width: 18px;
+        height: 18px;
+      }
     }
   </style>
   {% block extra_head %}{% endblock %}
