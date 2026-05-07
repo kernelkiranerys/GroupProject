@@ -37,3 +37,29 @@ document.addEventListener('DOMContentLoaded', function () {
     setTheme('light');
   });
 });
+
+// Ensure change-password form always submits (defensive fix)
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    var changeBtn = document.querySelector('button[name="change-password-submit"]');
+    if (!changeBtn) return;
+    var pwForm = changeBtn.closest('form');
+    if (!pwForm) return;
+
+    // If other code prevents the click/submission, force it and avoid double submits
+    changeBtn.addEventListener('click', function (ev) {
+      try {
+        // allow native submit if the button is type=submit
+        if (changeBtn.type && changeBtn.type.toLowerCase() === 'submit') {
+          // disable briefly to avoid double-clicks
+          changeBtn.disabled = true;
+          setTimeout(function () { changeBtn.disabled = false; }, 3000);
+          return;
+        }
+        ev.preventDefault();
+        changeBtn.disabled = true;
+        pwForm.submit();
+      } catch (e) { console.error('pw submit handler', e); }
+    }, { passive: false });
+  } catch (e) { }
+});

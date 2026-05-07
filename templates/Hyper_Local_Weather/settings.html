@@ -5,7 +5,6 @@
 
 {% block content %}
 <div class="settings-page">
-
   <div class="pagehead">
     <div>
       <h1 class="h1">Account Settings</h1>
@@ -25,7 +24,6 @@
     </nav>
 
     <div class="settings-content">
-      <!-- ── PROFILE PICTURE SECTION ── -->
       <div class="tab-pane" id="profile-picture">
         <div class="settings-section card">
           <div class="settings-section__head">
@@ -42,158 +40,165 @@
           {% if avatar_success %}
             <div class="settings-alert settings-alert--ok">{{ avatar_success }}</div>
           {% endif %}
-          {% if avatar_error %}
-            <div class="settings-alert settings-alert--err">{{ avatar_error }}</div>
-          {% endif %}
 
-          <form method="post" class="settings-form" enctype="multipart/form-data">
+          <form method="post" class="settings-form">
             {% csrf_token %}
             <input type="hidden" name="change_avatar" value="1">
-            <div class="avatar-modal">
-              <div class="modal-header">
-                <div class="import-card">
-                  <input type="file" name="uploaded_avatar" id="id_uploaded_avatar" accept="image/*" hidden>
-                  <label for="id_uploaded_avatar" class="import-dropzone" aria-label="Upload your own profile image">
-                    <span class="import-dropzone__icon" aria-hidden="true"></span>
-                    <span class="import-dropzone__title">Upload your own image</span>
-                    <span class="import-dropzone__hint">Click here to choose a JPG, PNG, GIF, or WEBP file.</span>
-                  </label>
-                </div>
-              </div>
-                <p class="muted notification-preference-row__hint">Warn me when AQI reaches moderate, unhealthy, or hazardous levels.</p>
-              </div>
-              <div class="toggle-switch">
-                <input type="checkbox" id="notify_air_quality_alerts" name="notify_air_quality_alerts" {% if user.profile.notify_air_quality_alerts %}checked{% endif %}>
-                <label for="notify_air_quality_alerts" class="toggle-switch__label"></label>
-              </div>
+            <div class="avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px;">
+              {% for avatar in avatars %}
+                <label class="avatar-option" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+                  <input class="avatar-radio" type="radio" name="avatar" value="{{ avatar }}" style="display:none;">
+                  <img src="{% static 'User_Icons/'|add:avatar %}" alt="{{ avatar }}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
+                </label>
+              {% endfor %}
             </div>
-            <div class="notification-preference-row">
-              <div>
-                <label for="notify_temperature_alerts" class="notification-preference-row__label">Indoor temperature alerts</label>
-                <p class="muted notification-preference-row__hint">Warn me when indoor temperature is too cold or too hot.</p>
-              </div>
-              <div class="toggle-switch">
-                <input type="checkbox" id="notify_temperature_alerts" name="notify_temperature_alerts" {% if user.profile.notify_temperature_alerts %}checked{% endif %}>
-                <label for="notify_temperature_alerts" class="toggle-switch__label"></label>
-              </div>
-            </div>
-            <div class="notification-preference-row">
-              <div>
-                <label for="notify_humidity_alerts" class="notification-preference-row__label">Humidity alerts</label>
-                <p class="muted notification-preference-row__hint">Warn me when humidity is too high or too low for comfort.</p>
-              </div>
-              <div class="toggle-switch">
-                <input type="checkbox" id="notify_humidity_alerts" name="notify_humidity_alerts" {% if user.profile.notify_humidity_alerts %}checked{% endif %}>
-                <label for="notify_humidity_alerts" class="toggle-switch__label"></label>
-              </div>
-            </div>
-            <div class="notification-preference-row">
-              <div>
-                <label for="notify_pressure_alerts" class="notification-preference-row__label">Pressure alerts</label>
-                <p class="muted notification-preference-row__hint">Warn me when atmospheric pressure indicates unstable weather.</p>
-              </div>
-              <div class="toggle-switch">
-                <input type="checkbox" id="notify_pressure_alerts" name="notify_pressure_alerts" {% if user.profile.notify_pressure_alerts %}checked{% endif %}>
-                <label for="notify_pressure_alerts" class="toggle-switch__label"></label>
-              </div>
-            </div>
-            <div class="notification-preference-row">
-              <div>
-                <label for="notify_positive_weather_alerts" class="notification-preference-row__label">Positive weather updates</label>
-                <p class="muted notification-preference-row__hint">Show good-news updates like healthy AQI and comfortable indoor temperatures.</p>
-              </div>
-              <div class="toggle-switch">
-                <input type="checkbox" id="notify_positive_weather_alerts" name="notify_positive_weather_alerts" {% if user.profile.notify_positive_weather_alerts %}checked{% endif %}>
-                <label for="notify_positive_weather_alerts" class="toggle-switch__label"></label>
-              </div>
-            </div>
+            <button type="submit" class="auth-submit-btn settings-btn" style="margin-top:12px;">Save avatar</button>
           </form>
         </div>
       </div>
 
-      <!-- ── APPEARANCE SECTION ── -->
-      <div class="tab-pane" id="appearance">
+      <div class="tab-pane" id="profile">
         <div class="settings-section card">
           <div class="settings-section__head">
-            <span class="settings-section__icon settings-section__icon--brush" aria-hidden="true">
-              <svg class="icon-svg icon-svg--brush" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M14.8 4.8a2.2 2.2 0 0 1 3.1 3.1L8.3 17.6l-3.5.9.9-3.5 9.1-10.2z" />
-                <path d="M13.2 6.4l3.4 3.4" />
-              </svg>
-            </span>
+            <span class="settings-section__icon">👤</span>
             <div>
-              <h2 class="settings-section__title">Appearance</h2>
-              <p class="muted settings-section__sub">Choose between dark and light mode.</p>
+              <h2 class="settings-section__title">Profile</h2>
+              <p class="muted settings-section__sub">Update your name, username and email address.</p>
             </div>
           </div>
 
           <div class="settings-divider"></div>
 
-          <div class="theme-preferences">
-            <p class="theme-preferences__copy muted">
-              Choose how AirSense looks for you. Pick a single theme and changes will apply instantly.
-            </p>
+          {% if profile_success %}<div class="settings-alert settings-alert--ok">{{ profile_success }}</div>{% endif %}
+          {% if profile_error %}<div class="settings-alert settings-alert--err">{{ profile_error }}</div>{% endif %}
 
-            <div class="theme-cards-grid" role="radiogroup" aria-label="Theme options">
-              <button type="button" class="theme-option theme-card" id="theme-opt-light" data-theme-value="light" aria-label="Classic light theme" role="radio" aria-checked="false">
-                <span class="theme-card__preview theme-card__preview--light" aria-hidden="true">
-                  <span class="theme-card__top"></span>
-                  <span class="theme-card__line theme-card__line--1"></span>
-                  <span class="theme-card__line theme-card__line--2"></span>
-                  <span class="theme-card__panel"></span>
-                </span>
-                <span class="theme-card__name">Classic Light</span>
-                <span class="theme-card__desc">Original light mode with clean contrast and simple accents.</span>
-              </button>
+          <form method="post" class="settings-form">
+            {% csrf_token %}
+            <input type="hidden" name="update_profile" value="1">
+            {{ profile_form.as_p }}
+            <button type="submit" class="auth-submit-btn settings-btn">Save changes</button>
+          </form>
+        </div>
+      </div>
 
-              <button type="button" class="theme-option theme-card" id="theme-opt-dark" data-theme-value="dark" aria-label="Classic dark theme" role="radio" aria-checked="false">
-                <span class="theme-card__preview theme-card__preview--dark" aria-hidden="true">
-                  <span class="theme-card__top"></span>
-                  <span class="theme-card__line theme-card__line--1"></span>
-                  <span class="theme-card__line theme-card__line--2"></span>
-                  <span class="theme-card__panel"></span>
-                </span>
-                <span class="theme-card__name">Classic Dark</span>
-                <span class="theme-card__desc">Original dark mode with clear text and neutral blue depth.</span>
-              </button>
-
-              <button type="button" class="theme-option theme-card" id="theme-opt-frost" data-theme-value="arctic-frost" aria-label="Arctic Frost light theme" role="radio" aria-checked="false">
-                <span class="theme-card__preview theme-card__preview--light" aria-hidden="true">
-                  <span class="theme-card__top"></span>
-                  <span class="theme-card__line theme-card__line--1"></span>
-                  <span class="theme-card__line theme-card__line--2"></span>
-                  <span class="theme-card__panel"></span>
-                </span>
-                <span class="theme-card__name">Arctic Frost</span>
-                <span class="theme-card__desc">Cool light surfaces with crisp contrast and subtle icy blue accents.</span>
-              </button>
-
-              <button type="button" class="theme-option theme-card" id="theme-opt-ocean" data-theme-value="ocean-depth" aria-label="Ocean Depth dark theme" role="radio" aria-checked="false">
-                <span class="theme-card__preview theme-card__preview--dark" aria-hidden="true">
-                  <span class="theme-card__top"></span>
-                  <span class="theme-card__line theme-card__line--1"></span>
-                  <span class="theme-card__line theme-card__line--2"></span>
-                  <span class="theme-card__panel"></span>
-                </span>
-                <span class="theme-card__name">Ocean Depth</span>
-                <span class="theme-card__desc">Deep blue dark mode with cool glow accents and high legibility.</span>
-              </button>
+      <div class="tab-pane" id="password">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">🔒</span>
+            <div>
+              <h2 class="settings-section__title">Change Password</h2>
+              <p class="muted settings-section__sub">Choose a strong password of at least 8 characters.</p>
             </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          {% if password_success %}<div class="settings-alert settings-alert--ok">{{ password_success }}</div>{% endif %}
+          {% if password_error %}<div class="settings-alert settings-alert--err">{{ password_error }}</div>{% endif %}
+
+          <form method="post" class="settings-form" action="{% url 'Hyper_Local_Weather:settings' %}#password">
+            {% csrf_token %}
+            <input type="hidden" name="change_password" value="1">
+
+            <div class="form-group">
+              <label for="id_current_password">Current password</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                {{ password_form.current_password }}
+                <button type="button" class="password-toggle" data-target="id_current_password" aria-label="Show current password">*</button>
+              </div>
+              {% if password_form.current_password.errors %}<span class="form-error">{{ password_form.current_password.errors.0 }}</span>{% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_new_password">New password</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                {{ password_form.new_password }}
+                <button type="button" class="password-toggle" data-target="id_new_password" aria-label="Show new password">*</button>
+              </div>
+              {% if password_form.new_password.errors %}<span class="form-error">{{ password_form.new_password.errors.0 }}</span>{% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_confirm_password">Confirm password</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                {{ password_form.confirm_password }}
+                <button type="button" class="password-toggle" data-target="id_confirm_password" aria-label="Show confirm password">*</button>
+              </div>
+              {% if password_form.confirm_password.errors %}<span class="form-error">{{ password_form.confirm_password.errors.0 }}</span>{% endif %}
+            </div>
+
+            {% if password_form.non_field_errors %}
+              <div class="form-error" style="margin-bottom:10px;">{{ password_form.non_field_errors.0 }}</div>
+            {% endif %}
+
+            <button type="submit" name="change-password-submit" class="auth-submit-btn settings-btn">Change password</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="notifications">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">🔔</span>
+            <div>
+              <h2 class="settings-section__title">Notifications</h2>
+              <p class="muted settings-section__sub">Choose which alerts you want to receive.</p>
+            </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          <form method="post" id="notifications-form" class="settings-form" action="{% url 'Hyper_Local_Weather:update_notification_settings' %}">
+            {% csrf_token %}
+            <div class="notification-preference-row">
+              <label for="notify_air_quality_alerts">Air quality alerts</label>
+              <input type="checkbox" id="notify_air_quality_alerts" name="notify_air_quality_alerts" {% if user.profile.notify_air_quality_alerts %}checked{% endif %}>
+            </div>
+            <div class="notification-preference-row">
+              <label for="notify_temperature_alerts">Indoor temperature alerts</label>
+              <input type="checkbox" id="notify_temperature_alerts" name="notify_temperature_alerts" {% if user.profile.notify_temperature_alerts %}checked{% endif %}>
+            </div>
+            <div class="notification-preference-row">
+              <label for="notify_humidity_alerts">Humidity alerts</label>
+              <input type="checkbox" id="notify_humidity_alerts" name="notify_humidity_alerts" {% if user.profile.notify_humidity_alerts %}checked{% endif %}>
+            </div>
+            <div class="notification-preference-row">
+              <label for="notify_pressure_alerts">Pressure alerts</label>
+              <input type="checkbox" id="notify_pressure_alerts" name="notify_pressure_alerts" {% if user.profile.notify_pressure_alerts %}checked{% endif %}>
+            </div>
+            <div class="notification-preference-row">
+              <label for="notify_positive_weather_alerts">Positive weather updates</label>
+              <input type="checkbox" id="notify_positive_weather_alerts" name="notify_positive_weather_alerts" {% if user.profile.notify_positive_weather_alerts %}checked{% endif %}>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="appearance">
+        <div class="settings-section card">
+          <div class="settings-section__head">
+            <span class="settings-section__icon">🎨</span>
+            <div>
+              <h2 class="settings-section__title">Appearance</h2>
+              <p class="muted settings-section__sub">Choose your theme.</p>
+            </div>
+          </div>
+
+          <div class="settings-divider"></div>
+
+          <div class="theme-cards-grid" role="radiogroup" aria-label="Theme options">
+            <button type="button" class="theme-option theme-card" data-theme-value="light" role="radio" aria-checked="false">Classic Light</button>
+            <button type="button" class="theme-option theme-card" data-theme-value="dark" role="radio" aria-checked="false">Classic Dark</button>
+            <button type="button" class="theme-option theme-card" data-theme-value="arctic-frost" role="radio" aria-checked="false">Arctic Frost</button>
+            <button type="button" class="theme-option theme-card" data-theme-value="ocean-depth" role="radio" aria-checked="false">Ocean Depth</button>
           </div>
         </div>
       </div>
 
-      <!-- ── ACCOUNT INFO ── -->
       <div class="tab-pane" id="account-info">
         <div class="settings-section card">
           <div class="settings-section__head">
-            <span class="settings-section__icon settings-section__icon--info" aria-hidden="true">
-              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M12 10v6" />
-                <circle class="icon-dot" cx="12" cy="7" r="1.2"></circle>
-              </svg>
-            </span>
+            <span class="settings-section__icon">ℹ️</span>
             <div>
               <h2 class="settings-section__title">Account Info</h2>
               <p class="muted settings-section__sub">Read-only details about your account.</p>
@@ -203,18 +208,9 @@
           <div class="settings-divider"></div>
 
           <dl class="settings-dl">
-            <div class="settings-dl__row">
-              <dt class="muted">Account ID</dt>
-              <dd>#{{ request.user.pk }}</dd>
-            </div>
-            <div class="settings-dl__row">
-              <dt class="muted">User Code</dt>
-              <dd><strong>{{ user_code }}</strong></dd>
-            </div>
-            <div class="settings-dl__row">
-              <dt class="muted">Member since</dt>
-              <dd>{{ request.user.date_joined|date:"d M Y" }}</dd>
-            </div>
+            <div class="settings-dl__row"><dt class="muted">Account ID</dt><dd>#{{ request.user.pk }}</dd></div>
+            <div class="settings-dl__row"><dt class="muted">User Code</dt><dd><strong>{{ user_code }}</strong></dd></div>
+            <div class="settings-dl__row"><dt class="muted">Member since</dt><dd>{{ request.user.date_joined|date:"d M Y" }}</dd></div>
             <div class="settings-dl__row">
               <dt class="muted">Role</dt>
               <dd>
@@ -230,20 +226,11 @@
           </dl>
         </div>
       </div>
-      <!-- ── ORGANISATION SECTION ── -->
+
       <div class="tab-pane" id="organisation">
         <div class="settings-section card">
           <div class="settings-section__head">
-            <span class="settings-section__icon settings-section__icon--org" aria-hidden="true">
-              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <rect x="3" y="9" width="18" height="13" rx="1"></rect>
-                <path d="M8 22V9"></path>
-                <path d="M16 22V9"></path>
-                <path d="M12 9V5"></path>
-                <rect x="9" y="2" width="6" height="4" rx="1"></rect>
-                <path d="M3 13h18"></path>
-              </svg>
-            </span>
+            <span class="settings-section__icon">🏢</span>
             <div>
               <h2 class="settings-section__title">Organisation</h2>
               <p class="muted settings-section__sub">Create or manage your organisation and invite members by user code.</p>
@@ -256,82 +243,31 @@
           {% if org_error %}<div class="settings-alert settings-alert--err" style="margin-bottom:14px;">{{ org_error }}</div>{% endif %}
 
           {% if not org %}
-            {# ── Create org ── #}
-            <p class="muted" style="margin-bottom:14px;">You are not part of an organisation yet. Create one to become an admin and invite your team.</p>
+            <p class="muted" style="margin-bottom:14px;">You are not part of an organisation yet.</p>
             <form method="post" class="settings-form">
               {% csrf_token %}
               <div class="form-group">
                 <label for="id_org_name">Organisation name</label>
-                <input type="text" name="name" id="id_org_name" maxlength="100" placeholder="e.g. AirSense Labs" class="form-control" required>
-                {% if create_org_form.name.errors %}<span class="form-error">{{ create_org_form.name.errors.0 }}</span>{% endif %}
+                <input type="text" name="name" id="id_org_name" maxlength="100" class="form-control" required>
               </div>
               <button type="submit" name="create_organisation" class="auth-action-btn auth-action-btn--grant" style="margin-top:10px;">Create Organisation</button>
             </form>
           {% else %}
-            {# ── Org info ── #}
             <dl class="settings-dl" style="margin-bottom:20px;">
-              <div class="settings-dl__row">
-                <dt class="muted">Name</dt>
-                <dd><strong>{{ org.name }}</strong></dd>
-              </div>
-              <div class="settings-dl__row">
-                <dt class="muted">Your role</dt>
-                <dd>
-                  {% if membership.role == 'admin' %}<span class="role-badge role-badge--staff">Admin</span>{% else %}<span class="role-badge">Member</span>{% endif %}
-                </dd>
-              </div>
-              <div class="settings-dl__row">
-                <dt class="muted">Members</dt>
-                <dd>{{ org_members|length }}</dd>
-              </div>
+              <div class="settings-dl__row"><dt class="muted">Name</dt><dd><strong>{{ org.name }}</strong></dd></div>
+              <div class="settings-dl__row"><dt class="muted">Members</dt><dd>{{ org_members|length }}</dd></div>
             </dl>
 
-            {# ── Members list ── #}
-            <table class="auth-table" style="margin-bottom:20px;">
-              <thead><tr><th>Username</th><th>User Code</th><th>Role</th><th>Joined</th>{% if membership.role == 'admin' %}<th></th>{% endif %}</tr></thead>
-              <tbody>
-              {% for m in org_members %}
-                <tr>
-                  <td>{{ m.user.username }}</td>
-                  <td><code>{{ m.user.profile.user_code }}</code></td>
-                  <td>{% if m.role == 'admin' %}<span class="role-badge role-badge--staff">Admin</span>{% else %}<span class="role-badge">Member</span>{% endif %}</td>
-                  <td>{{ m.joined_at|date:"d M Y" }}</td>
-                  {% if membership.role == 'admin' and m.user != request.user %}
-                  <td>
-                    <form method="post" style="display:inline;">
-                      {% csrf_token %}
-                      <input type="hidden" name="remove_uid" value="{{ m.user.pk }}">
-                      <button type="submit" name="remove_member" class="auth-action-btn auth-action-btn--revoke" style="padding:4px 10px;font-size:0.78rem;">Remove</button>
-                    </form>
-                  </td>
-                  {% elif membership.role == 'admin' %}
-                  <td><span class="muted" style="font-size:0.78rem;">You</span></td>
-                  {% endif %}
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
-
-            {# ── Invite by user code (admin only) ── #}
             {% if membership.role == 'admin' %}
-            <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:10px;">Invite by User Code</h3>
-            <p class="muted" style="font-size:0.82rem;margin-bottom:12px;">Ask your teammate to share their 6-digit code from their Account Info tab, then enter it below.</p>
             <form method="post" class="settings-form">
               {% csrf_token %}
               <div class="form-group" style="max-width:240px;">
                 <label for="id_invite_code">User code</label>
-                <input type="text" name="user_code" id="id_invite_code" maxlength="6" minlength="6" placeholder="000000" class="form-control" inputmode="numeric" pattern="[0-9]{6}" required>
-                {% if invite_form.user_code.errors %}<span class="form-error">{{ invite_form.user_code.errors.0 }}</span>{% endif %}
+                <input type="text" name="user_code" id="id_invite_code" maxlength="6" minlength="6" class="form-control" inputmode="numeric" pattern="[0-9]{6}" required>
               </div>
               <button type="submit" name="invite_member" class="auth-action-btn auth-action-btn--grant" style="margin-top:8px;">Add Member</button>
             </form>
             {% endif %}
-
-            <div class="settings-divider" style="margin-top:24px;"></div>
-            <form method="post" style="margin-top:12px;">
-              {% csrf_token %}
-              <button type="submit" name="leave_organisation" class="auth-action-btn auth-action-btn--revoke" onclick="return confirm('Are you sure you want to leave {{ org.name }}?');">Leave Organisation</button>
-            </form>
           {% endif %}
         </div>
       </div>
@@ -341,5 +277,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'js/settings.js' %}?v=1"></script>
+<script src="{% static 'js/settings.js' %}?v=2"></script>
 {% endblock %}

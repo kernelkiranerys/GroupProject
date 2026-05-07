@@ -51,11 +51,28 @@ document.addEventListener('DOMContentLoaded', function () {
       panes.forEach(function (pane) {
         pane.style.display = pane.id === target ? 'block' : 'none';
       });
+
+      if (target) {
+        if (window.history && typeof window.history.replaceState === 'function') {
+          window.history.replaceState(null, '', '#' + target);
+        } else {
+          window.location.hash = target;
+        }
+      }
     });
   });
 
   if (tabs.length > 0) {
-    tabs[0].click();
+    var initialTab = (window.location.hash || '').replace('#', '').trim();
+    var initialButton = initialTab
+      ? document.querySelector('.settings-nav__btn[data-tab="' + initialTab + '"]')
+      : null;
+
+    if (initialButton) {
+      initialButton.click();
+    } else {
+      tabs[0].click();
+    }
   }
 
   alerts.forEach(function (alertEl) {
