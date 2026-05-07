@@ -133,39 +133,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-  (function () {
-    var dark = document.getElementById('theme-opt-dark');
-    var light = document.getElementById('theme-opt-light');
-
-    function refreshUI() {
-      var t = document.documentElement.getAttribute('data-theme') || 'dark';
-      dark.classList.toggle('theme-option--active', t === 'dark');
-      light.classList.toggle('theme-option--active', t === 'light');
-    }
-
-    refreshUI();
-
-    dark.addEventListener('click', function () {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      refreshUI();
-      // keep the navbar icon in sync
-      var icon = document.getElementById('theme-icon');
-      var label = document.getElementById('theme-label');
-      if (icon) icon.textContent = '☀️';
-      if (label) label.textContent = 'Light Mode';
-    });
-
-    light.addEventListener('click', function () {
-      document.documentElement.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light');
-      refreshUI();
-      var icon = document.getElementById('theme-icon');
-      var label = document.getElementById('theme-label');
-      if (icon) icon.textContent = '🌙';
-      if (label) label.textContent = 'Dark Mode';
-    });
-  })();
-</script>
+<script src="{% static 'js/account.js' %}?v=1"></script>
 {% endblock %}

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="auth-container">
+<div class="auth-container" data-default-tab="{% if signup_error or signup_form.errors %}signup{% else %}login{% endif %}">
   <div class="auth-tabs">
     <button class="auth-tab auth-tab--active" data-tab="login">Login</button>
     <button class="auth-tab" data-tab="signup">Sign Up</button>
@@ -80,29 +81,6 @@
   </div>
 </div>
 
-<script>
-  function activateTab(tabName) {
-    document.querySelectorAll('.auth-panel').forEach(panel => {
-      panel.classList.remove('auth-panel--active');
-    });
-
-    document.querySelectorAll('.auth-tab').forEach(t => {
-      t.classList.remove('auth-tab--active');
-    });
-
-    document.getElementById(tabName).classList.add('auth-panel--active');
-    document.querySelector('.auth-tab[data-tab="' + tabName + '"]').classList.add('auth-tab--active');
-  }
-
-  document.querySelectorAll('.auth-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      activateTab(this.getAttribute('data-tab'));
-    });
-  });
-
-  {% if signup_error or signup_form.errors %}
-    activateTab('signup');
-  {% endif %}
-</script>
+<script src="{% static 'js/auth.js' %}?v=1"></script>
 {% endblock %}
 
