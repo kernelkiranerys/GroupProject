@@ -22,12 +22,12 @@ urlpatterns = [
     path('update_location/', views.update_location, name='update_location'),
     path('auth/', views.auth_page, name='auth'),
     path('signup/', views.signup, name='signup'),
+    path('map/', views.map_page, name='map'),
     path('<str:date>/', views.index, name='index_with_date'),
     path('location/<int:pk>/', views.location_detail, name='location_detail'),
     path('account/', views.account, name='account'),
     path('update-avatar/', views.update_avatar, name='update_avatar'),
     path('update-notification-settings/', views.update_notification_settings, name='update_notification_settings'),
-    path('map/', views.map_page, name='map'),
 ]
 
 if settings.DEBUG:
