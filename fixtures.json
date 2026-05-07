@@ -1,0 +1,4238 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$03Ij4KQrd2kv8GgmuOuFQE$njn7DHeClYIve/dElm/HaiL0OA9VuOjl1qTkQTT4eP0=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "admin_demo",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin_demo@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-05-07T14:03:58.004Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$IIN0Qj09fMXQWQuVJ6y5Qj$l/HiKnFkG9OB+FfFncH464mYImlIfWbP4zJ5DVP6Eds=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "alice",
+      "first_name": "",
+      "last_name": "",
+      "email": "alice@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-05-07T14:03:58.667Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$OeHLea4wETTSVhmgiUyt7o$PKJ5mNXKYotzNs4gir9ThJhZzLP/BWoaluItWbDJluU=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "bob",
+      "first_name": "",
+      "last_name": "",
+      "email": "bob@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-05-07T14:03:59.358Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$c83vU6izE8ou5yCeFU707o$0skZMxQFr13LpIRQglvO0LgGjzZHIDqfx2lZQc70cjs=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "charlie",
+      "first_name": "",
+      "last_name": "",
+      "email": "charlie@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-05-07T14:04:00.070Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.profile",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "image": "Defaults/Default-profile.jpg",
+      "user_code": "120001",
+      "notify_air_quality_alerts": true,
+      "notify_temperature_alerts": true,
+      "notify_humidity_alerts": true,
+      "notify_pressure_alerts": true,
+      "notify_positive_weather_alerts": true
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.profile",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "image": "Defaults/Default-profile.jpg",
+      "user_code": "120002",
+      "notify_air_quality_alerts": true,
+      "notify_temperature_alerts": true,
+      "notify_humidity_alerts": false,
+      "notify_pressure_alerts": true,
+      "notify_positive_weather_alerts": true
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.profile",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "image": "Defaults/Default-profile.jpg",
+      "user_code": "120003",
+      "notify_air_quality_alerts": true,
+      "notify_temperature_alerts": false,
+      "notify_humidity_alerts": true,
+      "notify_pressure_alerts": false,
+      "notify_positive_weather_alerts": true
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.profile",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "image": "Defaults/Default-profile.jpg",
+      "user_code": "120004",
+      "notify_air_quality_alerts": false,
+      "notify_temperature_alerts": true,
+      "notify_humidity_alerts": true,
+      "notify_pressure_alerts": true,
+      "notify_positive_weather_alerts": false
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.location",
+    "pk": 1,
+    "fields": {
+      "name": "Leeds, UK",
+      "latitude": "53.80080",
+      "longitude": "-1.54910"
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 1,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T00:00:00Z",
+      "temperature_c": 16.24,
+      "humidity": 45.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 8.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 2,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T00:00:00Z",
+      "temperature_c": 18.04,
+      "humidity": 49.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 12.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 3,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 53.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 4,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 5,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T06:00:00Z",
+      "temperature_c": 16.72,
+      "humidity": 51.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 14.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 6,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T06:00:00Z",
+      "temperature_c": 18.52,
+      "humidity": 55.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 18.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 7,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 59.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 23.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 8,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 63.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 27.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 9,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T12:00:00Z",
+      "temperature_c": 17.2,
+      "humidity": 48.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 10,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T12:00:00Z",
+      "temperature_c": 19.0,
+      "humidity": 52.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 11,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 56.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 12,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 60.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 13,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T18:00:00Z",
+      "temperature_c": 17.68,
+      "humidity": 45.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 14,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T18:00:00Z",
+      "temperature_c": 19.48,
+      "humidity": 49.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 15,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 53.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 16,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-07T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 17,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T00:00:00Z",
+      "temperature_c": 16.84,
+      "humidity": 46.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 18,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T00:00:00Z",
+      "temperature_c": 18.64,
+      "humidity": 50.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 19,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T00:00:00Z",
+      "temperature_c": 20.44,
+      "humidity": 54.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 20,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T00:00:00Z",
+      "temperature_c": 22.24,
+      "humidity": 58.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 21,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T06:00:00Z",
+      "temperature_c": 17.32,
+      "humidity": 52.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 22,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T06:00:00Z",
+      "temperature_c": 19.12,
+      "humidity": 56.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 23,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T06:00:00Z",
+      "temperature_c": 20.92,
+      "humidity": 60.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 24,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T06:00:00Z",
+      "temperature_c": 22.72,
+      "humidity": 64.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 25,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T12:00:00Z",
+      "temperature_c": 17.8,
+      "humidity": 49.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 26,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T12:00:00Z",
+      "temperature_c": 19.6,
+      "humidity": 53.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 27,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T12:00:00Z",
+      "temperature_c": 21.4,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 28,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T12:00:00Z",
+      "temperature_c": 23.2,
+      "humidity": 61.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 29,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T18:00:00Z",
+      "temperature_c": 18.28,
+      "humidity": 46.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 30,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T18:00:00Z",
+      "temperature_c": 20.08,
+      "humidity": 50.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 31,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T18:00:00Z",
+      "temperature_c": 21.88,
+      "humidity": 54.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 32,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-06T18:00:00Z",
+      "temperature_c": 23.68,
+      "humidity": 58.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 33,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T00:00:00Z",
+      "temperature_c": 17.44,
+      "humidity": 47.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 34,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T00:00:00Z",
+      "temperature_c": 19.24,
+      "humidity": 51.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 35,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T00:00:00Z",
+      "temperature_c": 21.04,
+      "humidity": 55.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 36,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T00:00:00Z",
+      "temperature_c": 22.84,
+      "humidity": 59.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 37,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T06:00:00Z",
+      "temperature_c": 17.92,
+      "humidity": 53.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 38,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T06:00:00Z",
+      "temperature_c": 19.72,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 39,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T06:00:00Z",
+      "temperature_c": 21.52,
+      "humidity": 61.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 40,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T06:00:00Z",
+      "temperature_c": 23.32,
+      "humidity": 65.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 41,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T12:00:00Z",
+      "temperature_c": 18.4,
+      "humidity": 50.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 42,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T12:00:00Z",
+      "temperature_c": 20.2,
+      "humidity": 54.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 43,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T12:00:00Z",
+      "temperature_c": 22.0,
+      "humidity": 58.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 44,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T12:00:00Z",
+      "temperature_c": 23.8,
+      "humidity": 62.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 45,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T18:00:00Z",
+      "temperature_c": 18.88,
+      "humidity": 47.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 46,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T18:00:00Z",
+      "temperature_c": 20.68,
+      "humidity": 51.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 47,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T18:00:00Z",
+      "temperature_c": 22.48,
+      "humidity": 55.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 48,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-05T18:00:00Z",
+      "temperature_c": 24.28,
+      "humidity": 59.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 49,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T00:00:00Z",
+      "temperature_c": 18.04,
+      "humidity": 48.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 50,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 52.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 51,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 56.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 52,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T00:00:00Z",
+      "temperature_c": 23.44,
+      "humidity": 60.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 53,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T06:00:00Z",
+      "temperature_c": 18.52,
+      "humidity": 45.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 54,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 49.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 55,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 53.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 56,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T06:00:00Z",
+      "temperature_c": 23.92,
+      "humidity": 57.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 57,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T12:00:00Z",
+      "temperature_c": 19.0,
+      "humidity": 51.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 58,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 55.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 59,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 59.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 60,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T12:00:00Z",
+      "temperature_c": 24.4,
+      "humidity": 63.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 61,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T18:00:00Z",
+      "temperature_c": 19.48,
+      "humidity": 48.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 62,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 52.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 63,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 56.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 27.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 64,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-04T18:00:00Z",
+      "temperature_c": 24.88,
+      "humidity": 60.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 31.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 65,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T00:00:00Z",
+      "temperature_c": 18.64,
+      "humidity": 49.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 66,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T00:00:00Z",
+      "temperature_c": 20.44,
+      "humidity": 53.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 67,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T00:00:00Z",
+      "temperature_c": 22.24,
+      "humidity": 57.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 68,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T00:00:00Z",
+      "temperature_c": 24.04,
+      "humidity": 61.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 69,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T06:00:00Z",
+      "temperature_c": 19.12,
+      "humidity": 46.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 70,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T06:00:00Z",
+      "temperature_c": 20.92,
+      "humidity": 50.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 71,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T06:00:00Z",
+      "temperature_c": 22.72,
+      "humidity": 54.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 27.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 72,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T06:00:00Z",
+      "temperature_c": 24.52,
+      "humidity": 58.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 31.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 73,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T12:00:00Z",
+      "temperature_c": 19.6,
+      "humidity": 52.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 13.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 74,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T12:00:00Z",
+      "temperature_c": 21.4,
+      "humidity": 56.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 17.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 75,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T12:00:00Z",
+      "temperature_c": 23.2,
+      "humidity": 60.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 22.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 76,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T12:00:00Z",
+      "temperature_c": 25.0,
+      "humidity": 64.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 26.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 77,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T18:00:00Z",
+      "temperature_c": 20.08,
+      "humidity": 49.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 8.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 78,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T18:00:00Z",
+      "temperature_c": 21.88,
+      "humidity": 53.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 12.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 79,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T18:00:00Z",
+      "temperature_c": 23.68,
+      "humidity": 57.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 80,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-03T18:00:00Z",
+      "temperature_c": 25.48,
+      "humidity": 61.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 81,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T00:00:00Z",
+      "temperature_c": 19.24,
+      "humidity": 50.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 13.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 82,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T00:00:00Z",
+      "temperature_c": 21.04,
+      "humidity": 54.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 17.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 83,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T00:00:00Z",
+      "temperature_c": 22.84,
+      "humidity": 58.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 22.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 84,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T00:00:00Z",
+      "temperature_c": 24.64,
+      "humidity": 62.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 26.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 85,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T06:00:00Z",
+      "temperature_c": 19.72,
+      "humidity": 47.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 8.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 86,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T06:00:00Z",
+      "temperature_c": 21.52,
+      "humidity": 51.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 12.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 87,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T06:00:00Z",
+      "temperature_c": 23.32,
+      "humidity": 55.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 88,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T06:00:00Z",
+      "temperature_c": 25.12,
+      "humidity": 59.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 89,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T12:00:00Z",
+      "temperature_c": 20.2,
+      "humidity": 53.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 14.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 90,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T12:00:00Z",
+      "temperature_c": 22.0,
+      "humidity": 57.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 18.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 91,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T12:00:00Z",
+      "temperature_c": 23.8,
+      "humidity": 61.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 23.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 92,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T12:00:00Z",
+      "temperature_c": 25.6,
+      "humidity": 65.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 27.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 93,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T18:00:00Z",
+      "temperature_c": 20.68,
+      "humidity": 50.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 94,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T18:00:00Z",
+      "temperature_c": 22.48,
+      "humidity": 54.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 95,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T18:00:00Z",
+      "temperature_c": 24.28,
+      "humidity": 58.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 96,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-02T18:00:00Z",
+      "temperature_c": 26.08,
+      "humidity": 62.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 97,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 51.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 14.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 98,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 55.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 18.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 99,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T00:00:00Z",
+      "temperature_c": 23.44,
+      "humidity": 59.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 23.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 100,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T00:00:00Z",
+      "temperature_c": 25.24,
+      "humidity": 63.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 27.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 101,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 48.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 102,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 52.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 103,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T06:00:00Z",
+      "temperature_c": 23.92,
+      "humidity": 56.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 104,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T06:00:00Z",
+      "temperature_c": 25.72,
+      "humidity": 60.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 105,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 45.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 106,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 49.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 107,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T12:00:00Z",
+      "temperature_c": 24.4,
+      "humidity": 53.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 108,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T12:00:00Z",
+      "temperature_c": 26.2,
+      "humidity": 57.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 109,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 51.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 110,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 55.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 111,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T18:00:00Z",
+      "temperature_c": 24.88,
+      "humidity": 59.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 112,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-05-01T18:00:00Z",
+      "temperature_c": 26.68,
+      "humidity": 63.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 113,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T00:00:00Z",
+      "temperature_c": 16.24,
+      "humidity": 52.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 114,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T00:00:00Z",
+      "temperature_c": 18.04,
+      "humidity": 56.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 115,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 60.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 116,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 64.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 117,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T06:00:00Z",
+      "temperature_c": 16.72,
+      "humidity": 49.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 118,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T06:00:00Z",
+      "temperature_c": 18.52,
+      "humidity": 53.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 119,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 57.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 120,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 61.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 121,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T12:00:00Z",
+      "temperature_c": 17.2,
+      "humidity": 46.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 122,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T12:00:00Z",
+      "temperature_c": 19.0,
+      "humidity": 50.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 123,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 54.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 124,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 58.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 125,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T18:00:00Z",
+      "temperature_c": 17.68,
+      "humidity": 52.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 126,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T18:00:00Z",
+      "temperature_c": 19.48,
+      "humidity": 56.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 127,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 60.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 128,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-30T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 64.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 129,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T00:00:00Z",
+      "temperature_c": 16.84,
+      "humidity": 53.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 130,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T00:00:00Z",
+      "temperature_c": 18.64,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 131,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T00:00:00Z",
+      "temperature_c": 20.44,
+      "humidity": 61.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 132,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T00:00:00Z",
+      "temperature_c": 22.24,
+      "humidity": 65.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 133,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T06:00:00Z",
+      "temperature_c": 17.32,
+      "humidity": 50.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 134,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T06:00:00Z",
+      "temperature_c": 19.12,
+      "humidity": 54.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 135,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T06:00:00Z",
+      "temperature_c": 20.92,
+      "humidity": 58.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 136,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T06:00:00Z",
+      "temperature_c": 22.72,
+      "humidity": 62.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 137,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T12:00:00Z",
+      "temperature_c": 17.8,
+      "humidity": 47.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 138,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T12:00:00Z",
+      "temperature_c": 19.6,
+      "humidity": 51.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 139,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T12:00:00Z",
+      "temperature_c": 21.4,
+      "humidity": 55.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 140,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T12:00:00Z",
+      "temperature_c": 23.2,
+      "humidity": 59.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 141,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T18:00:00Z",
+      "temperature_c": 18.28,
+      "humidity": 53.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 142,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T18:00:00Z",
+      "temperature_c": 20.08,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 143,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T18:00:00Z",
+      "temperature_c": 21.88,
+      "humidity": 61.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 144,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-29T18:00:00Z",
+      "temperature_c": 23.68,
+      "humidity": 65.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 145,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T00:00:00Z",
+      "temperature_c": 17.44,
+      "humidity": 45.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 146,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T00:00:00Z",
+      "temperature_c": 19.24,
+      "humidity": 49.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 147,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T00:00:00Z",
+      "temperature_c": 21.04,
+      "humidity": 53.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 148,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T00:00:00Z",
+      "temperature_c": 22.84,
+      "humidity": 57.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 149,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T06:00:00Z",
+      "temperature_c": 17.92,
+      "humidity": 51.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 150,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T06:00:00Z",
+      "temperature_c": 19.72,
+      "humidity": 55.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 151,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T06:00:00Z",
+      "temperature_c": 21.52,
+      "humidity": 59.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 152,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T06:00:00Z",
+      "temperature_c": 23.32,
+      "humidity": 63.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 153,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T12:00:00Z",
+      "temperature_c": 18.4,
+      "humidity": 48.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 154,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T12:00:00Z",
+      "temperature_c": 20.2,
+      "humidity": 52.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 155,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T12:00:00Z",
+      "temperature_c": 22.0,
+      "humidity": 56.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 27.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 156,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T12:00:00Z",
+      "temperature_c": 23.8,
+      "humidity": 60.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 31.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 157,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T18:00:00Z",
+      "temperature_c": 18.88,
+      "humidity": 45.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 13.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 158,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T18:00:00Z",
+      "temperature_c": 20.68,
+      "humidity": 49.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 17.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 159,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T18:00:00Z",
+      "temperature_c": 22.48,
+      "humidity": 53.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 22.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 160,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-28T18:00:00Z",
+      "temperature_c": 24.28,
+      "humidity": 57.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 26.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 161,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T00:00:00Z",
+      "temperature_c": 18.04,
+      "humidity": 46.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 162,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 50.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 163,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 54.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 27.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 164,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T00:00:00Z",
+      "temperature_c": 23.44,
+      "humidity": 58.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 31.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 165,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T06:00:00Z",
+      "temperature_c": 18.52,
+      "humidity": 52.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 13.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 166,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 56.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 17.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 167,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 60.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 22.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 168,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T06:00:00Z",
+      "temperature_c": 23.92,
+      "humidity": 64.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 26.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 169,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T12:00:00Z",
+      "temperature_c": 19.0,
+      "humidity": 49.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 8.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 170,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 53.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 12.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 171,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 57.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 172,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T12:00:00Z",
+      "temperature_c": 24.4,
+      "humidity": 61.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 173,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T18:00:00Z",
+      "temperature_c": 19.48,
+      "humidity": 46.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 14.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 174,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 50.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 18.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 175,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 54.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 23.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 176,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-27T18:00:00Z",
+      "temperature_c": 24.88,
+      "humidity": 58.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 27.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 177,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T00:00:00Z",
+      "temperature_c": 18.64,
+      "humidity": 47.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 8.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 178,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T00:00:00Z",
+      "temperature_c": 20.44,
+      "humidity": 51.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 12.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 179,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T00:00:00Z",
+      "temperature_c": 22.24,
+      "humidity": 55.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 180,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T00:00:00Z",
+      "temperature_c": 24.04,
+      "humidity": 59.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 181,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T06:00:00Z",
+      "temperature_c": 19.12,
+      "humidity": 53.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 14.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 182,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T06:00:00Z",
+      "temperature_c": 20.92,
+      "humidity": 57.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 18.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 183,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T06:00:00Z",
+      "temperature_c": 22.72,
+      "humidity": 61.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 23.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 184,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T06:00:00Z",
+      "temperature_c": 24.52,
+      "humidity": 65.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 27.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 185,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T12:00:00Z",
+      "temperature_c": 19.6,
+      "humidity": 50.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 186,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T12:00:00Z",
+      "temperature_c": 21.4,
+      "humidity": 54.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 187,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T12:00:00Z",
+      "temperature_c": 23.2,
+      "humidity": 58.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 188,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T12:00:00Z",
+      "temperature_c": 25.0,
+      "humidity": 62.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 189,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T18:00:00Z",
+      "temperature_c": 20.08,
+      "humidity": 47.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 190,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T18:00:00Z",
+      "temperature_c": 21.88,
+      "humidity": 51.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 191,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T18:00:00Z",
+      "temperature_c": 23.68,
+      "humidity": 55.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 192,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-26T18:00:00Z",
+      "temperature_c": 25.48,
+      "humidity": 59.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 193,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T00:00:00Z",
+      "temperature_c": 19.24,
+      "humidity": 48.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 194,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T00:00:00Z",
+      "temperature_c": 21.04,
+      "humidity": 52.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 195,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T00:00:00Z",
+      "temperature_c": 22.84,
+      "humidity": 56.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 196,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T00:00:00Z",
+      "temperature_c": 24.64,
+      "humidity": 60.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 197,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T06:00:00Z",
+      "temperature_c": 19.72,
+      "humidity": 45.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 198,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T06:00:00Z",
+      "temperature_c": 21.52,
+      "humidity": 49.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 199,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T06:00:00Z",
+      "temperature_c": 23.32,
+      "humidity": 53.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 200,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T06:00:00Z",
+      "temperature_c": 25.12,
+      "humidity": 57.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 201,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T12:00:00Z",
+      "temperature_c": 20.2,
+      "humidity": 51.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 202,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T12:00:00Z",
+      "temperature_c": 22.0,
+      "humidity": 55.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 203,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T12:00:00Z",
+      "temperature_c": 23.8,
+      "humidity": 59.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 204,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T12:00:00Z",
+      "temperature_c": 25.6,
+      "humidity": 63.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 205,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T18:00:00Z",
+      "temperature_c": 20.68,
+      "humidity": 48.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 206,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T18:00:00Z",
+      "temperature_c": 22.48,
+      "humidity": 52.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 207,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T18:00:00Z",
+      "temperature_c": 24.28,
+      "humidity": 56.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 208,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-25T18:00:00Z",
+      "temperature_c": 26.08,
+      "humidity": 60.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 209,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 49.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 210,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 53.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 211,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T00:00:00Z",
+      "temperature_c": 23.44,
+      "humidity": 57.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 212,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T00:00:00Z",
+      "temperature_c": 25.24,
+      "humidity": 61.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 213,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 46.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 214,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 50.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 215,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T06:00:00Z",
+      "temperature_c": 23.92,
+      "humidity": 54.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 216,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T06:00:00Z",
+      "temperature_c": 25.72,
+      "humidity": 58.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 217,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 52.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 218,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 56.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 219,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T12:00:00Z",
+      "temperature_c": 24.4,
+      "humidity": 60.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 220,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T12:00:00Z",
+      "temperature_c": 26.2,
+      "humidity": 64.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 221,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 49.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 222,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 53.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 223,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T18:00:00Z",
+      "temperature_c": 24.88,
+      "humidity": 57.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 224,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-24T18:00:00Z",
+      "temperature_c": 26.68,
+      "humidity": 61.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 225,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T00:00:00Z",
+      "temperature_c": 16.24,
+      "humidity": 50.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 226,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T00:00:00Z",
+      "temperature_c": 18.04,
+      "humidity": 54.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 227,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 58.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 228,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 62.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 229,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T06:00:00Z",
+      "temperature_c": 16.72,
+      "humidity": 47.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 230,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T06:00:00Z",
+      "temperature_c": 18.52,
+      "humidity": 51.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 231,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 55.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 232,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 59.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 233,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T12:00:00Z",
+      "temperature_c": 17.2,
+      "humidity": 53.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 234,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T12:00:00Z",
+      "temperature_c": 19.0,
+      "humidity": 57.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 235,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 61.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 236,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 65.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 237,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T18:00:00Z",
+      "temperature_c": 17.68,
+      "humidity": 50.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 238,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T18:00:00Z",
+      "temperature_c": 19.48,
+      "humidity": 54.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 239,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 58.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 27.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 240,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-23T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 62.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 31.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 241,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T00:00:00Z",
+      "temperature_c": 16.84,
+      "humidity": 51.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 242,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T00:00:00Z",
+      "temperature_c": 18.64,
+      "humidity": 55.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 243,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T00:00:00Z",
+      "temperature_c": 20.44,
+      "humidity": 59.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 244,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T00:00:00Z",
+      "temperature_c": 22.24,
+      "humidity": 63.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 245,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T06:00:00Z",
+      "temperature_c": 17.32,
+      "humidity": 48.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 246,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T06:00:00Z",
+      "temperature_c": 19.12,
+      "humidity": 52.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 247,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T06:00:00Z",
+      "temperature_c": 20.92,
+      "humidity": 56.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 27.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 248,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T06:00:00Z",
+      "temperature_c": 22.72,
+      "humidity": 60.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 31.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 249,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T12:00:00Z",
+      "temperature_c": 17.8,
+      "humidity": 45.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 13.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 250,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T12:00:00Z",
+      "temperature_c": 19.6,
+      "humidity": 49.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 17.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 251,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T12:00:00Z",
+      "temperature_c": 21.4,
+      "humidity": 53.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 22.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 252,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T12:00:00Z",
+      "temperature_c": 23.2,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 26.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 253,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T18:00:00Z",
+      "temperature_c": 18.28,
+      "humidity": 51.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 8.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 254,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T18:00:00Z",
+      "temperature_c": 20.08,
+      "humidity": 55.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 12.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 255,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T18:00:00Z",
+      "temperature_c": 21.88,
+      "humidity": 59.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 256,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-22T18:00:00Z",
+      "temperature_c": 23.68,
+      "humidity": 63.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 257,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T00:00:00Z",
+      "temperature_c": 17.44,
+      "humidity": 52.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 13.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 258,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T00:00:00Z",
+      "temperature_c": 19.24,
+      "humidity": 56.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 17.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 259,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T00:00:00Z",
+      "temperature_c": 21.04,
+      "humidity": 60.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 22.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 260,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T00:00:00Z",
+      "temperature_c": 22.84,
+      "humidity": 64.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 26.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 261,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T06:00:00Z",
+      "temperature_c": 17.92,
+      "humidity": 49.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 8.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 262,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T06:00:00Z",
+      "temperature_c": 19.72,
+      "humidity": 53.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 12.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 263,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T06:00:00Z",
+      "temperature_c": 21.52,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 264,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T06:00:00Z",
+      "temperature_c": 23.32,
+      "humidity": 61.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 265,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T12:00:00Z",
+      "temperature_c": 18.4,
+      "humidity": 46.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 14.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 266,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T12:00:00Z",
+      "temperature_c": 20.2,
+      "humidity": 50.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 18.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 267,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T12:00:00Z",
+      "temperature_c": 22.0,
+      "humidity": 54.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 23.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 268,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T12:00:00Z",
+      "temperature_c": 23.8,
+      "humidity": 58.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 27.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 269,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T18:00:00Z",
+      "temperature_c": 18.88,
+      "humidity": 52.0,
+      "pressure_hpa": 1008.9,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 270,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T18:00:00Z",
+      "temperature_c": 20.68,
+      "humidity": 56.0,
+      "pressure_hpa": 1010.1,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 271,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T18:00:00Z",
+      "temperature_c": 22.48,
+      "humidity": 60.0,
+      "pressure_hpa": 1011.3,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 272,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-21T18:00:00Z",
+      "temperature_c": 24.28,
+      "humidity": 64.0,
+      "pressure_hpa": 1012.5,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 273,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T00:00:00Z",
+      "temperature_c": 18.04,
+      "humidity": 53.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 14.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 274,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 18.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 275,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 61.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 23.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 276,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T00:00:00Z",
+      "temperature_c": 23.44,
+      "humidity": 65.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 27.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 277,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T06:00:00Z",
+      "temperature_c": 18.52,
+      "humidity": 50.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 9.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 278,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 54.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 13.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 279,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 58.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 280,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T06:00:00Z",
+      "temperature_c": 23.92,
+      "humidity": 62.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 281,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T12:00:00Z",
+      "temperature_c": 19.0,
+      "humidity": 47.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 282,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 51.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 283,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 55.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 284,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T12:00:00Z",
+      "temperature_c": 24.4,
+      "humidity": 59.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 285,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T18:00:00Z",
+      "temperature_c": 19.48,
+      "humidity": 53.0,
+      "pressure_hpa": 1009.8,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 286,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 57.0,
+      "pressure_hpa": 1011.0,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 287,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 61.0,
+      "pressure_hpa": 1012.2,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 288,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-20T18:00:00Z",
+      "temperature_c": 24.88,
+      "humidity": 65.0,
+      "pressure_hpa": 1013.4,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 289,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T00:00:00Z",
+      "temperature_c": 18.64,
+      "humidity": 45.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 15.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 290,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T00:00:00Z",
+      "temperature_c": 20.44,
+      "humidity": 49.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 19.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 291,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T00:00:00Z",
+      "temperature_c": 22.24,
+      "humidity": 53.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 24.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 292,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T00:00:00Z",
+      "temperature_c": 24.04,
+      "humidity": 57.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 28.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 293,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T06:00:00Z",
+      "temperature_c": 19.12,
+      "humidity": 51.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 10.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 294,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T06:00:00Z",
+      "temperature_c": 20.92,
+      "humidity": 55.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 14.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 295,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T06:00:00Z",
+      "temperature_c": 22.72,
+      "humidity": 59.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 19.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 296,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T06:00:00Z",
+      "temperature_c": 24.52,
+      "humidity": 63.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 23.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 297,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T12:00:00Z",
+      "temperature_c": 19.6,
+      "humidity": 48.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 298,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T12:00:00Z",
+      "temperature_c": 21.4,
+      "humidity": 52.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 299,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T12:00:00Z",
+      "temperature_c": 23.2,
+      "humidity": 56.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 300,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T12:00:00Z",
+      "temperature_c": 25.0,
+      "humidity": 60.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 301,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T18:00:00Z",
+      "temperature_c": 20.08,
+      "humidity": 45.0,
+      "pressure_hpa": 1010.7,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 302,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T18:00:00Z",
+      "temperature_c": 21.88,
+      "humidity": 49.0,
+      "pressure_hpa": 1011.9,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 303,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T18:00:00Z",
+      "temperature_c": 23.68,
+      "humidity": 53.0,
+      "pressure_hpa": 1013.1,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 304,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-19T18:00:00Z",
+      "temperature_c": 25.48,
+      "humidity": 57.0,
+      "pressure_hpa": 1014.3,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 305,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T00:00:00Z",
+      "temperature_c": 19.24,
+      "humidity": 46.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 16.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 306,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T00:00:00Z",
+      "temperature_c": 21.04,
+      "humidity": 50.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 20.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 307,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T00:00:00Z",
+      "temperature_c": 22.84,
+      "humidity": 54.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 25.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 308,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T00:00:00Z",
+      "temperature_c": 24.64,
+      "humidity": 58.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 29.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 309,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T06:00:00Z",
+      "temperature_c": 19.72,
+      "humidity": 52.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 11.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 310,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T06:00:00Z",
+      "temperature_c": 21.52,
+      "humidity": 56.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 15.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 311,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T06:00:00Z",
+      "temperature_c": 23.32,
+      "humidity": 60.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 20.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 312,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T06:00:00Z",
+      "temperature_c": 25.12,
+      "humidity": 64.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 24.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 313,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T12:00:00Z",
+      "temperature_c": 20.2,
+      "humidity": 49.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 314,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T12:00:00Z",
+      "temperature_c": 22.0,
+      "humidity": 53.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 315,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T12:00:00Z",
+      "temperature_c": 23.8,
+      "humidity": 57.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 316,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T12:00:00Z",
+      "temperature_c": 25.6,
+      "humidity": 61.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 317,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T18:00:00Z",
+      "temperature_c": 20.68,
+      "humidity": 46.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 318,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T18:00:00Z",
+      "temperature_c": 22.48,
+      "humidity": 50.0,
+      "pressure_hpa": 1012.8,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 319,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T18:00:00Z",
+      "temperature_c": 24.28,
+      "humidity": 54.0,
+      "pressure_hpa": 1014.0,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 320,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-18T18:00:00Z",
+      "temperature_c": 26.08,
+      "humidity": 58.0,
+      "pressure_hpa": 1015.2,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 321,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T00:00:00Z",
+      "temperature_c": 19.84,
+      "humidity": 47.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 17.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 322,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T00:00:00Z",
+      "temperature_c": 21.64,
+      "humidity": 51.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 21.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 323,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T00:00:00Z",
+      "temperature_c": 23.44,
+      "humidity": 55.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 26.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 324,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T00:00:00Z",
+      "temperature_c": 25.24,
+      "humidity": 59.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 30.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 325,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T06:00:00Z",
+      "temperature_c": 20.32,
+      "humidity": 53.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 12.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 326,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T06:00:00Z",
+      "temperature_c": 22.12,
+      "humidity": 57.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 16.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 327,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T06:00:00Z",
+      "temperature_c": 23.92,
+      "humidity": 61.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 21.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 328,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T06:00:00Z",
+      "temperature_c": 25.72,
+      "humidity": 65.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 25.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 329,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T12:00:00Z",
+      "temperature_c": 20.8,
+      "humidity": 50.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 18.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 330,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T12:00:00Z",
+      "temperature_c": 22.6,
+      "humidity": 54.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 22.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 331,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T12:00:00Z",
+      "temperature_c": 24.4,
+      "humidity": 58.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 27.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 332,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T12:00:00Z",
+      "temperature_c": 26.2,
+      "humidity": 62.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 31.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 333,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T18:00:00Z",
+      "temperature_c": 21.28,
+      "humidity": 47.0,
+      "pressure_hpa": 1008.0,
+      "air_quality": 13.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 334,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T18:00:00Z",
+      "temperature_c": 23.08,
+      "humidity": 51.0,
+      "pressure_hpa": 1009.2,
+      "air_quality": 17.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 335,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T18:00:00Z",
+      "temperature_c": 24.88,
+      "humidity": 55.0,
+      "pressure_hpa": 1010.4,
+      "air_quality": 22.0
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.weatherreading",
+    "pk": 336,
+    "fields": {
+      "location": 1,
+      "timestamp": "2026-04-17T18:00:00Z",
+      "temperature_c": 26.68,
+      "humidity": 59.0,
+      "pressure_hpa": 1011.6,
+      "air_quality": 26.5
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.organisation",
+    "pk": 1,
+    "fields": {
+      "name": "Demo Weather Org",
+      "owner": 1,
+      "created_at": "2026-05-07T14:04:01.018Z"
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.organisationmembership",
+    "pk": 1,
+    "fields": {
+      "organisation": 1,
+      "user": 1,
+      "role": "admin",
+      "joined_at": "2026-05-07T14:04:01.068Z"
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.organisationmembership",
+    "pk": 2,
+    "fields": {
+      "organisation": 1,
+      "user": 2,
+      "role": "member",
+      "joined_at": "2026-05-07T14:04:01.074Z"
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.organisationmembership",
+    "pk": 3,
+    "fields": {
+      "organisation": 1,
+      "user": 3,
+      "role": "member",
+      "joined_at": "2026-05-07T14:04:01.081Z"
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.organizationinvite",
+    "pk": 1,
+    "fields": {
+      "email": "newmember@example.com",
+      "code": "334455",
+      "role": "member",
+      "created_by": 1,
+      "created_at": "2026-05-07T14:04:01.087Z",
+      "accepted_by": null,
+      "accepted_at": null,
+      "is_active": true
+    }
+  },
+  {
+    "model": "Hyper_Local_Weather.organizationinvite",
+    "pk": 2,
+    "fields": {
+      "email": "accepted@example.com",
+      "code": "778899",
+      "role": "staff",
+      "created_by": 1,
+      "created_at": "2026-05-07T14:04:01.095Z",
+      "accepted_by": 3,
+      "accepted_at": "2026-05-05T14:04:01.094Z",
+      "is_active": false
+    }
+  }
+]
