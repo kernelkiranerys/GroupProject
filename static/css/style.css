@@ -2284,6 +2284,13 @@ body {
   background: rgba(255,255,255,0.35);
 }
 
+/* Settings Nav */
+[data-theme="light"] .settings-nav__btn--active {
+  background: rgba(85, 210, 180, 0.35);
+  box-shadow: 0 0 0 2px rgba(85, 210, 180, 0.65) inset;
+  color: #0c2340;
+}
+
 /* Charts */
 [data-theme="light"] .chart {
   background: rgba(255,255,255,0.38);

@@ -67,6 +67,30 @@
         min-width: 200px;
       }
     }
+
+    .topbar__user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+    }
+    .topbar__user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .topbar__user-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    @media (max-width: 400px) {
+      .topbar__user-name { display: none; }
+    }
   </style>
   {% block extra_head %}{% endblock %}
   <script>
@@ -130,6 +154,16 @@
               <h1 class="brand__name">AirSense</h1>
             </div>
     </div>
+    {% if user.is_authenticated %}
+    <div class="topbar__user">
+      <img class="topbar__user-avatar"
+           src="{{ topbar_avatar_url }}"
+           onerror="this.src='{% static 'Defaults/Default_profile.jpg' %}'"
+           alt="{{ user.username }}">
+      <span class="topbar__user-name">{{ user.username }}</span>
+    </div>
+    {% endif %}
+  </div>
 </header>
 
   <main class="container">
