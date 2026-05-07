@@ -1096,8 +1096,8 @@ def analytics(request):
             'icon': '🍄',
             'count': len(mold_risk_readings),
             'pct': _risk_pct(mold_risk_readings),
-            'level': 'high' if _risk_pct(mold_risk_readings) > 20 else ('medium' if _risk_pct(mold_risk_readings) > 5 else 'low'),
-            'description': 'Readings with humidity >70 % and temperature >18 °C — conditions that accelerate mold growth.',
+            'level': 'high' if (avg_humidity is not None and avg_temp is not None and avg_humidity > 70 and avg_temp > 18) else ('medium' if (avg_humidity is not None and avg_temp is not None and avg_humidity > 60 and avg_temp > 16) else 'low'),
+            'description': 'Humidity >70 % and temperature >18 °C — a Category 1 hazard under the Housing Act 2004 (HHSRS).',
             'threshold': 'Humidity > 70% & Temp > 18°C',
         },
         {
@@ -1105,8 +1105,8 @@ def analytics(request):
             'icon': '🌡️',
             'count': len(heat_stress_readings),
             'pct': _risk_pct(heat_stress_readings),
-            'level': 'high' if _risk_pct(heat_stress_readings) > 10 else ('medium' if _risk_pct(heat_stress_readings) > 2 else 'low'),
-            'description': 'Indoor temperature exceeded 28 °C — potentially uncomfortable or unsafe for occupants.',
+            'level': 'high' if _risk_pct(heat_stress_readings) > 20 else ('medium' if heat_stress_readings else 'low'),
+            'description': 'Temperature above the 28 °C HSE action threshold — Workplace (Health, Safety & Welfare) Regulations 1992.',
             'threshold': 'Temp > 28°C',
         },
         {
@@ -1114,7 +1114,7 @@ def analytics(request):
             'icon': '❄️',
             'count': len(cold_alert_readings),
             'pct': _risk_pct(cold_alert_readings),
-            'level': 'high' if _risk_pct(cold_alert_readings) > 15 else ('medium' if _risk_pct(cold_alert_readings) > 5 else 'low'),
+            'level': 'high' if _risk_pct(cold_alert_readings) > 20 else ('medium' if cold_alert_readings else 'low'),
             'description': 'Temperature below the 16 °C UK workplace legal minimum — action recommended.',
             'threshold': 'Temp < 16°C',
         },
@@ -1123,8 +1123,8 @@ def analytics(request):
             'icon': '💧',
             'count': len(high_humidity_readings),
             'pct': _risk_pct(high_humidity_readings),
-            'level': 'high' if _risk_pct(high_humidity_readings) > 25 else ('medium' if _risk_pct(high_humidity_readings) > 10 else 'low'),
-            'description': 'Relative humidity exceeded 70 % — discomfort risk and promotes mold/dust mite growth.',
+            'level': 'high' if (avg_humidity is not None and avg_humidity > 70) else ('medium' if (avg_humidity is not None and avg_humidity > 60) else 'low'),
+            'description': 'Humidity above 70 % — persistently high levels may constitute a Category 1 hazard under the Housing Act 2004 (HHSRS).',
             'threshold': 'Humidity > 70%',
         },
         {
@@ -1132,8 +1132,8 @@ def analytics(request):
             'icon': '🏜️',
             'count': len(low_humidity_readings),
             'pct': _risk_pct(low_humidity_readings),
-            'level': 'medium' if _risk_pct(low_humidity_readings) > 10 else 'low',
-            'description': 'Relative humidity below 30 % — dry air can cause respiratory irritation.',
+            'level': 'high' if (avg_humidity is not None and avg_humidity < 30) else ('medium' if (avg_humidity is not None and avg_humidity < 40) else 'low'),
+            'description': 'Humidity below 30 % — below the HSE recommended indoor range of 40–70 %.',
             'threshold': 'Humidity < 30%',
         },
     ]
@@ -1143,8 +1143,8 @@ def analytics(request):
             'icon': '💨',
             'count': len(poor_aq_readings),
             'pct': _risk_pct(poor_aq_readings),
-            'level': 'high' if _risk_pct(poor_aq_readings) > 20 else ('medium' if _risk_pct(poor_aq_readings) > 5 else 'low'),
-            'description': 'Low gas resistance readings indicate elevated VOCs or particulates in indoor air.',
+            'level': 'high' if (avg_aq is not None and avg_aq < 5000) else ('medium' if (avg_aq is not None and avg_aq < 10000) else 'low'),
+            'description': 'Elevated VOCs or particulates detected — ventilation required under the Workplace Regulations 1992 and COSHH Regulations 2002.',
             'threshold': 'Gas resistance < 5 kΩ',
         })
 
