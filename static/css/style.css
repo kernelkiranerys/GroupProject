@@ -794,6 +794,8 @@ body {
 
 /* ========= DASHBOARD LAYOUT ========= */
 
+/* ========= DASHBOARD LAYOUT ========= */
+
 .dashboard-graph {
   grid-column: 1 / -1;
 }
@@ -1749,6 +1751,14 @@ body {
   grid-template-columns: 320px 1fr;
   gap: 14px;
   align-items: stretch;
+}
+
+.dashboard-grid--outdoor .aqWrap{
+  grid-template-columns: 1fr;
+}
+
+.dashboard-grid--outdoor .aqChart{
+  width: 100%;
 }
 
 /* left column */
