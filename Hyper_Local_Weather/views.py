@@ -1704,3 +1704,6 @@ def account(request):
     }
 
     return render(request, 'Hyper_Local_Weather/account.html', context)
+
+def map_page(request):
+    return render(request, 'Hyper_Local_Weather/map.html')

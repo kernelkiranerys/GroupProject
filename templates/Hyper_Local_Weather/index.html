@@ -21,19 +21,57 @@
   </a>
 </div>
 
-{% if view_mode == 'outdoor' %}
+<div class="dashboard-grid {% if view_mode == 'indoor' %}dashboard-grid--indoor{% else %}dashboard-grid--outdoor{% endif %}">
+  {% if view_mode == 'indoor' %}
+  <div class="dashboard-row dashboard-row--single">
+    <div class="card gauge-card indoor-temp-card {% if is_mock_indoor_temp %}disabled{% endif %}">
+      <h3>Current Indoor Temperature</h3>
+      <div class="tempTile tempTile--wide js-indoor-temp-tile">
+        <button type="button" class="tempTile__toggle" aria-label="Show weekly average" aria-expanded="false" title="Show weekly average"></button>
 
-<div class="card outdoor-top">
-  <div class="outdoor-top__left">
-    <h3>Outdoor Air Quality</h3>
-    <div id="uk-air-quality-map" class="outdoor-top__map" aria-label="UK air quality map"></div>
-    <div class="aq-map-legend" aria-label="Air quality legend">
-      <span><i class="aq-map-dot aq-map-dot--good"></i> Good</span>
-      <span><i class="aq-map-dot aq-map-dot--moderate"></i> Moderate</span>
-      <span><i class="aq-map-dot aq-map-dot--poor"></i> Poor</span>
+        <div class="tempTile__carousel">
+          <div class="tempTile__panel">
+            <div class="tempTile__main">
+              <div class="tempTile__value">
+                <span class="tempTile__num">{{ latest_indoor_temp|floatformat:0 }}</span>
+                <span class="tempTile__deg">&deg;</span>
+              </div>
+              <div class="tempTile__sub muted">Indoor • live reading</div>
+            </div>
+          </div>
+
+          <div class="tempTile__panel tempTile__panel--week">
+            <div class="tempTile__weekAvg" aria-label="Indoor weekly average">
+              <div class="tempTile__weekAvgValue">
+                <span class="tempTile__weekAvgNum js-week-avg-num">N/A</span>
+                <span class="tempTile__weekAvgDeg js-week-avg-deg">&deg;</span>
+              </div>
+              <div class="tempTile__weekAvgLabel muted">Weekly average</div>
+            </div>
+
+            <div class="tempTile__week" aria-label="Indoor weekly average temperatures">
+              {% for day in past_week_temps %}
+                <div class="day" data-temp="{% if day.avg_temp == 'N/A' %}{% else %}{{ day.avg_temp }}{% endif %}">
+                  <div class="day__name">{{ day.day_name }}</div>
+                  <div class="day__val">
+                    {% if day.avg_temp == 'N/A' %}
+                      --
+                    {% else %}
+                      {{ day.avg_temp }}&deg;
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="outdoor-top__right {% if is_mock_outdoor_temp %}disabled{% endif %}">
+  {% endif %}
+
+  {% if view_mode == 'outdoor' %}
+  <div class="card outdoor-top__right {% if is_mock_outdoor_temp %}disabled{% endif %}">
     <div class="outdoor-temp">
       <h3>Current Outdoor Temperature</h3>
       <div class="tempTile tempTile--compact-outdoor js-outdoor-temp-tile">
@@ -78,266 +116,227 @@
       </div>
     </div>
   </div>
-</div>
 
-{% else %}
-
-{% endif %}
-
-<div class="dashboard-graph card">
-  <div class="aqWrap">
-
-    <!-- LEFT: CURRENT  -->
-    <div class="aqSummary">
-      <div class="aqSummary__top">
-        <div class="aqSummary__title">Today's {{ view_mode|title }} Air Quality</div>
-      </div>
-
-      <div class="aqSummary__main">
-        <div class="aqSummary__num">
-          {{ current_air_quality|floatformat:0 }}
-        </div>
-        <div class="aqSummary__status">
-          {% if current_air_quality <= 50 %}
-            Good
-          {% elif current_air_quality <= 100 %}
-            Moderate
-          {% elif current_air_quality <= 150 %}
-            Unhealthy for Sensitive Groups
-          {% elif current_air_quality <= 200 %}
-            Unhealthy
-          {% elif current_air_quality <= 300 %}
-            Very Unhealthy
-          {% else %}
-            Hazardous
-          {% endif %}
-        </div>
-        <div class="aqSummary__meta muted">AQI • PM2.5 placeholder</div>
-      </div>
-    </div>
-
-    <!-- RIGHT: CHART -->
-    <div class="aqChart">
-      <div class="aqChart__plot">
-        <svg viewBox="0 0 1000 360" class="aqSvg" role="img" aria-label="Air quality trend placeholder">
-          <defs>
-            <filter id="aqGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="3" result="blur"/>
-              <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-
-          <g class="aqBands">
-            <rect x="70" y="250" width="900" height="50" class="band band-good"></rect>
-            <rect x="70" y="200" width="900" height="50" class="band band-mod"></rect>
-            <rect x="70" y="150" width="900" height="50" class="band band-usg"></rect>
-            <rect x="70" y="100" width="900" height="50" class="band band-unh"></rect>
-            <rect x="70" y="30" width="900" height="70" class="band band-vunh"></rect>
-          </g>
-
-          <g class="aqGrid">
-            <line x1="70" y1="30" x2="70" y2="300"></line>
-            <line x1="70" y1="300" x2="970" y2="300"></line>
-            <line x1="70" y1="250" x2="970" y2="250"></line>
-            <line x1="70" y1="200" x2="970" y2="200"></line>
-            <line x1="70" y1="150" x2="970" y2="150"></line>
-            <line x1="70" y1="100" x2="970" y2="100"></line>
-            <line x1="70" y1="50"  x2="970" y2="50"></line>
-            <line x1="70"  y1="30" x2="70"  y2="300"></line>
-            <line x1="220" y1="30" x2="220" y2="300"></line>
-            <line x1="370" y1="30" x2="370" y2="300"></line>
-            <line x1="520" y1="30" x2="520" y2="300"></line>
-            <line x1="670" y1="30" x2="670" y2="300"></line>
-            <line x1="820" y1="30" x2="820" y2="300"></line>
-            <line x1="970" y1="30" x2="970" y2="300"></line>
-          </g>
-
-          <text class="aqTitle" x="70" y="18">AQI (Air Quality Index) - last 7 days</text>
-
-          <g class="aqAxisLabels">
-            <text x="52" y="304" text-anchor="end">0</text>
-            <text x="52" y="254" text-anchor="end">50</text>
-            <text x="52" y="204" text-anchor="end">100</text>
-            <text x="52" y="154" text-anchor="end">150</text>
-            <text x="52" y="104" text-anchor="end">200</text>
-            <text x="52" y="54"  text-anchor="end">250</text>
-          </g>
-
-          <text class="aqYAxisTitle" x="18" y="165" transform="rotate(-90 18 165)">AQI</text>
-
-          <path class="aqArea"
-            d="M70 210
-               L220 230
-               L370 160
-               L520 190
-               L670 170
-               L820 245
-               L970 180
-               L970 300 L70 300 Z" />
-
-          <path class="aqLine" filter="url(#aqGlow)"
-            d="M70 210
-               L220 230
-               L370 160
-               L520 190
-               L670 170
-               L820 245
-               L970 180" />
-
-          <g class="aqDots">
-            <circle cx="70"  cy="210" r="6"></circle>
-            <circle cx="220" cy="230" r="6"></circle>
-            <circle cx="370" cy="160" r="6"></circle>
-            <circle cx="520" cy="190" r="6"></circle>
-            <circle cx="670" cy="170" r="6"></circle>
-            <circle cx="820" cy="245" r="6"></circle>
-            <circle cx="970" cy="180" r="6"></circle>
-          </g>
-
-          <g class="aqXLabels">
-            <text x="70"  y="340" text-anchor="middle">Mon</text>
-            <text x="220" y="340" text-anchor="middle">Tue</text>
-            <text x="370" y="340" text-anchor="middle">Wed</text>
-            <text x="520" y="340" text-anchor="middle">Thu</text>
-            <text x="670" y="340" text-anchor="middle">Fri</text>
-            <text x="820" y="340" text-anchor="middle">Sat</text>
-            <text x="970" y="340" text-anchor="middle">Sun</text>
-          </g>
-        </svg>
-      </div>
-
-      <div class="aqDays muted" role="tablist" aria-label="Select air quality day">
-        <button type="button" class="aqDayBtn" data-day-index="0" role="tab" aria-selected="false">M</button>
-        <button type="button" class="aqDayBtn" data-day-index="1" role="tab" aria-selected="false">T</button>
-        <button type="button" class="aqDayBtn" data-day-index="2" role="tab" aria-selected="false">W</button>
-        <button type="button" class="aqDayBtn" data-day-index="3" role="tab" aria-selected="false">T</button>
-        <button type="button" class="aqDayBtn" data-day-index="4" role="tab" aria-selected="false">F</button>
-        <button type="button" class="aqDayBtn" data-day-index="5" role="tab" aria-selected="false">S</button>
-        <button type="button" class="aqDayBtn" data-day-index="6" role="tab" aria-selected="false">S</button>
-      </div>
+  <div class="card outdoor-top__left">
+    <h3>Outdoor Air Quality</h3>
+    <div id="uk-air-quality-map" class="outdoor-top__map" aria-label="UK air quality map"></div>
+    <div class="aq-map-legend" aria-label="Air quality legend">
+      <span><i class="aq-map-dot aq-map-dot--good"></i> Good</span>
+      <span><i class="aq-map-dot aq-map-dot--moderate"></i> Moderate</span>
+      <span><i class="aq-map-dot aq-map-dot--poor"></i> Poor</span>
     </div>
   </div>
-</div>
+  {% endif %}
 
-<div class="dashboard-row">
-  <div class="card humidity-card">
-    <div class="gauge__label">Humidity</div>
-    <div class="humidityGauge">
-      <div class="cloud" style="--h: {{ current_humidity|floatformat:0 }};">
-        <div class="cloud__fill"></div>
-        <div class="cloud__shine"></div>
+  
+
+  <div class="dashboard-graph card">
+    <div class="aqWrap">
+
+      <!-- LEFT: CURRENT  -->
+      <div class="aqSummary">
+        <div class="aqSummary__top">
+          <div class="aqSummary__title">Today's {{ view_mode|title }} Air Quality</div>
+        </div>
+
+        <div class="aqSummary__main">
+          <div class="aqSummary__num">
+            {{ current_air_quality|floatformat:0 }}
+          </div>
+          <div class="aqSummary__status">
+            {% if current_air_quality <= 50 %}
+              Good
+            {% elif current_air_quality <= 100 %}
+              Moderate
+            {% elif current_air_quality <= 150 %}
+              Unhealthy for Sensitive Groups
+            {% elif current_air_quality <= 200 %}
+              Unhealthy
+            {% elif current_air_quality <= 300 %}
+              Very Unhealthy
+            {% else %}
+              Hazardous
+            {% endif %}
+          </div>
+          <div class="aqSummary__meta muted">AQI • PM2.5 placeholder</div>
+        </div>
       </div>
 
-      <div class="humidityReadout">
-        <div class="humidityValue">
-          <span class="humidityNum">{{ current_humidity|floatformat:0 }}</span><span class="humidityPct">%</span>
+      <!-- RIGHT: CHART -->
+      <div class="aqChart">
+        <div class="aqChart__plot">
+          <svg viewBox="0 0 1000 360" class="aqSvg" role="img" aria-label="Air quality trend placeholder">
+            <defs>
+              <filter id="aqGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <g class="aqBands">
+              <rect x="70" y="250" width="900" height="50" class="band band-good"></rect>
+              <rect x="70" y="200" width="900" height="50" class="band band-mod"></rect>
+              <rect x="70" y="150" width="900" height="50" class="band band-usg"></rect>
+              <rect x="70" y="100" width="900" height="50" class="band band-unh"></rect>
+              <rect x="70" y="30" width="900" height="70" class="band band-vunh"></rect>
+            </g>
+
+            <g class="aqGrid">
+              <line x1="70" y1="30" x2="70" y2="300"></line>
+              <line x1="70" y1="300" x2="970" y2="300"></line>
+              <line x1="70" y1="250" x2="970" y2="250"></line>
+              <line x1="70" y1="200" x2="970" y2="200"></line>
+              <line x1="70" y1="150" x2="970" y2="150"></line>
+              <line x1="70" y1="100" x2="970" y2="100"></line>
+              <line x1="70" y1="50"  x2="970" y2="50"></line>
+              <line x1="70"  y1="30" x2="70"  y2="300"></line>
+              <line x1="220" y1="30" x2="220" y2="300"></line>
+              <line x1="370" y1="30" x2="370" y2="300"></line>
+              <line x1="520" y1="30" x2="520" y2="300"></line>
+              <line x1="670" y1="30" x2="670" y2="300"></line>
+              <line x1="820" y1="30" x2="820" y2="300"></line>
+              <line x1="970" y1="30" x2="970" y2="300"></line>
+            </g>
+
+            <text class="aqTitle" x="70" y="18">AQI (Air Quality Index) - last 7 days</text>
+
+            <g class="aqAxisLabels">
+              <text x="52" y="304" text-anchor="end">0</text>
+              <text x="52" y="254" text-anchor="end">50</text>
+              <text x="52" y="204" text-anchor="end">100</text>
+              <text x="52" y="154" text-anchor="end">150</text>
+              <text x="52" y="104" text-anchor="end">200</text>
+              <text x="52" y="54"  text-anchor="end">250</text>
+            </g>
+
+            <text class="aqYAxisTitle" x="18" y="165" transform="rotate(-90 18 165)">AQI</text>
+
+            <path class="aqArea"
+              d="M70 210
+                 L220 230
+                 L370 160
+                 L520 190
+                 L670 170
+                 L820 245
+                 L970 180
+                 L970 300 L70 300 Z" />
+
+            <path class="aqLine" filter="url(#aqGlow)"
+              d="M70 210
+                 L220 230
+                 L370 160
+                 L520 190
+                 L670 170
+                 L820 245
+                 L970 180" />
+
+            <g class="aqDots">
+              <circle cx="70"  cy="210" r="6"></circle>
+              <circle cx="220" cy="230" r="6"></circle>
+              <circle cx="370" cy="160" r="6"></circle>
+              <circle cx="520" cy="190" r="6"></circle>
+              <circle cx="670" cy="170" r="6"></circle>
+              <circle cx="820" cy="245" r="6"></circle>
+              <circle cx="970" cy="180" r="6"></circle>
+            </g>
+
+            <g class="aqXLabels">
+              <text x="70"  y="340" text-anchor="middle">Mon</text>
+              <text x="220" y="340" text-anchor="middle">Tue</text>
+              <text x="370" y="340" text-anchor="middle">Wed</text>
+              <text x="520" y="340" text-anchor="middle">Thu</text>
+              <text x="670" y="340" text-anchor="middle">Fri</text>
+              <text x="820" y="340" text-anchor="middle">Sat</text>
+              <text x="970" y="340" text-anchor="middle">Sun</text>
+            </g>
+          </svg>
         </div>
-        <div class="humidityLevel">
-          {% if current_humidity <= 30 %}
-            Low
-          {% elif current_humidity <= 60 %}
-            Normal
-          {% else %}
-            High
-          {% endif %}
+
+        <div class="aqDays muted" role="tablist" aria-label="Select air quality day">
+          <button type="button" class="aqDayBtn" data-day-index="0" role="tab" aria-selected="false">M</button>
+          <button type="button" class="aqDayBtn" data-day-index="1" role="tab" aria-selected="false">T</button>
+          <button type="button" class="aqDayBtn" data-day-index="2" role="tab" aria-selected="false">W</button>
+          <button type="button" class="aqDayBtn" data-day-index="3" role="tab" aria-selected="false">T</button>
+          <button type="button" class="aqDayBtn" data-day-index="4" role="tab" aria-selected="false">F</button>
+          <button type="button" class="aqDayBtn" data-day-index="5" role="tab" aria-selected="false">S</button>
+          <button type="button" class="aqDayBtn" data-day-index="6" role="tab" aria-selected="false">S</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="card gauge-card">
-    <div class="gauge__label">Pressure</div>
+  <div class="dashboard-row">
+    <div class="card humidity-card">
+      <div class="gauge__label">Humidity</div>
+      <div class="humidityGauge">
+        <div class="cloud" style="--h: {{ current_humidity|floatformat:0 }};">
+          <div class="cloud__fill"></div>
+          <div class="cloud__shine"></div>
+        </div>
 
-    <div class="gauge" data-pressure="{{ current_pressure|floatformat:2 }}" data-min-pressure="960" data-max-pressure="1060">
-      <div class="gauge__ring">
-        <div class="gauge__face">
-          <div class="gauge__ticks" aria-hidden="true"></div>
-
-          <div class="gauge__numbers" aria-hidden="true">
-            <span style="--mark:0;">960</span>
-            <span style="--mark:1;">980</span>
-            <span style="--mark:2;">1000</span>
-            <span style="--mark:3;">1020</span>
-            <span style="--mark:4;">1040</span>
-            <span style="--mark:5;">1060</span>
+        <div class="humidityReadout">
+          <div class="humidityValue">
+            <span class="humidityNum">{{ current_humidity|floatformat:0 }}</span><span class="humidityPct">%</span>
           </div>
-
-          <div class="gauge__icons" aria-hidden="true">
-            <span class="gauge__icon gauge__icon--cloud gauge__icon--cloud-top"></span>
-            <span class="gauge__icon gauge__icon--cloud gauge__icon--cloud-left"></span>
-            <span class="gauge__icon gauge__icon--rain"></span>
-            <span class="gauge__icon gauge__icon--sun gauge__icon--sun-right"></span>
-          </div>
-
-          <div class="gauge__needle-tail"></div>
-          <div class="gauge__needle"></div>
-          <div class="gauge__center"></div>
-
-          <div class="gauge__brand" aria-hidden="true">
-            <span>Barometer</span>
+          <div class="humidityLevel">
+            {% if current_humidity <= 30 %}
+              Low
+            {% elif current_humidity <= 60 %}
+              Normal
+            {% else %}
+              High
+            {% endif %}
           </div>
         </div>
       </div>
-
-      <div class="gauge__readout">
-        <div class="gauge__value">{{ current_pressure|floatformat:0 }}</div>
-        <div class="gauge__unit">hPa</div>
-        <div class="gauge__meta muted">Sea level • Steady</div>
-      </div>
     </div>
-  </div>
-</div>
 
-{% if view_mode == 'indoor' %}
-<div class="dashboard-row dashboard-row--single">
-  <div class="card gauge-card indoor-temp-card {% if is_mock_indoor_temp %}disabled{% endif %}">
-    <h3>Current Indoor Temperature</h3>
-    <div class="tempTile tempTile--wide js-indoor-temp-tile">
-      <button type="button" class="tempTile__toggle" aria-label="Show weekly average" aria-expanded="false" title="Show weekly average"></button>
+    <div class="card gauge-card">
+      <div class="gauge__label">Pressure</div>
 
-      <div class="tempTile__carousel">
-        <div class="tempTile__panel">
-          <div class="tempTile__main">
-            <div class="tempTile__value">
-              <span class="tempTile__num">{{ latest_indoor_temp|floatformat:0 }}</span>
-              <span class="tempTile__deg">&deg;</span>
+      <div class="gauge" data-pressure="{{ current_pressure|floatformat:2 }}" data-min-pressure="960" data-max-pressure="1060">
+        <div class="gauge__ring">
+          <div class="gauge__face">
+            <div class="gauge__ticks" aria-hidden="true"></div>
+
+            <div class="gauge__numbers" aria-hidden="true">
+              <span style="--mark:0;">960</span>
+              <span style="--mark:1;">980</span>
+              <span style="--mark:2;">1000</span>
+              <span style="--mark:3;">1020</span>
+              <span style="--mark:4;">1040</span>
+              <span style="--mark:5;">1060</span>
             </div>
-            <div class="tempTile__sub muted">Indoor • live reading</div>
+
+            <div class="gauge__icons" aria-hidden="true">
+              <span class="gauge__icon gauge__icon--cloud gauge__icon--cloud-top"></span>
+              <span class="gauge__icon gauge__icon--cloud gauge__icon--cloud-left"></span>
+              <span class="gauge__icon gauge__icon--rain"></span>
+              <span class="gauge__icon gauge__icon--sun gauge__icon--sun-right"></span>
+            </div>
+
+            <div class="gauge__needle-tail"></div>
+            <div class="gauge__needle"></div>
+            <div class="gauge__center"></div>
+
+            <div class="gauge__brand" aria-hidden="true">
+              <span>Barometer</span>
+            </div>
           </div>
         </div>
 
-        <div class="tempTile__panel tempTile__panel--week">
-          <div class="tempTile__weekAvg" aria-label="Indoor weekly average">
-            <div class="tempTile__weekAvgValue">
-              <span class="tempTile__weekAvgNum js-week-avg-num">N/A</span>
-              <span class="tempTile__weekAvgDeg js-week-avg-deg">&deg;</span>
-            </div>
-            <div class="tempTile__weekAvgLabel muted">Weekly average</div>
-          </div>
-
-          <div class="tempTile__week" aria-label="Indoor weekly average temperatures">
-            {% for day in past_week_temps %}
-              <div class="day" data-temp="{% if day.avg_temp == 'N/A' %}{% else %}{{ day.avg_temp }}{% endif %}">
-                <div class="day__name">{{ day.day_name }}</div>
-                <div class="day__val">
-                  {% if day.avg_temp == 'N/A' %}
-                    --
-                  {% else %}
-                    {{ day.avg_temp }}&deg;
-                  {% endif %}
-                </div>
-              </div>
-            {% endfor %}
-          </div>
+        <div class="gauge__readout">
+          <div class="gauge__value">{{ current_pressure|floatformat:0 }}</div>
+          <div class="gauge__unit">hPa</div>
+          <div class="gauge__meta muted">Sea level • Steady</div>
         </div>
       </div>
     </div>
   </div>
 </div>
-{% endif %}
 
 {% endblock %}
 
@@ -609,6 +608,10 @@ document.addEventListener('DOMContentLoaded', function() {
     zoomControl: true,
   });
 
+  // Keep user-location overlays above AQI hex fills.
+  map.createPane('userOverlayPane');
+  map.getPane('userOverlayPane').style.zIndex = 650;
+
   const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
@@ -631,22 +634,44 @@ document.addEventListener('DOMContentLoaded', function() {
   const mapZoom = parseInt('{{ map_zoom }}', 10) || 13;
   const userHasLocation = {{ user_has_location|yesno:"true,false" }};
 
-  const ukBounds = [[49.8, -8.8], [60.9, 2.2]];
+  let userRing = null;
+  let userDot = null;
 
-  if (userHasLocation) {
-    map.setView([userLat, userLon], mapZoom);
-    // Draw a 100-yard ring (100 yards = 91.44 meters)
-    const userRing = L.circle([userLat, userLon], {
+  function drawUserLocationOverlay(lat, lon) {
+    if (userRing) {
+      map.removeLayer(userRing);
+    }
+    if (userDot) {
+      map.removeLayer(userDot);
+    }
+
+    userRing = L.circle([lat, lon], {
       color: '#1E90FF',
       fillColor: '#1E90FF',
       fillOpacity: 0.12,
       weight: 1,
-      radius: 91.44
+      radius: 91.44,
+      pane: 'userOverlayPane'
     }).addTo(map);
+
+    userDot = L.circleMarker([lat, lon], {
+      radius: 4,
+      color: '#ffffff',
+      weight: 1,
+      fillColor: '#1E90FF',
+      fillOpacity: 1,
+      pane: 'userOverlayPane'
+    }).addTo(map);
+
     userRing.bindPopup('Your location (approx.) — 100 yards radius');
-  } else {
-    map.fitBounds(ukBounds, { padding: [12, 12] });
+    userDot.bindPopup('Your location (approx.) — 100 yards radius');
   }
+
+  // Always show the active hyper-local zone ring (session/default coordinates).
+  // UK-wide bounds make a 100-yard radius effectively invisible.
+  const initialZoom = userHasLocation ? mapZoom : 13;
+  map.setView([userLat, userLon], initialZoom);
+  drawUserLocationOverlay(userLat, userLon);
 
   fetch('{% url "Hyper_Local_Weather:uk_sensor_hex_data" %}')
     .then(function(response) {
@@ -702,6 +727,21 @@ document.addEventListener('DOMContentLoaded', function() {
       if (data.latitude === null || data.longitude === null) {
         return;
       }
+
+      map.setView([data.latitude, data.longitude], 14);
+      drawUserLocationOverlay(data.latitude, data.longitude);
+
+      // Persist location so subsequent page loads use the same center/ring.
+      fetch('{% url "Hyper_Local_Weather:update_location" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          lat: data.latitude,
+          lon: data.longitude
+        })
+      }).catch(function() {});
 
       var gpsIcon = L.divIcon({
         className: '',

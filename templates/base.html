@@ -80,6 +80,46 @@
 <body>
   <div class="notification-container"></div>
 
+  <header class="mobile-header">
+    <div class="mobile-header__left">
+        <div class="dropdown">
+            <button class="dropbtn" aria-label="Open menu" title="Menu" aria-expanded="false" aria-controls="main-menu-dropdown-mobile" type="button">
+                <span class="hamburger-icon" aria-hidden="true"></span>
+            </button>
+            <div class="dropdown-content" id="main-menu-dropdown-mobile">
+          <a href="{% url 'Hyper_Local_Weather:index' %}">Home</a>
+          <a href="{% url 'Hyper_Local_Weather:historical' %}">Stats</a>
+          <a href="{% url 'Hyper_Local_Weather:map' %}">Map</a>
+          <a href="{% url 'Hyper_Local_Weather:account' %}">Account</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'Hyper_Local_Weather:notification_testing' %}">Notification Testing</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <a href="{% url 'Hyper_Local_Weather:settings' %}">Settings</a>
+                {% if user.is_staff %}
+                <a href="{% url 'Hyper_Local_Weather:authorisations' %}">Authorisations</a>
+                {% endif %}
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="link-button">Logout</button>
+                </form>
+                {% else %}
+                <a href="{% url 'Hyper_Local_Weather:auth' %}">Login / Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="mobile-header__center">
+        <h1 class="brand__name">AirSense</h1>
+    </div>
+    <div class="mobile-header__right">
+        <button class="notification-bell" aria-label="Notifications">
+            <span class="notification-bell__icon">🔔</span>
+            <span class="notification-bell__dot"></span>
+        </button>
+    </div>
+  </header>
+
   <header class="topbar">
     <div class="container topbar__inner">
         <div class="brand-and-nav">
@@ -89,8 +129,10 @@
                   <span class="hamburger-icon" aria-hidden="true"></span>
                 </button>
                     <div class="dropdown-content" id="main-menu-dropdown">
-                        <a href="{% url 'Hyper_Local_Weather:index' %}">Dashboard</a>
-                        <a href="{% url 'Hyper_Local_Weather:historical' %}">Historical</a>
+                        <a href="{% url 'Hyper_Local_Weather:index' %}">Home</a>
+                        <a href="{% url 'Hyper_Local_Weather:historical' %}">Stats</a>
+                        <a href="{% url 'Hyper_Local_Weather:map' %}">Map</a>
+                        <a href="{% url 'Hyper_Local_Weather:account' %}">Account</a>
                       {% if user.is_authenticated %}
                         <a href="{% url 'Hyper_Local_Weather:notification_testing' %}">Notification Testing</a>
                       {% endif %}
@@ -119,6 +161,25 @@
   <main class="container">
     {% block content %}{% endblock %}
   </main>
+
+  <nav class="bottom-nav">
+    <a href="{% url 'Hyper_Local_Weather:index' %}" class="bottom-nav__link {% if request.resolver_match.url_name == 'index' %}bottom-nav__link--active{% endif %}">
+      <span class="bottom-nav__icon">🏠</span>
+      <span class="bottom-nav__label">Home</span>
+    </a>
+    <a href="{% url 'Hyper_Local_Weather:historical' %}" class="bottom-nav__link {% if request.resolver_match.url_name == 'historical' %}bottom-nav__link--active{% endif %}">
+      <span class="bottom-nav__icon">📊</span>
+      <span class="bottom-nav__label">Stats</span>
+    </a>
+    <a href="{% url 'Hyper_Local_Weather:map' %}" class="bottom-nav__link {% if request.resolver_match.url_name == 'map' %}bottom-nav__link--active{% endif %}">
+      <span class="bottom-nav__icon">🗺️</span>
+      <span class="bottom-nav__label">Map</span>
+    </a>
+    <a href="{% url 'Hyper_Local_Weather:account' %}" class="bottom-nav__link {% if request.resolver_match.url_name == 'account' %}bottom-nav__link--active{% endif %}">
+      <span class="bottom-nav__icon">👤</span>
+      <span class="bottom-nav__label">Account</span>
+    </a>
+  </nav>
 
   <footer class="footer">
     <div class="container footer__inner">
@@ -183,31 +244,59 @@
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const dropdown = document.querySelector('.dropdown');
-      if (!dropdown) return;
+      const dropdowns = Array.from(document.querySelectorAll('.dropdown'));
 
-      const button = dropdown.querySelector('.dropbtn');
-      if (!button) return;
+      dropdowns.forEach(function (dropdown) {
+        const button = dropdown.querySelector('.dropbtn');
+        if (!button) {
+          return;
+        }
 
-      button.addEventListener('click', function (event) {
-        event.stopPropagation();
-        const willOpen = !dropdown.classList.contains('dropdown--open');
-        dropdown.classList.toggle('dropdown--open', willOpen);
-        button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        button.addEventListener('click', function (event) {
+          event.stopPropagation();
+
+          const willOpen = !dropdown.classList.contains('dropdown--open');
+          dropdowns.forEach(function (otherDropdown) {
+            if (otherDropdown !== dropdown) {
+              otherDropdown.classList.remove('dropdown--open');
+              const otherButton = otherDropdown.querySelector('.dropbtn');
+              if (otherButton) {
+                otherButton.setAttribute('aria-expanded', 'false');
+              }
+            }
+          });
+
+          dropdown.classList.toggle('dropdown--open', willOpen);
+          button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
       });
 
       document.addEventListener('click', function (event) {
-        if (!dropdown.contains(event.target)) {
-          dropdown.classList.remove('dropdown--open');
-          button.setAttribute('aria-expanded', 'false');
+        if (event.target.closest('.dropdown')) {
+          return;
         }
+
+        dropdowns.forEach(function (dropdown) {
+          dropdown.classList.remove('dropdown--open');
+          const button = dropdown.querySelector('.dropbtn');
+          if (button) {
+            button.setAttribute('aria-expanded', 'false');
+          }
+        });
       });
 
       document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-          dropdown.classList.remove('dropdown--open');
-          button.setAttribute('aria-expanded', 'false');
+        if (event.key !== 'Escape') {
+          return;
         }
+
+        dropdowns.forEach(function (dropdown) {
+          dropdown.classList.remove('dropdown--open');
+          const button = dropdown.querySelector('.dropbtn');
+          if (button) {
+            button.setAttribute('aria-expanded', 'false');
+          }
+        });
       });
 
       // Sync settings page theme cards on load

@@ -27,6 +27,7 @@ urlpatterns = [
     path('account/', views.account, name='account'),
     path('update-avatar/', views.update_avatar, name='update_avatar'),
     path('update-notification-settings/', views.update_notification_settings, name='update_notification_settings'),
+    path('map/', views.map_page, name='map'),
 ]
 
 if settings.DEBUG:
