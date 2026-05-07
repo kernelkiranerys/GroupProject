@@ -14,10 +14,21 @@
 
 <div class="view-switch" role="navigation" aria-label="Dashboard mode switch">
   <a href="{% url 'Hyper_Local_Weather:index' %}?mode=outdoor" class="view-switch__btn view-switch__btn--square {% if view_mode == 'outdoor' %}view-switch__btn--active{% endif %}" aria-label="Outdoor view" title="Outdoor view">
-    <span class="view-switch__icon" aria-hidden="true">🌳</span>
+    <span class="view-switch__icon" aria-hidden="true">
+      <svg class="view-switch__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 12,11 A 4,4 0 1 1 8,7 A 4,4 0 0 1 16,7 A 4,4 0 1 1 12,11 Z"/>
+        <line x1="12" y1="11" x2="12" y2="20"/>
+        <line x1="9.5" y1="20" x2="14.5" y2="20"/>
+      </svg>
+    </span>
   </a>
   <a href="{% url 'Hyper_Local_Weather:index' %}?mode=indoor" class="view-switch__btn view-switch__btn--square {% if view_mode == 'indoor' %}view-switch__btn--active{% endif %}" aria-label="Indoor view" title="Indoor view">
-    <span class="view-switch__icon" aria-hidden="true">🏠</span>
+    <span class="view-switch__icon" aria-hidden="true">
+      <svg class="view-switch__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9,22 9,12 15,12 15,22"/>
+      </svg>
+    </span>
   </a>
 </div>
 
@@ -117,6 +128,7 @@
     </div>
   </div>
 
+<<<<<<< HEAD
   <div class="card outdoor-top__left">
     <h3>Outdoor Air Quality</h3>
     <div id="uk-air-quality-map" class="outdoor-top__map" aria-label="UK air quality map"></div>
@@ -124,6 +136,146 @@
       <span><i class="aq-map-dot aq-map-dot--good"></i> Good</span>
       <span><i class="aq-map-dot aq-map-dot--moderate"></i> Moderate</span>
       <span><i class="aq-map-dot aq-map-dot--poor"></i> Poor</span>
+=======
+{% else %}
+
+{% endif %}
+
+<div class="dashboard-graph card">
+  <div class="aqWrap">
+
+    <!-- LEFT: CURRENT  -->
+    <div class="aqSummary">
+      <div class="aqSummary__top">
+        <div class="aqSummary__title">Today's Air Quality</div>
+      </div>
+
+      <div class="aqSummary__main">
+        <div class="aqSummary__num">
+          {{ current_air_quality|floatformat:0 }}
+        </div>
+        <div class="aqSummary__status">
+          {% if current_air_quality <= 50 %}
+            Good
+          {% elif current_air_quality <= 100 %}
+            Moderate
+          {% elif current_air_quality <= 150 %}
+            Unhealthy for Sensitive Groups
+          {% elif current_air_quality <= 200 %}
+            Unhealthy
+          {% elif current_air_quality <= 300 %}
+            Very Unhealthy
+          {% else %}
+            Hazardous
+          {% endif %}
+        </div>
+        <div class="aqSummary__meta muted">AQI • PM2.5 placeholder</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CHART -->
+    <div class="aqChart">
+      <div class="aqChart__plot">
+        <svg viewBox="0 0 1000 360" class="aqSvg" role="img" aria-label="Air quality trend placeholder">
+          <defs>
+            <filter id="aqGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <g class="aqBands">
+            <rect x="70" y="250" width="900" height="50" class="band band-good"></rect>
+            <rect x="70" y="200" width="900" height="50" class="band band-mod"></rect>
+            <rect x="70" y="150" width="900" height="50" class="band band-usg"></rect>
+            <rect x="70" y="100" width="900" height="50" class="band band-unh"></rect>
+            <rect x="70" y="30" width="900" height="70" class="band band-vunh"></rect>
+          </g>
+
+          <g class="aqGrid">
+            <line x1="70" y1="30" x2="70" y2="300"></line>
+            <line x1="70" y1="300" x2="970" y2="300"></line>
+            <line x1="70" y1="250" x2="970" y2="250"></line>
+            <line x1="70" y1="200" x2="970" y2="200"></line>
+            <line x1="70" y1="150" x2="970" y2="150"></line>
+            <line x1="70" y1="100" x2="970" y2="100"></line>
+            <line x1="70" y1="50"  x2="970" y2="50"></line>
+            <line x1="70"  y1="30" x2="70"  y2="300"></line>
+            <line x1="220" y1="30" x2="220" y2="300"></line>
+            <line x1="370" y1="30" x2="370" y2="300"></line>
+            <line x1="520" y1="30" x2="520" y2="300"></line>
+            <line x1="670" y1="30" x2="670" y2="300"></line>
+            <line x1="820" y1="30" x2="820" y2="300"></line>
+            <line x1="970" y1="30" x2="970" y2="300"></line>
+          </g>
+
+          <text class="aqTitle" x="70" y="18">AQI (Air Quality Index) - last 7 days</text>
+
+          <g class="aqAxisLabels">
+            <text x="52" y="304" text-anchor="end">0</text>
+            <text x="52" y="254" text-anchor="end">50</text>
+            <text x="52" y="204" text-anchor="end">100</text>
+            <text x="52" y="154" text-anchor="end">150</text>
+            <text x="52" y="104" text-anchor="end">200</text>
+            <text x="52" y="54"  text-anchor="end">250</text>
+          </g>
+
+          <text class="aqYAxisTitle" x="18" y="165" transform="rotate(-90 18 165)">AQI</text>
+
+          <path class="aqArea"
+            d="M70 210
+               L220 230
+               L370 160
+               L520 190
+               L670 170
+               L820 245
+               L970 180
+               L970 300 L70 300 Z" />
+
+          <path class="aqLine" filter="url(#aqGlow)"
+            d="M70 210
+               L220 230
+               L370 160
+               L520 190
+               L670 170
+               L820 245
+               L970 180" />
+
+          <g class="aqDots">
+            <circle cx="70"  cy="210" r="6"></circle>
+            <circle cx="220" cy="230" r="6"></circle>
+            <circle cx="370" cy="160" r="6"></circle>
+            <circle cx="520" cy="190" r="6"></circle>
+            <circle cx="670" cy="170" r="6"></circle>
+            <circle cx="820" cy="245" r="6"></circle>
+            <circle cx="970" cy="180" r="6"></circle>
+          </g>
+
+          <g class="aqXLabels">
+            <text x="70"  y="340" text-anchor="middle">Mon</text>
+            <text x="220" y="340" text-anchor="middle">Tue</text>
+            <text x="370" y="340" text-anchor="middle">Wed</text>
+            <text x="520" y="340" text-anchor="middle">Thu</text>
+            <text x="670" y="340" text-anchor="middle">Fri</text>
+            <text x="820" y="340" text-anchor="middle">Sat</text>
+            <text x="970" y="340" text-anchor="middle">Sun</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="aqDays muted" role="tablist" aria-label="Select air quality day">
+        <button type="button" class="aqDayBtn" data-day-index="0" role="tab" aria-selected="false">M</button>
+        <button type="button" class="aqDayBtn" data-day-index="1" role="tab" aria-selected="false">T</button>
+        <button type="button" class="aqDayBtn" data-day-index="2" role="tab" aria-selected="false">W</button>
+        <button type="button" class="aqDayBtn" data-day-index="3" role="tab" aria-selected="false">T</button>
+        <button type="button" class="aqDayBtn" data-day-index="4" role="tab" aria-selected="false">F</button>
+        <button type="button" class="aqDayBtn" data-day-index="5" role="tab" aria-selected="false">S</button>
+        <button type="button" class="aqDayBtn" data-day-index="6" role="tab" aria-selected="false">S</button>
+      </div>
+>>>>>>> db2f7a3064745dbbbe0740a0804d8b43959e3017
     </div>
   </div>
   {% endif %}
@@ -779,6 +931,9 @@ document.addEventListener('DOMContentLoaded', function () {
   var indoorT  = parseFloat('{{ latest_indoor_temp|floatformat:1 }}')  || null;
   var humidity = parseFloat('{{ current_humidity|floatformat:1 }}')    || null;
   var pressure = parseFloat('{{ current_pressure|floatformat:1 }}')    || null;
+  // Indoor-specific values always from the indoor sensor regardless of view mode
+  var indoorHumidity = {% if indoor_humidity %}{{ indoor_humidity|floatformat:1 }}{% else %}null{% endif %};
+  var indoorPressure = {% if indoor_pressure %}{{ indoor_pressure|floatformat:1 }}{% else %}null{% endif %};
   var isMockAq     = {{ is_mock_air_quality|yesno:"true,false" }};
   var isMockIndoor = {{ is_mock_indoor_temp|yesno:"true,false" }};
 
@@ -838,29 +993,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Humidity notifications.
-  if (humidity !== null && SHOW_HUMIDITY) {
-    if (humidity > 75 && !shown('humidity_high')) {
+  // Humidity notifications — always based on indoor sensor readings.
+  if (indoorHumidity !== null && SHOW_HUMIDITY) {
+    if (indoorHumidity > 75 && !shown('humidity_high')) {
       queue.push({ key: 'humidity_high', type: 'warning', duration: 6000,
-        title: 'High Humidity',
-        body: 'Humidity is <strong>' + Math.round(humidity) + '%</strong>. High moisture can encourage mould growth and affect comfort.' });
-    } else if (humidity < 25 && !shown('humidity_low')) {
+        title: 'High Indoor Humidity',
+        body: 'Indoor humidity is <strong>' + Math.round(indoorHumidity) + '%</strong>. High moisture can encourage mould growth and affect comfort.' });
+    } else if (indoorHumidity < 25 && !shown('humidity_low')) {
       queue.push({ key: 'humidity_low', type: 'warning', duration: 6000,
-        title: 'Low Humidity',
-        body: 'Humidity is <strong>' + Math.round(humidity) + '%</strong>. Very dry air can irritate airways. Consider a humidifier.' });
+        title: 'Low Indoor Humidity',
+        body: 'Indoor humidity is <strong>' + Math.round(indoorHumidity) + '%</strong>. Very dry air can irritate airways. Consider a humidifier.' });
     }
   }
 
-  // Pressure notifications.
-  if (pressure !== null && SHOW_PRESSURE) {
-    if (pressure < 990 && !shown('pressure_low')) {
+  // Pressure notifications — based on indoor sensor readings.
+  if (indoorPressure !== null && SHOW_PRESSURE) {
+    if (indoorPressure < 990 && !shown('pressure_low')) {
       queue.push({ key: 'pressure_low', type: 'warning', duration: 6000,
         title: 'Low Atmospheric Pressure',
-        body: 'Pressure is <strong>' + Math.round(pressure) + ' hPa</strong>. Stormy or unsettled weather may be on the way.' });
-    } else if (pressure > 1025 && !shown('pressure_high') && SHOW_POSITIVE) {
+        body: 'Indoor pressure is <strong>' + Math.round(indoorPressure) + ' hPa</strong>. Stormy or unsettled weather may be on the way.' });
+    } else if (indoorPressure > 1025 && !shown('pressure_high') && SHOW_POSITIVE) {
       queue.push({ key: 'pressure_high', type: 'success', duration: 5000,
         title: 'High Pressure: Settled Weather',
-        body: 'Pressure is <strong>' + Math.round(pressure) + ' hPa</strong>. High pressure typically means calm, dry conditions.' });
+        body: 'Indoor pressure is <strong>' + Math.round(indoorPressure) + ' hPa</strong>. High pressure typically means calm, dry conditions.' });
     }
   }
 

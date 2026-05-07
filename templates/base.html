@@ -67,6 +67,30 @@
         min-width: 200px;
       }
     }
+
+    .topbar__user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+    }
+    .topbar__user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .topbar__user-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    @media (max-width: 400px) {
+      .topbar__user-name { display: none; }
+    }
   </style>
   {% block extra_head %}{% endblock %}
   <script>
@@ -129,10 +153,15 @@
                   <span class="hamburger-icon" aria-hidden="true"></span>
                 </button>
                     <div class="dropdown-content" id="main-menu-dropdown">
+<<<<<<< HEAD
                         <a href="{% url 'Hyper_Local_Weather:index' %}">Home</a>
                         <a href="{% url 'Hyper_Local_Weather:historical' %}">Stats</a>
                         <a href="{% url 'Hyper_Local_Weather:map' %}">Map</a>
                         <a href="{% url 'Hyper_Local_Weather:account' %}">Account</a>
+=======
+                        <a href="{% url 'Hyper_Local_Weather:index' %}">Dashboard</a>
+                        <a href="{% url 'Hyper_Local_Weather:analytics' %}">Analytics</a>
+>>>>>>> db2f7a3064745dbbbe0740a0804d8b43959e3017
                       {% if user.is_authenticated %}
                         <a href="{% url 'Hyper_Local_Weather:notification_testing' %}">Notification Testing</a>
                       {% endif %}
@@ -153,9 +182,35 @@
                 </div>
             </nav>
             <div class="brand">
+              <span class="brand__logo" aria-hidden="true">
+                <svg class="brand__logo-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- outer circle -->
+                  <circle cx="18" cy="18" r="15.5" stroke="currentColor" stroke-width="1.5"/>
+                  <!-- leaf: pointed tip top, pointed tip bottom, widest at centre -->
+                  <path d="M18 8 C24 10 26 14 26 18 C26 22 24 26 18 28 C12 26 10 22 10 18 C10 14 12 10 18 8 Z"
+                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <!-- centre vein -->
+                  <line x1="18" y1="28" x2="18" y2="9" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                  <!-- side veins -->
+                  <path d="M18 16 C21 15 23 14 25 13" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/>
+                  <path d="M18 16 C15 15 13 14 11 13" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/>
+                  <path d="M18 20 C21 19 23 18.5 25 18" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/>
+                  <path d="M18 20 C15 19 13 18.5 11 18" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/>
+                </svg>
+              </span>
               <h1 class="brand__name">AirSense</h1>
             </div>
     </div>
+    {% if user.is_authenticated %}
+    <div class="topbar__user">
+      <img class="topbar__user-avatar"
+           src="{{ topbar_avatar_url }}"
+           onerror="this.src='{% static 'Defaults/Default_profile.jpg' %}'"
+           alt="{{ user.username }}">
+      <span class="topbar__user-name">{{ user.username }}</span>
+    </div>
+    {% endif %}
+  </div>
 </header>
 
   <main class="container">
