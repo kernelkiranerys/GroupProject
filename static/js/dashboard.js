@@ -10,6 +10,67 @@
     var dashboard = document.querySelector('.dashboard-grid');
     if (!dashboard) return;
 
+    function bindTempTile(tileEl, options) {
+      if (!tileEl) return;
+
+      var toggle = tileEl.querySelector('.tempTile__toggle');
+      var currentPanel = tileEl.querySelector('.tempTile__panel:not(.tempTile__panel--week)');
+      var weekPanel = tileEl.querySelector('.tempTile__panel--week');
+      var avgNum = tileEl.querySelector(options.avgNumSelector);
+      var avgDeg = tileEl.querySelector(options.avgDegSelector);
+      var weekDayEls = Array.from(tileEl.querySelectorAll('.tempTile__week .day[data-temp]'));
+
+      function setPanelPositions(showWeek) {
+        var tileWidth = tileEl.clientWidth || 0;
+        if (currentPanel) {
+          currentPanel.style.setProperty('left', showWeek ? (-tileWidth) + 'px' : '0px', 'important');
+        }
+        if (weekPanel) {
+          weekPanel.style.setProperty('left', showWeek ? '0px' : tileWidth + 'px', 'important');
+        }
+      }
+
+      setPanelPositions(tileEl.classList.contains('tempTile--show-week'));
+
+      if (avgNum && avgDeg && weekDayEls.length) {
+        var temps = weekDayEls
+          .map(function (el) { return parseFloat(el.dataset.temp); })
+          .filter(function (value) { return Number.isFinite(value); });
+
+        if (temps.length) {
+          var weekAverage = Math.round((temps.reduce(function (sum, value) { return sum + value; }, 0) / temps.length) * 10) / 10;
+          avgNum.textContent = weekAverage.toFixed(1).replace('.0', '');
+          avgDeg.style.display = '';
+        } else {
+          avgNum.textContent = 'N/A';
+          avgDeg.style.display = 'none';
+        }
+      }
+
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          var showWeek = tileEl.classList.toggle('tempTile--show-week');
+          setPanelPositions(showWeek);
+
+          toggle.setAttribute('aria-expanded', showWeek ? 'true' : 'false');
+          toggle.setAttribute('aria-label', showWeek ? options.showCurrentLabel : 'Show weekly average');
+          toggle.setAttribute('title', showWeek ? options.showCurrentLabel : 'Show weekly average');
+        });
+      }
+    }
+
+    bindTempTile(document.querySelector('.js-indoor-temp-tile'), {
+      avgNumSelector: '.js-week-avg-num',
+      avgDegSelector: '.js-week-avg-deg',
+      showCurrentLabel: 'Show current indoor temperature'
+    });
+
+    bindTempTile(document.querySelector('.js-outdoor-temp-tile'), {
+      avgNumSelector: '.js-outdoor-week-avg-num',
+      avgDegSelector: '.js-outdoor-week-avg-deg',
+      showCurrentLabel: 'Show current outdoor temperature'
+    });
+
     var ds = dashboard.dataset;
     var mapCenterLat = parseNumber(ds.mapCenterLat);
     var mapCenterLon = parseNumber(ds.mapCenterLon);

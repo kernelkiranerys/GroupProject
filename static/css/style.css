@@ -1525,18 +1525,23 @@ body {
 }
 
 .tempTile__carousel{
-  display: flex;
-  width: 200%;
+  width: 100%;
   height: 100%;
-  transition: transform 320ms ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .tempTile__panel{
-  width: 50%;
+  width: 100%;
   height: 100%;
   padding: 16px;
   display: flex;
   flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  transition: left 320ms ease;
 }
 
 .tempTile__panel--week{
@@ -1547,9 +1552,11 @@ body {
   flex: 1;
 }
 
-.tempTile--show-week .tempTile__carousel{
-  transform: translateX(-50%);
-}
+.tempTile__panel:first-child{ left: 0; }
+.tempTile__panel--week{ left: 100%; }
+
+.tempTile--show-week .tempTile__panel:first-child{ left: -100%; }
+.tempTile--show-week .tempTile__panel--week{ left: 0; }
 
 .tempTile__toggle{
   position: absolute;
