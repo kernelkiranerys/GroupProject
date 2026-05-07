@@ -2257,8 +2257,8 @@ body {
 }
 
 .view-switch__btn--square{
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   justify-content: center;
   border-radius: 10px;
 }
@@ -2282,8 +2282,9 @@ body {
 }
 
 .view-switch__svg {
-  width: 26px;
-  height: 26px;
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 .mock-pill{
@@ -2493,6 +2494,14 @@ body {
   }
   .view-switch{
     flex-wrap: wrap;
+  }
+  .view-switch__btn--square{
+    width: 44px;
+    height: 44px;
+  }
+  .view-switch__svg{
+    width: 18px;
+    height: 18px;
   }
   .outdoor-top{
     grid-template-columns: 1fr;
